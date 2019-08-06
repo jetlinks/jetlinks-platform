@@ -1,0 +1,42 @@
+server:
+  port: 8844
+spring:
+  profiles:
+    active: dev
+  application:
+    name: jetlinks-demo
+  datasource:
+    url: jdbc:h2:file:./db/${spring.application.name}
+    username: sa
+    password:
+    type: com.zaxxer.hikari.HikariDataSource
+
+hsweb:
+  app:
+    name: ${spring.application.name}
+
+jetlinks:
+  redis:
+    hosts: redis://192.168.3.32:6379
+    database: 0
+    #    password:
+    type: standalone
+  server-id: ${spring.application.name}:${server.port} #设备服务网关服务ID,不同服务请设置不同的ID
+  transport-limit:
+    MQTT: 1000000
+mybatis:
+  mapper-locations: classpath*:/mappers/*.xml
+  type-handlers-package: org.jetlinks.platform.manager.enums
+logging:
+  level:
+    org.jetlinks: debug
+    org.hswebframework: warn
+    org.hswebframework.web: debug
+    org.springframework: warn
+    org.ibatis: debug
+    org.mybatis: debug
+vertx:
+  max-event-loop-execute-time-unit: seconds
+  max-event-loop-execute-time: 30
+  max-worker-execute-time: 30
+  max-worker-execute-time-unit: seconds
