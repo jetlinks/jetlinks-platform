@@ -17,7 +17,7 @@ hsweb:
 
 jetlinks:
   redis:
-    hosts: redis://192.168.3.32:6379
+    hosts: redis://127.0.0.1:6379
     database: 0
     #    password:
     type: standalone
