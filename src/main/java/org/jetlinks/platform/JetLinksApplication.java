@@ -37,9 +37,6 @@ public class JetLinksApplication {
         SpringApplication.run(JetLinksApplication.class,args);
     }
 
-
-
-
     @Profile({"dev"})
     @Component
     @ConfigurationProperties(prefix = "jetlinks.simulator")

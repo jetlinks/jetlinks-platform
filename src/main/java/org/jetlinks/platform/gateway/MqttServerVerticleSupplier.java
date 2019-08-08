@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0
  */
 @Component
-public class MQTTServerVerticleSupplier implements VerticleSupplier, EnvironmentAware {
+public class MqttServerVerticleSupplier implements VerticleSupplier, EnvironmentAware {
 
     @Autowired
     private MqttServerOptions mqttServerOptions;
@@ -52,7 +52,7 @@ public class MQTTServerVerticleSupplier implements VerticleSupplier, Environment
         mqttServer.setMessageConsumer(((deviceClient, message) -> {
             //转发消息到spring event
             eventPublisher.publishEvent(new GenericsPayloadApplicationEvent<>(
-                    MQTTServerVerticleSupplier.this,
+                    MqttServerVerticleSupplier.this,
                     new DeviceMessageEvent<>(deviceClient, message),
                     message.getClass()));
         }));

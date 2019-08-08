@@ -14,6 +14,10 @@ spring:
 hsweb:
   app:
     name: ${spring.application.name}
+  users:
+    admin:
+      username: admin
+      password: admin
 
 jetlinks:
   redis:
@@ -38,5 +42,5 @@ logging:
 vertx:
   max-event-loop-execute-time-unit: seconds
   max-event-loop-execute-time: 30
-  max-worker-execute-time: 30
   max-worker-execute-time-unit: seconds
+  max-worker-execute-time: 30
