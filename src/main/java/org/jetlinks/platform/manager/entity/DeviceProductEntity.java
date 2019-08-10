@@ -4,11 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hswebframework.web.commons.entity.RecordCreationEntity;
 import org.hswebframework.web.commons.entity.SimpleGenericEntity;
+import org.jetlinks.platform.manager.enums.DeviceType;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
 import java.util.Map;
-import java.util.function.Consumer;
 
 @Getter
 @Setter
@@ -52,24 +52,12 @@ public class DeviceProductEntity extends SimpleGenericEntity<String> implements 
     private String networkWay;
 
     //设备类型: 网关，设备
-    @Column(name = "product_type")
-    private String productType;
-
-    //注册方式: AUTO,MANUAL
-    @Column(name = "registry_way")
-    private String registryWay;
-
-    //认证方式: 产品认证,设备认证.
-    @Column(name = "auth_way")
-    private String authWay;
+    @Column(name = "device_type")
+    private DeviceType deviceType;
 
     //安全配置
     @Column(name = "security_conf")
     private Map<String, Object> security;
-
-    //系统配置，用于配置系统需要的设备配置
-    @Column(name = "sys_conf")
-    private Map<String, Object> sysConfiguration;
 
     //产品状态
     @Column(name = "state")

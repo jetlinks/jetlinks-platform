@@ -329,6 +329,12 @@
 
         <dependency>
             <groupId>org.jetlinks</groupId>
+            <artifactId>jetlinks-supports</artifactId>
+            <version>${jetlinks.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jetlinks</groupId>
             <artifactId>lettuce-plus-spring</artifactId>
             <version>${lettuce.plus.version}</version>
         </dependency>

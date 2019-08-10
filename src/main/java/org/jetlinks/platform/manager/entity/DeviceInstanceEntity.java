@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hswebframework.web.commons.entity.RecordCreationEntity;
 import org.hswebframework.web.commons.entity.SimpleGenericEntity;
+import org.jetlinks.platform.manager.enums.DeviceState;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
@@ -33,16 +34,12 @@ public class DeviceInstanceEntity extends SimpleGenericEntity<String> implements
     @Column(name = "security_conf")
     private Map<String, Object> security;
 
-    //系统配置，用于配置系统需要的设备配置
-    @Column(name = "sys_conf")
-    private Map<String, Object> sysConfiguration;
-
     //派生元数据,有的设备的属性，功能，事件可能会动态的添加
     @Column(name = "derive_metadata")
     private String deriveMetadata;
 
     @Column(name = "state")
-    private Byte state;
+    private DeviceState state;
 
     @Column(name = "creator_id")
     private String creatorId;
@@ -57,9 +54,4 @@ public class DeviceInstanceEntity extends SimpleGenericEntity<String> implements
     @Column(name = "registry_time")
     private Long registryTime;
 
-    @Override
-    @Column(name = "properties")
-    public Map<String, Object> getProperties() {
-        return super.getProperties();
-    }
 }
