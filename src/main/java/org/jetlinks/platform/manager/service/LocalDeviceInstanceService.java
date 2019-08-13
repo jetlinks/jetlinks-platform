@@ -52,17 +52,13 @@ public class LocalDeviceInstanceService extends GenericEntityService<DeviceInsta
 
     @Override
     public String insert(DeviceInstanceEntity entity) {
-        entity.setState(DeviceState.noActive);
-        String id = super.insert(entity);
-        updateRegistry(entity);
-        return id;
+        entity.setState(org.jetlinks.platform.manager.enums.DeviceState.notActive);
+
+        return super.insert(entity);
     }
 
-    @Override
-    public int updateByPk(String id, DeviceInstanceEntity entity) {
-        int len = super.updateByPk(id, entity);
-        updateRegistry(entity);
-        return len;
+    public void deploy(String id) {
+        updateRegistry(selectByPk(id));
     }
 
     private volatile FluxSink<String> deviceIdSink;
@@ -120,7 +116,7 @@ public class LocalDeviceInstanceService extends GenericEntityService<DeviceInsta
                     continue;
                 }
                 total += createUpdate()
-                        .set(DeviceInstanceEntity::getState, state)
+                        .set(DeviceInstanceEntity::getState, org.jetlinks.platform.manager.enums.DeviceState.of(state))
                         .where()
                         .in(DeviceInstanceEntity::getId, deviceIdList)
                         .exec();
@@ -160,8 +156,6 @@ public class LocalDeviceInstanceService extends GenericEntityService<DeviceInsta
                 operation.putState(DeviceState.noActive);
             }
             //自定义配置
-            ofNullable(entity.getSysConfiguration())
-                    .ifPresent(operation::putAll);
 
             ofNullable(entity.getSecurity())
                     .ifPresent(operation::putAll);

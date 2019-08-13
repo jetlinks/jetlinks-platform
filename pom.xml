@@ -19,6 +19,7 @@
         <hsweb.expands.version>3.0.2</hsweb.expands.version>
         <lettuce.plus.version>1.0.0-SNAPSHOT</lettuce.plus.version>
         <jetlinks.version>1.0.0-RC2-SNAPSHOT</jetlinks.version>
+        <hsweb.easyorm.version>3.0.6-SNAPSHOT</hsweb.easyorm.version>
     </properties>
 
     <build>
@@ -382,6 +383,23 @@
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>3.3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.searchbox</groupId>
+            <artifactId>jest</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hswebframework</groupId>
+            <artifactId>hsweb-easy-orm-elasticsearch</artifactId>
+            <version>${hsweb.easyorm.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.influxdb</groupId>
+            <artifactId>influxdb-java</artifactId>
+            <version>2.15</version>
         </dependency>
 
         <dependency>

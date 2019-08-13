@@ -1,6 +1,7 @@
 package org.jetlinks.platform.manager.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hswebframework.web.commons.entity.DataStatus;
 import org.hswebframework.web.id.IDGenerator;
 import org.hswebframework.web.service.GenericEntityService;
 import org.jetlinks.core.device.DeviceProductInfo;
@@ -37,6 +38,7 @@ public class LocalDeviceProductService extends GenericEntityService<DeviceProduc
 
     @Override
     public String insert(DeviceProductEntity entity) {
+        entity.setState(DataStatus.STATUS_ENABLED);
         String id = super.insert(entity);
         updateRegistry(entity);
         return id;
@@ -62,8 +64,6 @@ public class LocalDeviceProductService extends GenericEntityService<DeviceProduc
 
             operation.update(productInfo);
             operation.updateMetadata(entity.getMetadata());
-            ofNullable(entity.getSysConfiguration())
-                    .ifPresent(operation::putAll);
 
             ofNullable(entity.getSecurity())
                     .ifPresent(operation::putAll);

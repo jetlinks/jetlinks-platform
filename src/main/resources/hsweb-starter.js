@@ -101,6 +101,23 @@ function install(context) {
         .index().name("idx_dci_state").column("state").commit()
         .comment("设备实例").commit();
 
+    database.createOrAlter("dev_properties")
+        .addColumn().name("id").alias("id").comment("ID").jdbcType(java.sql.JDBCType.VARCHAR).length(32).primaryKey().commit()
+        .addColumn().name("device_id").alias("deviceId").notNull().comment("设备ID").varchar(32).commit()
+        .addColumn().name("property").alias("property").notNull().comment("属性").varchar(32).commit()
+        .addColumn().name("property_name").alias("propertyName").notNull().comment("属性名").varchar(32).commit()
+
+        .addColumn().name("number_value").comment("数字类型").number(32).commit()
+        .addColumn().name("string_value").comment("字符串值").varchar(3000).commit()
+        .addColumn().name("format_value").comment("格式化的值").varchar(256).commit()
+
+        .addColumn().name("update_time").alias("updateTime").comment("更新时间").datetime().commit()
+
+        .index().name("idx_dp_device_id").column("device_id").commit()
+        .index().name("idx_dp_property").column("property").commit()
+        .index().name("idx_dp_number_value").column("number_value").commit()
+        .comment("设备属性").commit();
+
 }
 
 //设置依赖

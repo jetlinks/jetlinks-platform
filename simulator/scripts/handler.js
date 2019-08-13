@@ -31,7 +31,9 @@ simulator.onEvent(function (index, session) {
         messageId: new Date().getTime() + "" + Math.round((Math.random() * 100000)),
         event: "temperature",
         timestamp: new Date().getTime(),
-        data: ((Math.random() * 100) + 1).toFixed(2)
+        data:{
+            "temperature": ((Math.random() * 20) + 30).toFixed(2)
+        }
     }))
 });
 
