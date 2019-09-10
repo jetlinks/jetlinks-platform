@@ -146,4 +146,15 @@ public class DeviceMessageController {
                 .get();
     }
 
+    //断开连接
+    @GetMapping("/{deviceId}/disconnect")
+    @SneakyThrows
+    public ResponseMessage<Boolean> disconnect(@PathVariable String deviceId) {
+        return registry.getDevice(deviceId)
+                .disconnect()
+                .thenApply(ResponseMessage::ok)
+                .toCompletableFuture()
+                .get();
+    }
+
 }
