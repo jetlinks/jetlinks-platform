@@ -52,7 +52,7 @@ public class JetLinksApplication {
 
         @Getter
         @Setter
-        private long initDeviceNumber = 1000;
+        private long initDeviceNumber = 10000;
 
         @Override
         public void run(String... strings) {
