@@ -1,22 +1,23 @@
 package org.jetlinks.platform.manager.web;
 
-import org.hswebframework.web.commons.entity.param.QueryParamEntity;
-import org.hswebframework.web.controller.SimpleGenericEntityController;
+import lombok.Getter;
+import org.hswebframework.ezorm.rdb.mapping.ReactiveRepository;
+import org.hswebframework.web.authorization.annotation.Authorize;
+import org.hswebframework.web.crud.web.reactive.ReactiveCrudController;
 import org.jetlinks.platform.manager.entity.DeviceInstanceEntity;
-import org.jetlinks.platform.manager.service.LocalDeviceInstanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/device-instance")
-public class DeviceInstanceController implements SimpleGenericEntityController<DeviceInstanceEntity,String, QueryParamEntity> {
+@Authorize
+public class DeviceInstanceController implements
+        ReactiveCrudController<DeviceInstanceEntity, String> {
 
     @Autowired
-    private LocalDeviceInstanceService instanceService;
+    @Getter
+    private ReactiveRepository<DeviceInstanceEntity, String> repository;
 
-    @Override
-    public LocalDeviceInstanceService getService() {
-        return instanceService;
-    }
+
 }

@@ -1,28 +1,21 @@
 package org.jetlinks.platform.configuration;
 
-import org.hswebframework.web.authorization.token.UserTokenManager;
 import org.jetlinks.core.ProtocolSupports;
 import org.jetlinks.core.device.registry.DeviceMessageHandler;
 import org.jetlinks.core.device.registry.DeviceRegistry;
 import org.jetlinks.core.message.interceptor.DeviceMessageSenderInterceptor;
-import org.jetlinks.platform.events.DeviceConnectedEvent;
-import org.jetlinks.platform.events.DeviceDisconnectedEvent;
 import org.jetlinks.gateway.monitor.GatewayServerMonitor;
 import org.jetlinks.gateway.monitor.LettuceGatewayServerMonitor;
 import org.jetlinks.gateway.session.DefaultDeviceSessionManager;
 import org.jetlinks.lettuce.LettucePlus;
-import org.jetlinks.lettuce.spring.cache.LettuceCacheManager;
-import org.jetlinks.lettuce.spring.hsweb.LettuceUserTokenManager;
+import org.jetlinks.platform.events.DeviceConnectedEvent;
+import org.jetlinks.platform.events.DeviceDisconnectedEvent;
 import org.jetlinks.registry.redis.lettuce.LettuceDeviceMessageHandler;
 import org.jetlinks.registry.redis.lettuce.LettuceDeviceRegistry;
 import org.jetlinks.supports.official.JetLinksProtocolSupport;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.transaction.TransactionAwareCacheManagerProxy;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,12 +27,10 @@ import java.util.concurrent.ScheduledExecutorService;
 @EnableConfigurationProperties(JetLinksProperties.class)
 public class JetLinksConfiguration {
 
-
     @Bean
     public DeviceMessageHandler deviceMessageHandler(LettucePlus lettucePlus) {
         return new LettuceDeviceMessageHandler(lettucePlus);
     }
-
 
     @Bean
     public LettuceDeviceRegistry deviceRegistry(LettucePlus lettucePlus, DeviceMessageHandler handler, ProtocolSupports protocolSupports) {
@@ -62,21 +53,6 @@ public class JetLinksConfiguration {
                 return o;
             }
         };
-    }
-
-    @Bean
-    public CacheManager cacheManager(LettucePlus plus) {
-
-        CacheManager cacheManager = new LettuceCacheManager(plus);
-
-        return new TransactionAwareCacheManagerProxy(cacheManager);
-    }
-
-    @Bean
-    @ConditionalOnProperty(prefix = "jetlinks.redis.user-token", name = "enable", havingValue = "true")
-    @ConfigurationProperties(prefix = "jetlinks.authorize")
-    public UserTokenManager userTokenManager(LettucePlus plus) {
-        return new LettuceUserTokenManager("jetlinks", plus);
     }
 
     @Bean(initMethod = "startup", destroyMethod = "shutdown")

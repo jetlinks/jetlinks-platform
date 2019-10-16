@@ -7,7 +7,7 @@ import org.hswebframework.web.dict.EnumDict;
 
 @AllArgsConstructor
 @Getter
-@Dict(id = "device-type")
+@Dict("device-type")
 public enum DeviceType implements EnumDict<String> {
     device("设备"),
     gateway("网关")

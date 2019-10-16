@@ -2,9 +2,10 @@ package org.jetlinks.platform.manager.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hswebframework.web.commons.entity.SimpleGenericEntity;
+import org.hswebframework.web.api.crud.entity.GenericEntity;
 
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -14,9 +15,15 @@ import java.util.Map;
 @Table(name = "dev_properties")
 @Getter
 @Setter
-public class DevicePropertiesEntity extends SimpleGenericEntity<String> {
+public class DevicePropertiesEntity extends GenericEntity<String> {
 
-    @Column(name = "device_id")
+    @Override
+    @GeneratedValue(generator = "snow_flake")
+    public String getId() {
+        return super.getId();
+    }
+
+    @Column(name = "device_id",length = 32)
     private String deviceId;
 
     @Column(name = "property")
@@ -29,7 +36,7 @@ public class DevicePropertiesEntity extends SimpleGenericEntity<String> {
     private String stringValue;
 
     @Column(name = "number_value")
-    private Number numberValue;
+    private BigDecimal numberValue;
 
     @Column(name = "format_value")
     private String formatValue;
@@ -39,7 +46,7 @@ public class DevicePropertiesEntity extends SimpleGenericEntity<String> {
 
 
     public Map<String,Object> toMap(){
-        Map<String,Object> data = copyTo(new HashMap<>());
+        Map<String,Object> data = copyTo(HashMap.class);
         data.put("updateTime",updateTime.getTime());
 
         return data;

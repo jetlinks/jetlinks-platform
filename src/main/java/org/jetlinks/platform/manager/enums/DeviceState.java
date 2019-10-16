@@ -7,7 +7,7 @@ import org.hswebframework.web.dict.EnumDict;
 
 @AllArgsConstructor
 @Getter
-@Dict(id = "device-state")
+@Dict( "device-state")
 public enum DeviceState implements EnumDict<String> {
     notActive("未激活"),
     offline("离线"),

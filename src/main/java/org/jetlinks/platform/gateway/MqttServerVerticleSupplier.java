@@ -4,7 +4,7 @@ import io.vertx.core.Verticle;
 import io.vertx.mqtt.MqttServerOptions;
 import lombok.Getter;
 import lombok.Setter;
-import org.hswebframework.web.service.GenericsPayloadApplicationEvent;
+import org.hswebframework.web.event.GenericsPayloadApplicationEvent;
 import org.jetlinks.core.device.registry.DeviceRegistry;
 import org.jetlinks.platform.events.DeviceMessageEvent;
 import org.jetlinks.gateway.monitor.GatewayServerMonitor;

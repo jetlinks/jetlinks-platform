@@ -3,7 +3,6 @@ package org.jetlinks.platform.configuration;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.spi.VerticleFactory;
 import io.vertx.mqtt.MqttServerOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.jetlinks.platform.gateway.VerticleSupplier;
@@ -39,7 +38,6 @@ public class DeviceGatewayConfiguration {
         return Vertx.vertx(vertxOptions);
     }
 
-
     @Bean
     public VertxServerInitializer mqttServerInitializer() {
         return new VertxServerInitializer();
@@ -49,9 +47,6 @@ public class DeviceGatewayConfiguration {
     public static class VertxServerInitializer implements CommandLineRunner, DisposableBean, Ordered {
 
         @Autowired
-        private VerticleFactory verticleFactory;
-
-        @Autowired
         private List<VerticleSupplier> verticleList;
 
         @Autowired
@@ -59,7 +54,6 @@ public class DeviceGatewayConfiguration {
 
         @Override
         public void run(String... args) {
-            vertx.registerVerticleFactory(verticleFactory);
             for (VerticleSupplier supplier : verticleList) {
                 DeploymentOptions options = new DeploymentOptions();
                 options.setHa(true);

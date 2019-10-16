@@ -3,21 +3,24 @@ package org.jetlinks.platform;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.hswebframework.web.dao.Dao;
+import org.hswebframework.web.authorization.basic.configuration.EnableAopAuthorize;
+import org.hswebframework.web.crud.annotation.EnableEasyormRepository;
 import org.jetlinks.core.device.DeviceInfo;
 import org.jetlinks.core.device.DeviceOperation;
 import org.jetlinks.core.device.DeviceProductInfo;
 import org.jetlinks.core.device.DeviceProductOperation;
 import org.jetlinks.core.device.registry.DeviceRegistry;
-import org.mybatis.spring.annotation.MapperScan;
+import org.jetlinks.platform.configuration.DeviceGatewayConfiguration;
+import org.jetlinks.platform.configuration.JetLinksConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
@@ -27,10 +30,13 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 
-@SpringBootApplication
-@EnableCaching
-@MapperScan(value = "org.jetlinks.platform.manager.dao",markerInterface = Dao.class)
-@EnableAsync
+
+@SpringBootApplication(scanBasePackages = "org.jetlinks.platform",exclude = DataSourceAutoConfiguration.class)
+//@EnableCaching
+//@EnableAsync
+@EnableEasyormRepository("org.jetlinks.platform.manager.entity")
+@Import(JetLinksConfiguration.class)
+@EnableAopAuthorize
 public class JetLinksApplication {
 
     public static void main(String[] args) {

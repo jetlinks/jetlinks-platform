@@ -28,7 +28,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.yaml.snakeyaml.emitter.Emitter;
+import reactor.core.publisher.EmitterProcessor;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
+import javax.annotation.PostConstruct;
+import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -46,7 +53,6 @@ public class DeviceEventMessageHandler {
     private JestClient jestClient;
 
     @EventListener
-    @Async
     public void handleEvent(DeviceMessageEvent<EventMessage> event) {
         EventMessage message = event.getMessage();
         DeviceOperation device = event.getSession().getOperation();
@@ -63,7 +69,6 @@ public class DeviceEventMessageHandler {
     }
 
     @EventListener
-    @Async
     public void handleWriteProperty(DeviceMessageEvent<WritePropertyMessageReply> event) {
         WritePropertyMessageReply message = event.getMessage();
         if (message.isSuccess()) {
@@ -72,7 +77,6 @@ public class DeviceEventMessageHandler {
     }
 
     @EventListener
-    @Async
     public void handleReadProperty(DeviceMessageEvent<ReadPropertyMessageReply> event) {
         ReadPropertyMessageReply message = event.getMessage();
         if (message.isSuccess()) {
@@ -140,10 +144,10 @@ public class DeviceEventMessageHandler {
                                 entity.setPropertyName(prop.getName());
                                 if (type instanceof NumberType) {
                                     NumberType numberType = (NumberType) type;
-                                    entity.setNumberValue(numberType.convert(entry.getValue()));
+                                    entity.setNumberValue(new BigDecimal(numberType.convert(entry.getValue()).toString()));
                                 } else if (type instanceof DateTimeType) {
                                     DateTimeType dateTimeType = (DateTimeType) type;
-                                    entity.setNumberValue(dateTimeType.convert(entry.getValue()).getTime());
+                                    entity.setNumberValue(new BigDecimal(dateTimeType.convert(entry.getValue()).toString()));
                                 } else {
                                     entity.setStringValue(String.valueOf(entry.getValue()));
                                 }
@@ -158,6 +162,40 @@ public class DeviceEventMessageHandler {
         syncDeviceProperty(entities);
     }
 
+    private EmitterProcessor<DevicePropertiesEntity> processor = EmitterProcessor.create();
+
+    @PostConstruct
+    @SuppressWarnings("all")
+    public void init() {
+
+        processor.bufferTimeout(50, Duration.ofSeconds(5))
+                .subscribe(list -> {
+                    Map<String, DevicePropertiesEntity> group = list
+                            .stream()
+                            .collect(Collectors.toMap(DevicePropertiesEntity::getDeviceId, Function.identity(), (_1, _2) -> _2));
+                    propertiesService
+                            .getRepository()
+                            .createQuery()
+                            .select(DevicePropertiesEntity::getDeviceId)
+                            .where()
+                            .in(DevicePropertiesEntity::getDeviceId, group.keySet())
+                            .fetch()
+                            .map(DevicePropertiesEntity::getDeviceId)
+                            .collectList()
+                            .subscribe(idList -> {
+                                idList.forEach(group::remove);
+                                if (!group.isEmpty()) {
+                                    propertiesService
+                                            .insertBatch(Mono.just(group.values()))
+                                            .subscribe(i -> {
+                                                log.debug("同步设备属性数量:{}", i);
+                                            });
+                                }
+                            });
+
+                });
+    }
+
     private void syncDeviceProperty(List<DevicePropertiesEntity> list) {
         Bulk.Builder builder = new Bulk.Builder()
                 .defaultIndex("device_properties")
@@ -168,19 +206,7 @@ public class DeviceEventMessageHandler {
             builder.addAction(new Index
                     .Builder(entity.toMap())
                     .build());
-
-            int num = propertiesService.createUpdate()
-                    .set(entity::getNumberValue)
-                    .set(entity::getStringValue)
-                    .set(entity::getFormatValue)
-                    .set(entity::getUpdateTime)
-                    .where(entity::getDeviceId)
-                    .and("property", entity.getProperty())
-                    .exec();
-            if (num == 0) {
-                entity.setId(IDGenerator.MD5.generate());
-                propertiesService.getDao().insert(entity);
-            }
+            processor.onNext(entity);
         }
 
         jestClient.executeAsync(builder.build(), new JestResultHandler<JestResult>() {

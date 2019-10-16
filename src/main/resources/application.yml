@@ -5,21 +5,35 @@ spring:
     active: dev
   application:
     name: jetlinks-demo
-  datasource:
-    url: jdbc:h2:file:./db/${spring.application.name}
-    username: sa
-    password:
-    type: com.zaxxer.hikari.HikariDataSource
+#  datasource:
+#    url: jdbc:h2:file:./db/${spring.application.name}
+#    username: sa
+#    password:
+#    type: com.zaxxer.hikari.HikariDataSource
   elasticsearch:
     jest:
       uris: http://localhost:9200
+  r2dbc:
+    url: r2dbc:h2:file://PUBLIC/./db/${spring.application.name}
+    username: sa
+    password:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: true
+    default-property-inclusion: non_null
+easyorm:
+  default-schema: PUBLIC # 数据库默认的schema
+  dialect: h2 #数据库方言
 hsweb:
-  app:
-    name: ${spring.application.name}
-  users:
-    admin:
-      username: admin
-      password: admin
+  webflux:
+    response-wrapper: enabled #开启响应包装器(将正常的Mono返回值包转为ResponseMessage)
+  auth:   #默认的用户配置
+    users:
+      admin:
+        username: admin
+        password: admin
 
 jetlinks:
   redis:
@@ -30,17 +44,16 @@ jetlinks:
   server-id: ${spring.application.name}:${server.port} #设备服务网关服务ID,不同服务请设置不同的ID
   transport-limit:
     MQTT: 1000000
-mybatis:
-  mapper-locations: classpath*:/mappers/*.xml
-  type-handlers-package: org.jetlinks.platform.manager.enums
+
 logging:
   level:
-    org.jetlinks: debug
-    org.hswebframework: warn
-    org.hswebframework.web: debug
-    org.springframework: warn
-    org.ibatis: debug
-    org.mybatis: debug
+#    org.jetlinks: debug
+    org.jetlinks.platform: debug
+    org.hswebframework: debug
+    org.springframework.transaction: debug
+    org.springframework.data.r2dbc.connectionfactory: debug
+   # org.springframework: warn
+
 vertx:
   max-event-loop-execute-time-unit: seconds
   max-event-loop-execute-time: 30
