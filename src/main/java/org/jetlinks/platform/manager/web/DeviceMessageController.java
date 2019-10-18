@@ -185,7 +185,7 @@ public class DeviceMessageController {
                 .readProperty(property.split("[, ;]"))
                 .messageId(IDGenerator.SNOW_FLAKE_STRING.generate())
                 .send())
-                .map(ReadPropertyMessageReply::getProperties);
+                .flatMap(reply->Mono.justOrEmpty(reply.getProperties()));
 
     }
 

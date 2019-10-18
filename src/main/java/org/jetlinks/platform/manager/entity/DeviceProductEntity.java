@@ -2,15 +2,21 @@ package org.jetlinks.platform.manager.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 import org.hswebframework.ezorm.rdb.mapping.annotation.ColumnType;
 import org.hswebframework.ezorm.rdb.mapping.annotation.JsonCodec;
 import org.hswebframework.web.api.crud.entity.GenericEntity;
 import org.hswebframework.web.api.crud.entity.RecordCreationEntity;
+import org.hswebframework.web.crud.generator.Generators;
+import org.hswebframework.web.validator.CreateGroup;
+import org.hswebframework.web.validator.UpdateGroup;
 import org.jetlinks.platform.manager.enums.DeviceType;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.sql.JDBCType;
 import java.util.Map;
 
@@ -20,13 +26,14 @@ import java.util.Map;
 public class DeviceProductEntity extends GenericEntity<String> implements RecordCreationEntity {
 
     @Override
-    @GeneratedValue(generator = "snow_flake")
+    @GeneratedValue(generator = Generators.SNOW_FLAKE)
     public String getId() {
         return super.getId();
     }
 
     //名称
     @Column(name = "name")
+    @NotBlank(message = "产品名称不能为空",groups = CreateGroup.class)
     private String name;
 
     //所属项目
@@ -47,11 +54,16 @@ public class DeviceProductEntity extends GenericEntity<String> implements Record
 
     //消息协议: Alink,JetLinks
     @Column(name = "message_protocol")
+    @NotBlank(message = "消息协议不能为空",groups = CreateGroup.class)
+    @Length(min = 1,max = 256,groups = {
+            CreateGroup.class, UpdateGroup.class
+    })
     private String messageProtocol;
 
     //协议元数据
     @Column(name = "metadata")
     @ColumnType(jdbcType = JDBCType.CLOB)
+    @NotBlank(message = "元数据不能为空",groups = CreateGroup.class)
     private String metadata;
 
     //传输协议: MQTT,COAP,UDP

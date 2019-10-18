@@ -25,14 +25,14 @@ import java.util.Map;
 public class DeviceInstanceEntity extends GenericEntity<String> implements RecordCreationEntity {
 
     @Override
-    @GeneratedValue(generator = "snow_flake")
+    @GeneratedValue(generator = Generators.SNOW_FLAKE)
     public String getId() {
         return super.getId();
     }
 
     //设备实例名称
     @Column(name = "name")
-    @NotBlank(message = "设备名称不能为空",groups = CreateGroup.class)
+    @NotBlank(message = "设备名称不能为空", groups = CreateGroup.class)
     private String name;
 
     //说明
@@ -41,11 +41,11 @@ public class DeviceInstanceEntity extends GenericEntity<String> implements Recor
 
     //产品id
     @Column(name = "product_id")
-    @NotBlank(message = "产品ID不能为空",groups = CreateGroup.class)
+    @NotBlank(message = "产品ID不能为空", groups = CreateGroup.class)
     private String productId;
 
     @Column(name = "product_name")
-    @NotBlank(message = "产品名称不能为空",groups = CreateGroup.class)
+    @NotBlank(message = "产品名称不能为空", groups = CreateGroup.class)
     private String productName;
 
     //安全配置

@@ -34,6 +34,11 @@ hsweb:
       admin:
         username: admin
         password: admin
+        permissions:
+          - id: device-instance
+            actions: ['query','save','delete']
+  authorize:
+    auto-parse: true
 
 jetlinks:
   redis:

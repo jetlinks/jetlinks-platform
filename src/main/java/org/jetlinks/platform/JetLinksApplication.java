@@ -35,8 +35,7 @@ import java.util.concurrent.atomic.AtomicLong;
 //@EnableCaching
 //@EnableAsync
 @EnableEasyormRepository("org.jetlinks.platform.manager.entity")
-@Import(JetLinksConfiguration.class)
-@EnableAopAuthorize
+//@EnableAopAuthorize
 public class JetLinksApplication {
 
     public static void main(String[] args) {
