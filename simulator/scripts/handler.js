@@ -1,5 +1,6 @@
 
 var _logger = logger;
+var _simulator = simulator;
 
 simulator.bindHandler("/invoke-function", function (message, session) {
     var messageId = message.messageId;
@@ -17,12 +18,15 @@ simulator.bindHandler("/invoke-function", function (message, session) {
 simulator.bindHandler("/read-property", function (message, session) {
     var messageId = message.messageId;
 
-    session.sendMessage("/read-property-reply", JSON.stringify({
-        messageId: messageId,
-        timestamp: new Date().getTime(),
-        properties: {"name": "1234"},
-        success: true
-    }))
+    _simulator.runDelay(function(){
+        session.sendMessage("/read-property-reply", JSON.stringify({
+            messageId: messageId,
+            timestamp: new Date().getTime(),
+            properties: {"name": "1234"},
+            success: true
+        }))
+    },200);
+
 });
 
 

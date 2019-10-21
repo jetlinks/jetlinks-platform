@@ -17,7 +17,7 @@ public class JetLinksProperties {
 
     private String serverId;
 
-    private Map<Transport, Long> transportLimit;
+    private Map<String, Long> transportLimit;
 
     @PostConstruct
     @SneakyThrows

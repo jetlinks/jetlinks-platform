@@ -2,7 +2,7 @@ package org.jetlinks.platform.manager.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hswebframework.web.crud.service.GenericReactiveCrudService;
-import org.jetlinks.core.device.registry.DeviceRegistry;
+import org.jetlinks.core.device.DeviceRegistry;
 import org.jetlinks.platform.events.DeviceConnectedEvent;
 import org.jetlinks.platform.manager.entity.DeviceInstanceEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,14 +67,15 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
     public Flux<Integer> syncState(Flux<String> deviceId, boolean force) {
 
         return deviceId.
-                map(registry::getDevice)
+                flatMap(registry::getDevice)
                 .publishOn(Schedulers.parallel())
                 .flatMap(operation -> {
                     if (force) {
-                        return Mono.fromCompletionStage(operation.checkState())
+                        return operation.checkState()
                                 .zipWith(Mono.just(operation.getDeviceId()));
                     }
-                    return Mono.just(Tuples.of(operation.getState(), operation.getDeviceId()));
+                    return operation.getState()
+                            .zipWith(Mono.just(operation.getDeviceId()));
                 })
                 .bufferTimeout(20, Duration.ofSeconds(5))
                 .map(list -> list.stream().collect(Collectors.groupingBy(Tuple2::getT1, Collectors.mapping(Tuple2::getT2, Collectors.toSet()))))

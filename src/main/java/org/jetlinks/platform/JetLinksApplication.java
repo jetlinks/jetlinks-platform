@@ -3,23 +3,16 @@ package org.jetlinks.platform;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.hswebframework.web.authorization.basic.configuration.EnableAopAuthorize;
 import org.hswebframework.web.crud.annotation.EnableEasyormRepository;
 import org.jetlinks.core.device.DeviceInfo;
-import org.jetlinks.core.device.DeviceOperation;
-import org.jetlinks.core.device.DeviceProductInfo;
-import org.jetlinks.core.device.DeviceProductOperation;
-import org.jetlinks.core.device.registry.DeviceRegistry;
-import org.jetlinks.platform.configuration.DeviceGatewayConfiguration;
-import org.jetlinks.platform.configuration.JetLinksConfiguration;
+import org.jetlinks.core.device.DeviceRegistry;
+import org.jetlinks.core.device.ProductInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -61,13 +54,7 @@ public class JetLinksApplication {
 
         @Override
         public void run(String... strings) {
-            DeviceProductInfo productInfo = new DeviceProductInfo();
-            productInfo.setProtocol("jet-links");
-            productInfo.setName("测试型号");
-            productInfo.setId("test");
-            DeviceProductOperation productOperation = registry.getProduct(productInfo.getId());
-            productOperation.update(productInfo);
-            productOperation.updateMetadata("{\n" +
+            String metadata="{\n" +
                     "  \"id\": \"test-device\",\n" +
                     "  \"name\": \"测试设备\",\n" +
                     "  \"properties\": [\n" +
@@ -135,7 +122,13 @@ public class JetLinksApplication {
                     "      ]\n" +
                     "    }\n" +
                     "  ]\n" +
-                    "}");
+                    "}";
+
+            ProductInfo productInfo = new ProductInfo("test","jet-links",metadata);
+            productInfo.setProtocol("jet-links");
+            productInfo.setId("test");
+           registry.registry(productInfo).subscribe();
+
             new Thread(() -> {
                 long sum = initStartWith + initDeviceNumber;
                 AtomicLong counter = new AtomicLong();
@@ -145,9 +138,7 @@ public class JetLinksApplication {
                         DeviceInfo deviceInfo = new DeviceInfo();
                         deviceInfo.setId("test" + i);
                         deviceInfo.setProtocol("jet-links");
-                        deviceInfo.setName("test");
                         deviceInfo.setProductId(productInfo.getId());
-
                         fluxSink.next(deviceInfo);
                     }
                     fluxSink.complete();
@@ -155,28 +146,29 @@ public class JetLinksApplication {
                         .subscribeOn(Schedulers.parallel())
                         .subscribe(list -> CompletableFuture.runAsync(() -> {
                             for (DeviceInfo deviceInfo : list) {
-                                DeviceOperation operation = registry.registry(deviceInfo);
-                                Map<String, Object> all = new HashMap<>();
-                                all.put("secureId", "test");
-                                all.put("secureKey", "test");
+                               registry.registry(deviceInfo)
+                               .flatMap(operator->{
+                                   Map<String, Object> all = new HashMap<>();
+                                   all.put("secureId", "test");
+                                   all.put("secureKey", "test");
+                                   counter.incrementAndGet();
+                                  return operator.setConfigs(all);
 
-                                operation.putAll(all);
-                                counter.incrementAndGet();
+                               }).subscribe()
+                               ;
                             }
                             log.info("batch registry device :{}", counter.get());
                         }));
 
 
-                //注册20个子设备绑定到test0
-                for (int i = 0; i < 20; i++) {
-                    DeviceInfo deviceInfo = new DeviceInfo();
-                    deviceInfo.setId("child" + i);
-                    deviceInfo.setProtocol("jet-links");
-                    deviceInfo.setName("test-child");
-                    deviceInfo.setProductId(productInfo.getId());
-                    deviceInfo.setParentDeviceId("test0");
-                    registry.registry(deviceInfo);
-                }
+//                //注册20个子设备绑定到test0
+//                for (int i = 0; i < 20; i++) {
+//                    DeviceInfo deviceInfo = new DeviceInfo();
+//                    deviceInfo.setId("child" + i);
+//                    deviceInfo.setProtocol("jet-links");
+//                    deviceInfo.setProductId(productInfo.getId());
+//                    registry.registry(deviceInfo);
+//                }
             }).start();
 
         }

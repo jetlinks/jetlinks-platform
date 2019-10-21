@@ -5,11 +5,13 @@ import io.vertx.mqtt.MqttServerOptions;
 import lombok.Getter;
 import lombok.Setter;
 import org.hswebframework.web.event.GenericsPayloadApplicationEvent;
-import org.jetlinks.core.device.registry.DeviceRegistry;
-import org.jetlinks.platform.events.DeviceMessageEvent;
-import org.jetlinks.gateway.monitor.GatewayServerMonitor;
-import org.jetlinks.gateway.session.DeviceSessionManager;
+import org.jetlinks.core.ProtocolSupports;
+import org.jetlinks.core.device.DeviceRegistry;
+import org.jetlinks.core.server.monitor.GatewayServerMonitor;
+import org.jetlinks.core.server.session.DeviceSessionManager;
 import org.jetlinks.gateway.vertx.mqtt.MqttServer;
+import org.jetlinks.platform.events.DeviceMessageEvent;
+import org.jetlinks.supports.server.ClientMessageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.EnvironmentAware;
@@ -33,11 +35,13 @@ public class MqttServerVerticleSupplier implements VerticleSupplier, Environment
     private DeviceSessionManager deviceSessionManager;
 
     @Autowired
-    private ApplicationEventPublisher eventPublisher;
-
-    @Autowired
     private GatewayServerMonitor gatewayServerMonitor;
 
+    @Autowired
+    private ProtocolSupports protocolSupports;
+
+    @Autowired
+    private ClientMessageHandler clientMessageHandler;
     @Getter
     @Setter
     private String publicServerAddress;
@@ -48,15 +52,9 @@ public class MqttServerVerticleSupplier implements VerticleSupplier, Environment
         mqttServer.setMqttServerOptions(mqttServerOptions);
         mqttServer.setRegistry(deviceRegistry);
         mqttServer.setGatewayServerMonitor(gatewayServerMonitor);
-        mqttServer.setPublicServerAddress(publicServerAddress);
-        mqttServer.setMessageConsumer(((deviceClient, message) -> {
-            //转发消息到spring event
-            eventPublisher.publishEvent(new GenericsPayloadApplicationEvent<>(
-                    MqttServerVerticleSupplier.this,
-                    new DeviceMessageEvent<>(deviceClient, message),
-                    message.getClass()));
-        }));
         mqttServer.setDeviceSessionManager(deviceSessionManager);
+        mqttServer.setProtocolSupports(protocolSupports);
+        mqttServer.setMessageHandler(clientMessageHandler);
         return mqttServer;
     }
 

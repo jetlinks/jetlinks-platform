@@ -13,27 +13,32 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.hswebframework.easyorm.elasticsearch.ElasticSearchQueryParamTranslator;
 import org.hswebframework.web.api.crud.entity.QueryParamEntity;
 import org.hswebframework.web.exception.BusinessException;
+import org.hswebframework.web.exception.NotFoundException;
 import org.hswebframework.web.id.IDGenerator;
-import org.jetlinks.core.device.registry.DeviceRegistry;
+import org.jetlinks.core.device.DeviceOperator;
+import org.jetlinks.core.device.DeviceRegistry;
+import org.jetlinks.core.message.ReadPropertyMessageSender;
 import org.jetlinks.core.message.event.EventMessage;
 import org.jetlinks.core.message.property.ReadPropertyMessageReply;
 import org.jetlinks.platform.events.DeviceMessageEvent;
 import org.jetlinks.platform.manager.entity.DevicePropertiesEntity;
-import org.jetlinks.platform.manager.service.LocalDeviceInstanceService;
 import org.jetlinks.platform.manager.service.LocalDevicePropertiesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.extra.processor.TopicProcessor;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -55,14 +60,13 @@ public class DeviceMessageController {
 
     private Map<String, EmitterProcessor<Object>> eventProcessor = new ConcurrentHashMap<>();
 
-
     @EventListener
     public void handleDeviceEvent(DeviceMessageEvent<EventMessage> e) {
 
-        Optional.ofNullable(eventProcessor.get(e.getSession().getId()))
+        Optional.ofNullable(eventProcessor.get(e.getMessage().getDeviceId()))
                 .ifPresent(processor -> {
                     if (processor.isCancelled()) {
-                        eventProcessor.remove(e.getSession().getId());
+                        eventProcessor.remove(e.getMessage().getDeviceId());
                         return;
                     }
                     processor.onNext(e.getMessage());
@@ -71,9 +75,8 @@ public class DeviceMessageController {
     }
 
     //获取实时事件
-    @GetMapping(value = "/{deviceId}/event",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/{deviceId}/event", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<Object> getEvent(@PathVariable String deviceId) {
-
         return eventProcessor
                 .computeIfAbsent(deviceId, __ -> EmitterProcessor.create(100, true))
                 .map(Function.identity());
@@ -176,16 +179,19 @@ public class DeviceMessageController {
 //        return ResponseMessage.ok();
 //    }
 
+
     //获取设备属性
     @GetMapping("/{deviceId}/property/{property:.+}")
     @SneakyThrows
-    public Mono<?> getProperties(@PathVariable String deviceId, @PathVariable String property) {
-        return Mono.fromCompletionStage(registry.getDevice(deviceId)
-                .messageSender()
-                .readProperty(property.split("[, ;]"))
-                .messageId(IDGenerator.SNOW_FLAKE_STRING.generate())
-                .send())
-                .flatMap(reply->Mono.justOrEmpty(reply.getProperties()));
+    public Flux<?> getProperties(@PathVariable String deviceId, @PathVariable String property) {
+
+        return registry
+                .getDevice(deviceId)
+                .switchIfEmpty(Mono.error(NotFoundException::new))
+                .map(DeviceOperator::messageSender)
+                .map(sender -> sender.readProperty(property).messageId(IDGenerator.SNOW_FLAKE_STRING.generate()))
+                .flatMapMany(ReadPropertyMessageSender::send)
+                .map(ReadPropertyMessageReply::getProperties);
 
     }
 
