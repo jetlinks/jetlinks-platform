@@ -1,0 +1,75 @@
+<div class="mini-fit dynamic-form rule-info" id="rule-line-form">
+    <div class="mini-col-12 form-component" style="text-align: center">
+        <span style="font-size: 18px">节点连接</span>
+    </div>
+    <div class="mini-col-12 form-component">
+        <div class="form-item brick"><label class="form-label">类型</label>
+            <div class="input-block component-body">
+                <input name="_type" required class="mini-radiobuttonlist" value="link" data="[{id:'link',text:'连接'},{id:'event',text:'事件'}]" style="width: 100%">
+            </div>
+        </div>
+    </div>
+
+    <div class="mini-col-12 form-component event-comp" style="display: none" >
+        <div class="form-item brick"><label class="form-label">事件</label>
+            <div class="input-block component-body">
+                <input name="event" required class="mini-combobox"
+                       data="[{id:'NODE_EXECUTE_BEFORE',text:'执行之前'},{id:'NODE_EXECUTE_DONE',text:'执行之后'},{id:'NODE_EXECUTE_FAIL',text:'执行失败'}]" style="width: 100%">
+            </div>
+        </div>
+    </div>
+
+    <div class="mini-col-12 form-component" >
+        <div class="form-item brick"><label class="form-label">标签</label>
+            <div class="input-block component-body">
+                <input name="label" class="mini-textbox" style="width: 100%">
+            </div>
+        </div>
+    </div>
+
+    <div class="mini-col-12 form-component" >
+        <div class="form-item brick"><label class="form-label">颜色</label>
+            <div class="input-block component-body">
+                <input name="color" class="mini-textbox" style="width: 100%">
+            </div>
+        </div>
+    </div>
+
+<!--    <div class="mini-col-12 form-component" >-->
+<!--        <div class="form-item brick"><label class="form-label">类型</label>-->
+<!--            <div class="input-block component-body">-->
+<!--                <input name="shape" class="mini-radiobuttonlist"-->
+<!--                       data="[{id:'flow-smooth',text:'平滑'},{id:'flow-polyline',text:'折线'}]" style="width: 100%">-->
+
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+    <div class="mini-col-12 form-component">
+        <div class="form-item form-text">
+            <label class="form-label">条件</label>
+            <div class="input-block component-body">
+                <input name="script" emptyText="e.g. return data.type===1;" class="mini-textarea" style="width: 100%;height: 50px">
+            </div>
+        </div>
+    </div>
+
+    <div class="mini-col-12 form-component">
+        <div class="form-item form-text">
+            <label class="form-label">说明</label>
+            <div class="input-block component-body">
+                <input name="description" class="mini-textarea" style="width: 100%;height: 50px">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="mini-col-12 form-component" style="margin-top: 15px">
+        <div class="form-item brick" style="text-align: center">
+             <a class="mini-button test-condition">测试条件</a>
+        </div>
+    </div>
+
+
+
+</div>

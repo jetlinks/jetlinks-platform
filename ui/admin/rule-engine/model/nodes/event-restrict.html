@@ -1,0 +1,22 @@
+<script type="text/html" title="事件限流" class="node-template">
+
+
+    <div class="mini-col-12 form-component">
+        <div class="form-item brick"><label class="form-label">到期时间(秒)</label>
+            <div class="input-block component-body">
+                <input name="config.expireTimeInterval"  required class="mini-spinner" style="width: 100%">
+            </div>
+        </div>
+    </div>
+
+    <div class="mini-col-12 form-component">
+        <div class="form-item form-text">
+            <label class="form-label">限流方式</label>
+            <div class="input-block component-body">
+                <input required name="config.restrictType" emptyText="变量说明：${#attr[error_stack]},${#attr[error_message]},${#attr[error_type]} " class="mini-textbox" style="width: 100%;">
+            </div>
+        </div>
+    </div>
+
+
+</script>
