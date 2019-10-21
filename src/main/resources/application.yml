@@ -23,6 +23,8 @@ spring:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: true
     default-property-inclusion: non_null
+  resources:
+    static-locations: file:./ui/,file:./static/,/,classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/, classpath:/public/
 easyorm:
   default-schema: PUBLIC # 数据库默认的schema
   dialect: h2 #数据库方言
