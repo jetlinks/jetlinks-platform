@@ -20,8 +20,8 @@ services:
       bootstrap.memory_lock: "true"
       discovery.zen.minimum_master_nodes: 1
       discovery.zen.ping.unicast.hosts: elasticsearch
-    volumes:
-      - ./data/elasticsearch:/usr/share/elasticsearch/data
+#    volumes:
+#      - ./data/elasticsearch:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -36,3 +36,14 @@ services:
       - "5601:5601"
     depends_on:
       - elasticsearch
+  postgres:
+    image: postgres:11-alpine
+    container_name: jetlinks-postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - "./data/postgres:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_PASSWORD: jetlinks
+      POSTGRES_DB: jetlinks
+      TZ: Asia/Shanghai
