@@ -59,7 +59,7 @@ public class SimpleDeviceRegistry implements DeviceRegistry {
         DefaultDeviceProductOperator operator = new DefaultDeviceProductOperator(productInfo.getId(), supports, manager);
         productOperatorMap.put(operator.getId(), operator);
         return operator.setConfigs(
-                DeviceConfigKey.productId.value(productInfo.getMetadata()),
+                DeviceConfigKey.metadata.value(productInfo.getMetadata()),
                 DeviceConfigKey.protocol.value(productInfo.getProtocol()))
                 .thenReturn(operator);
     }
