@@ -4,10 +4,9 @@ import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.hswebframework.web.event.GenericsPayloadApplicationEvent;
 import org.jetlinks.core.ProtocolSupports;
+import org.jetlinks.core.cluster.ClusterManager;
 import org.jetlinks.core.device.DeviceOperationBroker;
 import org.jetlinks.core.device.DeviceRegistry;
-import org.jetlinks.core.device.StandaloneDeviceMessageBroker;
-import org.jetlinks.core.message.Message;
 import org.jetlinks.core.message.codec.DefaultTransport;
 import org.jetlinks.core.server.MessageHandler;
 import org.jetlinks.core.server.monitor.GatewayServerMetrics;
@@ -17,6 +16,9 @@ import org.jetlinks.platform.events.DeviceConnectedEvent;
 import org.jetlinks.platform.events.DeviceDisconnectedEvent;
 import org.jetlinks.platform.events.DeviceMessageEvent;
 import org.jetlinks.supports.CompositeProtocolSupport;
+import org.jetlinks.supports.cluster.ClusterDeviceOperationBroker;
+import org.jetlinks.supports.cluster.ClusterDeviceRegistry;
+import org.jetlinks.supports.cluster.redis.RedisClusterManager;
 import org.jetlinks.supports.official.JetLinksAuthenticator;
 import org.jetlinks.supports.official.JetLinksDeviceMetadataCodec;
 import org.jetlinks.supports.official.JetLinksMQTTDeviceMessageCodec;
@@ -29,9 +31,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Mono;
-import reactor.extra.processor.WorkQueueProcessor;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -43,18 +45,24 @@ import java.util.concurrent.atomic.AtomicLong;
 @Slf4j
 public class JetLinksConfiguration {
 
+//    @Bean
+//    public StandaloneDeviceMessageBroker deviceMessageHandler() {
+//        return new StandaloneDeviceMessageBroker(EmitterProcessor.create(false));
+//    }
+
     @Bean
-    public StandaloneDeviceMessageBroker deviceMessageHandler() {
-        return new StandaloneDeviceMessageBroker(WorkQueueProcessor.<Message>builder()
-                .bufferSize(64)
-                .autoCancel(false)
-                .share(true)
-                .build());
+    public ClusterDeviceOperationBroker clusterDeviceOperationBroker(ClusterManager clusterManager) {
+        return new ClusterDeviceOperationBroker(clusterManager);
     }
 
     @Bean
-    public DeviceRegistry deviceRegistry(ProtocolSupports supports, DeviceOperationBroker handler) {
-        return new SimpleDeviceRegistry(supports, handler);
+    public ClusterManager clusterManager(ReactiveRedisTemplate<Object, Object> template) {
+        return new RedisClusterManager("default", "test", template);
+    }
+
+    @Bean
+    public DeviceRegistry deviceRegistry(ProtocolSupports supports, ClusterManager manager, DeviceOperationBroker handler) {
+        return new ClusterDeviceRegistry(supports, manager, handler);
     }
 
     @Bean
@@ -63,7 +71,7 @@ public class JetLinksConfiguration {
                 EmitterProcessor.create()
 
         );
-        AtomicLong counter=new AtomicLong();
+        AtomicLong counter = new AtomicLong();
 
         clientMessageHandler.subscribe()
                 .onBackpressureBuffer(Duration.ofSeconds(30), 1024, message -> {

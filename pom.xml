@@ -52,7 +52,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.1.9.RELEASE</version>
+                <version>${spring.boot.version}</version>
                 <configuration>
                     <mainClass>org.jetlinks.platform.JetLinksApplication</mainClass>
                     <layout>ZIP</layout>
@@ -163,8 +163,6 @@
                         <APP_JAR>/${project.build.finalName}.jar</APP_JAR>
                     </env>
                     <entryPoint>["/docker-entrypoint.sh"]</entryPoint>
-                    <!--<entryPoint>["java","-jar -server -XX:+UseG1GC $JAVA_OPTS /${project.build.finalName}.jar"]</entryPoint>-->
-                    <!--<entryPoint>java -jar $JAVA_OPTS -server -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:-OmitStackTraceInFastThrow -Djava.security.egd=file:/dev/./urandom /${project.build.finalName}.jar</entryPoint>-->
                     <resources>
                         <resource>
                             <targetPath>/</targetPath>
@@ -191,18 +189,10 @@
                 <version>${jetlinks.version}</version>
             </dependency>
 
-
-
             <dependency>
                 <groupId>io.vavr</groupId>
                 <artifactId>vavr</artifactId>
                 <version>0.9.2</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>druid</artifactId>
-                <version>1.1.18</version>
             </dependency>
 
             <dependency>
@@ -216,23 +206,12 @@
                 <version>3.13.1</version>
             </dependency>
 
-
-            <dependency>
-                <groupId>org.redisson</groupId>
-                <artifactId>redisson</artifactId>
-                <version>3.10.6</version>
-            </dependency>
-
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>1.2.3</version>
             </dependency>
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>druid</artifactId>
-                <version>1.1.14</version>
-            </dependency>
+
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
@@ -276,6 +255,21 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>28.0-jre</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -293,11 +287,6 @@
 <!--            <artifactId>r2dbc-mysql</artifactId>-->
 <!--            <version>0.8.0.BUILD-SNAPSHOT</version>-->
 <!--        </dependency>-->
-
-        <dependency>
-            <groupId>io.r2dbc</groupId>
-            <artifactId>r2dbc-postgresql</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.hswebframework.web</groupId>
@@ -429,11 +418,6 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
         </dependency>
 
         <dependency>

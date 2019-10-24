@@ -174,25 +174,6 @@ public class DeviceEventMessageHandler {
     private EmitterProcessor<DevicePropertiesEntity> processor = EmitterProcessor.create();
 
 
-    @SneakyThrows
-    public static void main(String[] args) {
-        Flux.interval(Duration.ofSeconds(1))
-                .elapsed()
-                .bufferWhile(l -> {
-                    if (l.getT1() < 1) {
-
-                        return true;
-                    }
-                    return false;
-                })
-                .subscribe(t -> System.out.println(t));
-        Thread.sleep(100000);
-    }
-
-    protected void doSyncProperty() {
-
-    }
-
     @PostConstruct
     @SuppressWarnings("all")
     public void init() {
