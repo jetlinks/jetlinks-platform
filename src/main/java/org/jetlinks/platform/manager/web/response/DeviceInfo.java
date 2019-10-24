@@ -43,7 +43,7 @@ public class DeviceInfo {
     private String deviceSecret;
 
     //一机一密
-    private String yjym;
+    private String omos;
 
 
     private String version;
