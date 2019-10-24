@@ -1,11 +1,16 @@
 package org.jetlinks.platform.manager.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hswebframework.web.api.crud.entity.QueryParamEntity;
+import org.hswebframework.web.bean.FastBeanCopier;
 import org.hswebframework.web.crud.service.GenericReactiveCrudService;
+import org.hswebframework.web.exception.NotFoundException;
 import org.jetlinks.core.device.DeviceRegistry;
 import org.jetlinks.core.utils.FluxUtils;
 import org.jetlinks.platform.events.DeviceConnectedEvent;
 import org.jetlinks.platform.manager.entity.DeviceInstanceEntity;
+import org.jetlinks.platform.manager.entity.DeviceProductEntity;
+import org.jetlinks.platform.manager.web.response.DeviceInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -28,6 +33,9 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
 
     @Autowired
     private DeviceRegistry registry;
+
+    @Autowired
+    private LocalDeviceProductService deviceProductService;
 
 
     public void deploy(String id) {
@@ -56,6 +64,12 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
                     .doOnError(err -> log.error(err.getMessage(), err))
                     .subscribe((i) -> log.info("同步设备状态成功"));
         }
+    }
+
+    public Mono<DeviceInfo> getDeviceInfoById(String id) {
+        return findById(Mono.just(id))
+                .zipWhen(instance -> deviceProductService.findById(Mono.just(instance.getProductId())), DeviceInfo::of)
+                .switchIfEmpty(Mono.error(NotFoundException::new));
     }
 
     /**

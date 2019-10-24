@@ -264,7 +264,7 @@ define(["jquery", "storejs"], function ($, storejs) {
     }
 
     return {
-        basePath: window.API_BASE_PATH ? window.API_BASE_PATH : window.BASE_PATH,
+        basePath: window.BASE_PATH,
         getParameter: function (name) {
             // 获取参数
             var url = window.location.search;

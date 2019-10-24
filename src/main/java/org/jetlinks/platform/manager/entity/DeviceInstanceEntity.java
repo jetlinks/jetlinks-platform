@@ -62,7 +62,7 @@ public class DeviceInstanceEntity extends GenericEntity<String> implements Recor
     @Column(name = "state")
     @EnumCodec
     @ColumnType(javaType = String.class)
-    private DeviceState state;
+    private DeviceState state=DeviceState.notActive;
 
     @Column(name = "creator_id")
     private String creatorId;
