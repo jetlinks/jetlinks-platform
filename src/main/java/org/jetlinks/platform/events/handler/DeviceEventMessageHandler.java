@@ -5,6 +5,7 @@ import io.searchbox.client.JestResult;
 import io.searchbox.client.JestResultHandler;
 import io.searchbox.core.Bulk;
 import io.searchbox.core.Index;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jetlinks.core.device.DeviceOperator;
 import org.jetlinks.core.device.DeviceRegistry;
@@ -17,6 +18,7 @@ import org.jetlinks.core.metadata.EventMetadata;
 import org.jetlinks.core.metadata.PropertyMetadata;
 import org.jetlinks.core.metadata.types.DateTimeType;
 import org.jetlinks.core.metadata.types.NumberType;
+import org.jetlinks.core.utils.FluxUtils;
 import org.jetlinks.platform.events.DeviceMessageEvent;
 import org.jetlinks.platform.manager.entity.DevicePropertiesEntity;
 import org.jetlinks.platform.manager.service.LocalDevicePropertiesService;
@@ -24,7 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.EmitterProcessor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
@@ -169,11 +173,31 @@ public class DeviceEventMessageHandler {
 
     private EmitterProcessor<DevicePropertiesEntity> processor = EmitterProcessor.create();
 
+
+    @SneakyThrows
+    public static void main(String[] args) {
+        Flux.interval(Duration.ofSeconds(1))
+                .elapsed()
+                .bufferWhile(l -> {
+                    if (l.getT1() < 1) {
+
+                        return true;
+                    }
+                    return false;
+                })
+                .subscribe(t -> System.out.println(t));
+        Thread.sleep(100000);
+    }
+
+    protected void doSyncProperty() {
+
+    }
+
     @PostConstruct
     @SuppressWarnings("all")
     public void init() {
-
-        processor.bufferTimeout(50, Duration.ofSeconds(5))
+        //0.8秒中之类多次访问进行buffer
+        FluxUtils.bufferRate(processor, 800, Duration.ofSeconds(5))
                 .subscribe(list -> {
                     Map<String, DevicePropertiesEntity> group = list
                             .stream()

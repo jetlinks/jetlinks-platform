@@ -24,9 +24,9 @@ public class SimpleDeviceRegistry implements DeviceRegistry {
 
     private ProtocolSupports supports;
 
-    private DeviceMessageHandler handler;
+    private DeviceOperationBroker handler;
 
-    public SimpleDeviceRegistry(ProtocolSupports supports, DeviceMessageHandler handler) {
+    public SimpleDeviceRegistry(ProtocolSupports supports, DeviceOperationBroker handler) {
         this.supports = supports;
         this.handler = handler;
     }

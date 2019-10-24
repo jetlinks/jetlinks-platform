@@ -40,7 +40,7 @@ public class DeviceInstanceEntity extends GenericEntity<String> implements Recor
     private String describe;
 
     //产品id
-    @Column(name = "product_id")
+    @Column(name = "product_id",length = 32)
     @NotBlank(message = "产品ID不能为空", groups = CreateGroup.class)
     private String productId;
 

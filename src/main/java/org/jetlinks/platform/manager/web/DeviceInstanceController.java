@@ -1,6 +1,7 @@
 package org.jetlinks.platform.manager.web;
 
 import lombok.Getter;
+import org.hswebframework.ezorm.rdb.mapping.ReactiveRepository;
 import org.hswebframework.web.authorization.annotation.Authorize;
 import org.hswebframework.web.authorization.annotation.Resource;
 import org.hswebframework.web.crud.web.reactive.ReactiveServiceCrudController;

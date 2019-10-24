@@ -4,11 +4,12 @@ import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.hswebframework.web.event.GenericsPayloadApplicationEvent;
 import org.jetlinks.core.ProtocolSupports;
-import org.jetlinks.core.device.DeviceMessageHandler;
+import org.jetlinks.core.device.DeviceOperationBroker;
 import org.jetlinks.core.device.DeviceRegistry;
-import org.jetlinks.core.device.StandaloneDeviceMessageHandler;
+import org.jetlinks.core.device.StandaloneDeviceMessageBroker;
 import org.jetlinks.core.message.Message;
 import org.jetlinks.core.message.codec.DefaultTransport;
+import org.jetlinks.core.server.MessageHandler;
 import org.jetlinks.core.server.monitor.GatewayServerMetrics;
 import org.jetlinks.core.server.monitor.GatewayServerMonitor;
 import org.jetlinks.core.server.session.DeviceSessionManager;
@@ -43,8 +44,8 @@ import java.util.concurrent.atomic.AtomicLong;
 public class JetLinksConfiguration {
 
     @Bean
-    public DeviceMessageHandler deviceMessageHandler() {
-        return new StandaloneDeviceMessageHandler(WorkQueueProcessor.<Message>builder()
+    public StandaloneDeviceMessageBroker deviceMessageHandler() {
+        return new StandaloneDeviceMessageBroker(WorkQueueProcessor.<Message>builder()
                 .bufferSize(64)
                 .autoCancel(false)
                 .share(true)
@@ -52,12 +53,12 @@ public class JetLinksConfiguration {
     }
 
     @Bean
-    public DeviceRegistry deviceRegistry(ProtocolSupports supports, DeviceMessageHandler handler) {
+    public DeviceRegistry deviceRegistry(ProtocolSupports supports, DeviceOperationBroker handler) {
         return new SimpleDeviceRegistry(supports, handler);
     }
 
     @Bean
-    public DefaultDecodedClientMessageHandler defaultDecodedClientMessageHandler(DeviceMessageHandler handler, ApplicationEventPublisher eventPublisher) {
+    public DefaultDecodedClientMessageHandler defaultDecodedClientMessageHandler(MessageHandler handler, ApplicationEventPublisher eventPublisher) {
         DefaultDecodedClientMessageHandler clientMessageHandler = new DefaultDecodedClientMessageHandler(handler,
                 EmitterProcessor.create()
 
@@ -83,7 +84,7 @@ public class JetLinksConfiguration {
     @Bean(initMethod = "startup")
     public DefaultSendToDeviceMessageHandler defaultSendToDeviceMessageHandler(JetLinksProperties properties,
                                                                                DeviceSessionManager sessionManager,
-                                                                               DeviceMessageHandler messageHandler) {
+                                                                               MessageHandler messageHandler) {
         return new DefaultSendToDeviceMessageHandler(properties.getServerId(), sessionManager, messageHandler);
     }
 

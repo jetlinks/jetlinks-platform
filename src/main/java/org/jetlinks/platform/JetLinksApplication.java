@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hswebframework.web.crud.annotation.EnableEasyormRepository;
+import org.hswebframework.web.starter.jackson.CustomCodecsAutoConfiguration;
+import org.hswebframework.web.starter.jackson.CustomJackson2JsonDecoder;
 import org.jetlinks.core.device.DeviceInfo;
 import org.jetlinks.core.device.DeviceRegistry;
 import org.jetlinks.core.device.ProductInfo;
@@ -24,7 +26,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 
 
-@SpringBootApplication(scanBasePackages = "org.jetlinks.platform",exclude = DataSourceAutoConfiguration.class)
+@SpringBootApplication(scanBasePackages = "org.jetlinks.platform",exclude ={
+        DataSourceAutoConfiguration.class
+       // CustomCodecsAutoConfiguration.class
+} )
 //@EnableCaching
 //@EnableAsync
 @EnableEasyormRepository("org.jetlinks.platform.manager.entity")
@@ -125,8 +130,7 @@ public class JetLinksApplication {
                     "}";
 
             ProductInfo productInfo = new ProductInfo("test","jet-links",metadata);
-            productInfo.setProtocol("jet-links");
-            productInfo.setId("test");
+
            registry.registry(productInfo).subscribe();
 
             new Thread(() -> {

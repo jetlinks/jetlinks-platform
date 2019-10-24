@@ -3,6 +3,7 @@ package org.jetlinks.platform.manager.service;
 import lombok.extern.slf4j.Slf4j;
 import org.hswebframework.web.crud.service.GenericReactiveCrudService;
 import org.jetlinks.core.device.DeviceRegistry;
+import org.jetlinks.core.utils.FluxUtils;
 import org.jetlinks.platform.events.DeviceConnectedEvent;
 import org.jetlinks.platform.manager.entity.DeviceInstanceEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
                     log.error(err.getMessage(), err);
                 })
                 .subscribe((i) -> {
-                    log.info("同步设备状态成功:{}",i);
+                    log.info("同步设备状态成功:{}", i);
                 });
     }
 
@@ -66,18 +67,18 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
      */
     public Flux<Integer> syncState(Flux<String> deviceId, boolean force) {
 
-        return deviceId.
-                flatMap(registry::getDevice)
-                .publishOn(Schedulers.parallel())
-                .flatMap(operation -> {
-                    if (force) {
-                        return operation.checkState()
-                                .zipWith(Mono.just(operation.getDeviceId()));
-                    }
-                    return operation.getState()
-                            .zipWith(Mono.just(operation.getDeviceId()));
-                })
-                .bufferTimeout(20, Duration.ofSeconds(5))
+        return FluxUtils.bufferRate(deviceId.
+                        flatMap(registry::getDevice)
+                        .publishOn(Schedulers.parallel())
+                        .flatMap(operation -> {
+                            if (force) {
+                                return operation.checkState()
+                                        .zipWith(Mono.just(operation.getDeviceId()));
+                            }
+                            return operation.getState()
+                                    .zipWith(Mono.just(operation.getDeviceId()));
+                        })
+                , 800, Duration.ofSeconds(5))
                 .map(list -> list.stream().collect(Collectors.groupingBy(Tuple2::getT1, Collectors.mapping(Tuple2::getT2, Collectors.toSet()))))
                 .map(Map::entrySet)
                 .flatMap(Flux::fromIterable)
