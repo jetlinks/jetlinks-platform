@@ -21,8 +21,8 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/device-instance")
-//@Authorize
-//@Resource(id = "device-instance", name = "设备实例")
+@Authorize
+@Resource(id = "device-instance", name = "设备实例")
 public class DeviceInstanceController implements
         ReactiveServiceCrudController<DeviceInstanceEntity, String> {
 
@@ -34,21 +34,6 @@ public class DeviceInstanceController implements
     @QueryAction
     public Mono<DeviceInfo> getDeviceInfoById(@PathVariable String id) {
         return service.getDeviceInfoById(id);
-    }
-
-    public static void main(String[] args) {
-        String ss= "{\n" +
-                "                  \"id\":\"name\",\n" +
-                "                  \"name\":\"名称\",\n" +
-                "                  \"valueType\":{\n" +
-                "                      \"type\":\"string\"\n" +
-                "                  }\n" +
-                "              }";
-        JSONObject object = JSONObject.parseObject(ss);
-        JetLinksPropertyMetadata metadata = new JetLinksPropertyMetadata(object);
-        System.out.println(metadata.getValueType().getId());
-        System.out.println(metadata.getValueType().getName());
-        System.out.println(JSON.toJSONString(metadata.toJson()));
     }
 
 }
