@@ -1,45 +1,9 @@
 window.BASE_PATH = "/";
 
 //api服务地址
-window.API_BASE_PATH = "/api/";
+window.API_BASE_PATH = "/";
 
 window.router = [
-    {
-        test: "^(query/|q/).*$",
-        prefix: "query-server"
-    },
-    {
-        test: "^(authentication-service|rule-engine-service|query-server|report-service).*$",
-        prefix: ""
-    },
-    {
-        test: "^(dictionary).*$",
-        prefix: "data-standards-service/"
-    },
-    {
-        test: "^(report).*$",
-        prefix: "report-service/"
-    },
-    {
-        test: "^(file).*$",
-        prefix: "file-server/"
-    },
-    {
-        test: "^(user|role|organizational|department|position|person|district|authorize|menu|permission|autz-setting|oauth2|dashboard|open-api).*$",
-        prefix: "authentication-service/"
-    },
-    {
-        test: "^(database|dev|datasource|redis).*$",
-        prefix: "rule-engine-service/"
-    },
-    {
-        test: "^(rule-engine).*$",
-        prefix: "rule-engine-service/"
-    },
-    {
-        test: "^(logger).*$",
-        prefix: "log-service/"
-    }
 ];
 
 window.mini_debugger = false;
@@ -154,6 +118,8 @@ function initRequireJs() {
             "designer-parser": [BASE_PATH + "admin/data-standards/designer/parser"],
             "designer-default": [BASE_PATH + "admin/data-standards/designer/components-default"],
             "export": [BASE_PATH + "admin/currency/export"],
+            "bootstrap-skin": [BASE_PATH + "plugins/miniui/themes/bootstrap/skin"],
+            "bootstrap-large-mode": [BASE_PATH + "plugins/miniui/themes/default/large-mode"],
             "default-method": [BASE_PATH + "admin/currency/default-method"]
         }
     });
