@@ -13,16 +13,17 @@ import org.jetlinks.core.message.event.EventMessage;
 import org.jetlinks.core.message.property.ReadPropertyMessageReply;
 import org.jetlinks.core.message.property.WritePropertyMessageReply;
 import org.jetlinks.core.metadata.DataType;
-import org.jetlinks.core.metadata.DeviceMetadata;
 import org.jetlinks.core.metadata.EventMetadata;
 import org.jetlinks.core.metadata.PropertyMetadata;
 import org.jetlinks.core.metadata.types.DateTimeType;
 import org.jetlinks.core.metadata.types.NumberType;
 import org.jetlinks.core.utils.FluxUtils;
 import org.jetlinks.platform.events.DeviceMessageEvent;
+import org.jetlinks.platform.events.GaugePropertyEvent;
 import org.jetlinks.platform.manager.entity.DevicePropertiesEntity;
 import org.jetlinks.platform.manager.service.LocalDevicePropertiesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.EmitterProcessor;
@@ -51,6 +52,9 @@ public class DeviceEventMessageHandler {
 
     @Autowired
     private DeviceRegistry registry;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @EventListener
     public void handleEvent(DeviceMessageEvent<EventMessage> event) {
@@ -152,6 +156,12 @@ public class DeviceEventMessageHandler {
                                             if (type instanceof NumberType) {
                                                 NumberType numberType = (NumberType) type;
                                                 entity.setNumberValue(new BigDecimal(numberType.convert(entry.getValue()).toString()));
+                                                eventPublisher.publishEvent(GaugePropertyEvent.builder()
+                                                        .deviceId(device)
+                                                        .propertyName(entry.getKey())
+                                                        .propertyValue(entry.getValue())
+                                                        .build()
+                                                );
                                             } else if (type instanceof DateTimeType) {
                                                 DateTimeType dateTimeType = (DateTimeType) type;
                                                 entity.setNumberValue(new BigDecimal(dateTimeType.convert(entry.getValue()).toString()));
@@ -177,33 +187,20 @@ public class DeviceEventMessageHandler {
     @PostConstruct
     @SuppressWarnings("all")
     public void init() {
-        //0.8秒中之类多次访问进行buffer
-        FluxUtils.bufferRate(processor, 800, Duration.ofSeconds(5))
-                .subscribe(list -> {
-                    Map<String, DevicePropertiesEntity> group = list
-                            .stream()
-                            .collect(Collectors.toMap(DevicePropertiesEntity::getDeviceId, Function.identity(), (_1, _2) -> _2));
-                    propertiesService
-                            .getRepository()
-                            .createQuery()
-                            .select(DevicePropertiesEntity::getDeviceId)
-                            .where()
-                            .in(DevicePropertiesEntity::getDeviceId, group.keySet())
-                            .fetch()
-                            .map(DevicePropertiesEntity::getDeviceId)
-                            .collectList()
-                            .subscribe(idList -> {
-                                idList.forEach(group::remove);
-                                if (!group.isEmpty()) {
-                                    propertiesService
-                                            .insertBatch(Mono.just(group.values()))
-                                            .subscribe(i -> {
-                                                log.debug("同步设备属性数量:{}", i);
-                                            });
-                                }
-                            });
 
-                });
+        processor.subscribe(entity->{
+            propertiesService
+                    .createUpdate()
+                    .set(entity)
+                    .where(entity::getDeviceId)
+                    .and(entity::getProperty)
+                    .execute()
+                    .filter(i->i!=0)
+                    .switchIfEmpty(propertiesService.insert(Mono.just(entity)))
+                    .subscribe(i->{
+                        log.debug("同步设备属性成功:{}",entity);
+                    });
+        });
     }
 
     private void syncDeviceProperty(List<DevicePropertiesEntity> list) {
