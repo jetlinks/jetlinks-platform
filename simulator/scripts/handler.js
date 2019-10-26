@@ -17,15 +17,27 @@ simulator.bindHandler("/invoke-function", function (message, session) {
 
 simulator.bindHandler("/read-property", function (message, session) {
     var messageId = message.messageId;
-
-    _simulator.runDelay(function(){
+   //for(var i=0;i<2;i++){
         session.sendMessage("/read-property-reply", JSON.stringify({
             messageId: messageId,
             timestamp: new Date().getTime(),
-            properties: {"name": "1234"},
+            properties: {"name": "test"},
+          //  headers:{
+              //  frag_msg_id:messageId,
+              //  frg_num:2
+          //  },
             success: true
         }))
-    },200);
+   //}
+
+    // _simulator.runDelay(function(){
+    //     session.sendMessage("/read-property-reply", JSON.stringify({
+    //         messageId: messageId,
+    //         timestamp: new Date().getTime(),
+    //         properties: {"name": "1234"},
+    //         success: true
+    //     }))
+    // },200);
 
 });
 
@@ -33,8 +45,9 @@ simulator.bindHandler("/read-property", function (message, session) {
 simulator.onEvent(function (index, session) {
     session.sendMessage("/event",JSON.stringify({
         messageId: new Date().getTime() + "" + Math.round((Math.random() * 100000)),
-        event: "temperature",
+        event: "properties",
         timestamp: new Date().getTime(),
+        headers:{"report-property":true},
         data:{
             "temperature": ((Math.random() * 20) + 30).toFixed(2)
         }

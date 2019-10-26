@@ -14,9 +14,11 @@ spring:
     jest:
       uris: http://localhost:9200
   r2dbc:
-    url: r2dbc:h2:file://PUBLIC/./db/${spring.application.name}
-    username: sa
-    password:
+    url: r2dbc:postgresql://localhost:5432/jetlinks
+    username: postgres
+    password: jetlinks
+    pool:
+      max-size: 32
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: Asia/Shanghai
@@ -25,9 +27,10 @@ spring:
     default-property-inclusion: non_null
   resources:
     static-locations: file:./ui/,file:./static/,/,classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/, classpath:/public/
+
 easyorm:
-  default-schema: PUBLIC # 数据库默认的schema
-  dialect: h2 #数据库方言
+  default-schema: public # 数据库默认的schema
+  dialect: postgres #数据库方言
 hsweb:
   webflux:
     response-wrapper: enabled #开启响应包装器(将正常的Mono返回值包转为ResponseMessage)

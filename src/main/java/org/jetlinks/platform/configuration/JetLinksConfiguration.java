@@ -68,12 +68,7 @@ public class JetLinksConfiguration {
 
     @Bean
     public DefaultDecodedClientMessageHandler defaultDecodedClientMessageHandler(MessageHandler handler, ApplicationEventPublisher eventPublisher) {
-        DefaultDecodedClientMessageHandler clientMessageHandler = new DefaultDecodedClientMessageHandler(handler,
-                WorkQueueProcessor.create()
-
-        );
-        AtomicLong counter = new AtomicLong();
-
+        DefaultDecodedClientMessageHandler clientMessageHandler = new DefaultDecodedClientMessageHandler(handler);
         clientMessageHandler.subscribe()
                 .onBackpressureBuffer(Duration.ofSeconds(30), 1024, message -> {
                     log.warn("无法处理更多消息:{}", message);
@@ -84,7 +79,6 @@ public class JetLinksConfiguration {
                             clientMessageHandler,
                             new DeviceMessageEvent<>(msg),
                             msg.getClass()));
-                    counter.incrementAndGet();
                 });
 
         return clientMessageHandler;

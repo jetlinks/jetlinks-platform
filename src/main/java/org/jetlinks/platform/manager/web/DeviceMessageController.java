@@ -8,6 +8,7 @@ import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import io.searchbox.core.search.sort.Sort;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.hswebframework.easyorm.elasticsearch.ElasticSearchQueryParamTranslator;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/device")
+@Slf4j
 public class DeviceMessageController {
 
     @Autowired
@@ -71,7 +73,10 @@ public class DeviceMessageController {
     public Flux<Object> getEvent(@PathVariable String deviceId) {
         return eventProcessor
                 .computeIfAbsent(deviceId, __ -> EmitterProcessor.create(100, true))
-                .map(Function.identity());
+                .map(Function.identity())
+                .doOnCancel(() -> {
+                    log.debug("unsubscribe event {}", deviceId);
+                });
     }
 
 
