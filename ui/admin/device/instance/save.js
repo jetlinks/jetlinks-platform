@@ -22,6 +22,9 @@ importMiniui(function () {
         $(".save-button").on("click", (function () {
             require(["message"], function (message) {
                 var data = getDataAndValidate();
+                if(!id){
+                    data.state = "notActive";
+                }
                 if (!data) return;
                 var loading = message.loading("提交中");
                 func(api, data, function (response) {

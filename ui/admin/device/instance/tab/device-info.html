@@ -18,6 +18,13 @@
         .info-div {
             margin-top: 20px;
         }
+        .refresh-effect{
+            cursor:pointer;
+
+        }
+        .refresh-effect:active{
+            background: #cccccc;
+        }
     </style>
 </head>
 <body>
@@ -54,7 +61,7 @@
                         <div id="content2" class="row" style="margin: 2% 1% 8% 1%">
                             <div>
                                 <div class="mini-col-4 info-div"><span class="info-key">一机一密:</span><span
-                                        class="info-val _yjym"></span></div>
+                                        class="info-val _omos"></span></div>
                                 <div class="mini-col-4 info-div"><span class="info-key">DeviceKey:</span><span
                                         class="info-val _deviceKey"></span></div>
                                 <div class="mini-col-4 info-div"><span class="info-key">DeviceSecret:</span><span
@@ -66,14 +73,10 @@
             </div>
             <div class="mini-clearfix" style="padding: 1% 1% 0 0">
                 <div class="mini-col-12">
-                    <div class="mini-panel mini-panel-info" title="设备属性 &nbsp;<i class='fa fa-refresh'></i>" width="auto"
+                    <div class="mini-panel mini-panel-info" title="设备属性 &nbsp;<i class='fa fa-refresh refresh-effect refresh-button'></i>" width="auto"
                          showCollapseButton="false" showCloseButton="false">
-                        <div id="content3" class="row" style="margin: 2% 1% 8% 1%">
-                            <div>
-                                <div class="mini-col-4 info-div"><span class="info-key">固件版本:</span><span
-                                        class="info-val _version"></span></div>
-                                <div class="mini-col-4 info-div"><span class="info-key">设备SN:</span><span
-                                        class="info-val _sn"></span></div>
+                        <div class="row" style="margin: 2% 1% 8% 1%">
+                            <div id="property-content" >
                             </div>
                         </div>
                     </div>

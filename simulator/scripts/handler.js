@@ -17,11 +17,20 @@ simulator.bindHandler("/invoke-function", function (message, session) {
 
 simulator.bindHandler("/read-property", function (message, session) {
     var messageId = message.messageId;
+    var properties = message.properties;
+    var initProperties = {"name": "test1","cpuUsage":"55","currentTemperature":"30"};
+    var resultProperties = {};
+    if (properties) {
+        for (var i = 0; i < properties.length; i++) {
+            resultProperties[properties[i]] = initProperties[properties[i]]
+        }
+    }
+
    //for(var i=0;i<2;i++){
         session.sendMessage("/read-property-reply", JSON.stringify({
             messageId: messageId,
             timestamp: new Date().getTime(),
-            properties: {"name": "test"},
+            properties: resultProperties,
           //  headers:{
               //  frag_msg_id:messageId,
               //  frg_num:2

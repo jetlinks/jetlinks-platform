@@ -120,6 +120,8 @@ function initRequireJs() {
             "export": [BASE_PATH + "admin/currency/export"],
             "bootstrap-skin": [BASE_PATH + "plugins/miniui/themes/bootstrap/skin"],
             "bootstrap-large-mode": [BASE_PATH + "plugins/miniui/themes/default/large-mode"],
+            "metadata-parser": [BASE_PATH + "plugins/tools/metadata-parser"],
+            "metadata-trans-tree": [BASE_PATH + "plugins/tools/metadata-trans-tree"],
             "default-method": [BASE_PATH + "admin/currency/default-method"]
         }
     });

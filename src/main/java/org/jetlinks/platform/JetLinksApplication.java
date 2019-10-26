@@ -76,7 +76,29 @@ public class JetLinksApplication {
                     "      \"valueType\": {\n" +
                     "        \"type\": \"string\"\n" +
                     "      }\n" +
-                    "    }\n" +
+                    "    },\n" +
+                    "        {\n" +
+                    "            \"id\":\"currentTemperature\",\n" +
+                    "            \"name\":\"当前温度\",\n" +
+                    "            \"expands\":{\n" +
+                    "                \"readonly\":true\n" +
+                    "            },\n" +
+                    "            \"valueType\":{\n" +
+                    "                \"type\":\"double\",\n" +
+                    "                \"unit\":\"celsiusDegrees\",\n" +
+                    "                \"max\":100,\n" +
+                    "                \"min\":1\n" +
+                    "            }\n" +
+                    "        },\n" +
+                    "        {\n" +
+                    "            \"id\":\"cpuUsage\",\n" +
+                    "            \"name\":\"cpu使用率\",\n" +
+                    "            \"readonly\":true,\n" +
+                    "            \"valueType\":{\n" +
+                    "                \"type\":\"double\",\n" +
+                    "                \"unit\":\"percent\"\n" +
+                    "            }\n" +
+                    "        }\n" +
                     "  ],\n" +
                     "  \"functions\": [\n" +
                     "    {\n" +

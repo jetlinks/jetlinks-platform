@@ -9,12 +9,12 @@ importMiniui(function () {
             $(".deviceName").text(data.name);
             $(".deviceId").text(data.id);
             $(".productName").text(data.productName);
-            $(".state").text(data.state);
+            $(".state").text(data.state.text);
         })
         var tabs = mini.get("tabs");
         var tabsData = [
             {title: "设备信息", url: "/admin/device/instance/tab/device-info.html?id=" + id /*refreshOnClick: true*/},
-            {title: "运行状态", url: "/admin/device/instance/tab/run-info.html"},
+            {title: "运行状态", url: "/admin/device/instance/tab/run-info.html?id=" + id},
             {title: "设备日志", url: "/admin/device/instance/tab/device-log.html"},
             {title: "在线调试", url: "/admin/device/instance/tab/device-debug.html"},
         ]
