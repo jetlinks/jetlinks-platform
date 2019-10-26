@@ -21,19 +21,13 @@ import org.jetlinks.core.message.ReadPropertyMessageSender;
 import org.jetlinks.core.message.event.EventMessage;
 import org.jetlinks.core.message.property.ReadPropertyMessageReply;
 import org.jetlinks.platform.events.DeviceMessageEvent;
-import org.jetlinks.platform.manager.entity.DevicePropertiesEntity;
-import org.jetlinks.platform.manager.service.LocalDevicePropertiesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.extra.processor.TopicProcessor;
 
 import java.util.List;
 import java.util.Map;
@@ -52,8 +46,6 @@ public class DeviceMessageController {
 //    @Autowired
 //    private LocalDeviceInstanceService localDeviceInstanceService;
 
-    @Autowired
-    private LocalDevicePropertiesService propertiesService;
 
     @Autowired
     private JestClient jestClient;
@@ -80,14 +72,6 @@ public class DeviceMessageController {
         return eventProcessor
                 .computeIfAbsent(deviceId, __ -> EmitterProcessor.create(100, true))
                 .map(Function.identity());
-    }
-
-    @GetMapping("/{deviceId}/properties")
-    public Flux<DevicePropertiesEntity> getDeviceProperties(@PathVariable String deviceId) {
-
-        return propertiesService.createQuery()
-                .where(DevicePropertiesEntity::getDeviceId, deviceId)
-                .fetch();
     }
 
 
@@ -148,37 +132,6 @@ public class DeviceMessageController {
                 .collect(Collectors.toList());
     }
 
-//    @GetMapping("/{deviceId}/event/{event}")
-//    @SneakyThrows
-//    public ResponseMessage<Object> getEvents(@PathVariable String deviceId,
-//                                             @PathVariable String event,
-//                                             QueryParamEntity entity) {
-//        JSONObject queryJson = entity.toQuery()
-//                .where("deviceId", deviceId)
-//                .execute(this::toQueryBuilder);
-//
-//        Search.Builder builder = new Search.Builder(queryJson.toJSONString());
-//        builder.addIndex("device_event_" + event)
-//                .addType("device")
-//                .addSort(new Sort("time", Sort.Sorting.DESC));
-//
-//        SearchResult result = jestClient.execute(builder.build());
-//        if (!result.isSucceeded()) {
-//            return ResponseMessage.error(result.getErrorMessage());
-//        }
-//
-//        return ResponseMessage.ok(convert(result));
-//    }
-
-    //强制同步设备真实状态到数据库
-//    @PutMapping("/state/sync")
-//    public ResponseMessage<Void> syncState(@RequestBody List<String> deviceIdList) {
-//
-//        localDeviceInstanceService.syncState(deviceIdList, true);
-//
-//        return ResponseMessage.ok();
-//    }
-
 
     //获取设备属性
     @GetMapping("/{deviceId}/property/{property:.+}")
@@ -195,15 +148,23 @@ public class DeviceMessageController {
 
     }
 
-//    //断开连接
-//    @GetMapping("/{deviceId}/disconnect")
-//    @SneakyThrows
-//    public ResponseMessage<Boolean> disconnect(@PathVariable String deviceId) {
-//        return registry.getDevice(deviceId)
-//                .disconnect()
-//                .thenApply(ResponseMessage::ok)
-//                .toCompletableFuture()
-//                .get();
-//    }
+
+    //获取设备所有属性
+    @PostMapping("/{deviceId}/properties")
+    @SneakyThrows
+    public Flux<?> getProperties(@PathVariable String deviceId, @RequestBody Mono<List<String>> properties) {
+
+        return properties
+                .flatMapMany(list-> registry
+                        .getDevice(deviceId)
+                        .switchIfEmpty(Mono.error(NotFoundException::new))
+                        .map(DeviceOperator::messageSender)
+                        .map(sender -> sender.readProperty(list.toArray(new String[0]))
+                                .messageId(IDGenerator.SNOW_FLAKE_STRING.generate()))
+                        .flatMapMany(ReadPropertyMessageSender::send)
+                        .map(ReadPropertyMessageReply::getProperties));
+
+    }
+
 
 }

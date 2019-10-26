@@ -10,6 +10,7 @@ import org.jetlinks.core.utils.FluxUtils;
 import org.jetlinks.platform.events.DeviceConnectedEvent;
 import org.jetlinks.platform.manager.entity.DeviceInstanceEntity;
 import org.jetlinks.platform.manager.entity.DeviceProductEntity;
+import org.jetlinks.platform.manager.entity.DevicePropertiesEntity;
 import org.jetlinks.platform.manager.web.response.DeviceInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -36,6 +37,9 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
 
     @Autowired
     private LocalDeviceProductService deviceProductService;
+
+    @Autowired
+    private LocalDevicePropertiesService propertiesService;
 
 
     public void deploy(String id) {
@@ -68,8 +72,18 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
 
     public Mono<DeviceInfo> getDeviceInfoById(String id) {
         return findById(Mono.just(id))
-                .zipWhen(instance -> deviceProductService.findById(Mono.just(instance.getProductId())), DeviceInfo::of)
+                .zipWhen(instance -> deviceProductService
+                        .findById(Mono.just(instance.getProductId())), DeviceInfo::of)
                 .switchIfEmpty(Mono.error(NotFoundException::new));
+//        return findById(Mono.just(id))
+//                .zipWhen(instance -> deviceProductService
+//                                .findById(Mono.just(instance.getProductId()))
+//                                .zipWith(propertiesService.createQuery()
+//                                        .where(DevicePropertiesEntity::getDeviceId, id)
+//                                        .fetch()
+//                                        .collectList()),
+//                        ((deviceInstanceEntity, tuple) -> DeviceInfo.of(deviceInstanceEntity, tuple.getT1(), tuple.getT2())))
+//                .switchIfEmpty(Mono.error(NotFoundException::new));
     }
 
     /**

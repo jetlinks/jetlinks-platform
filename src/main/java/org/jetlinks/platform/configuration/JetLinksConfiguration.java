@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Mono;
+import reactor.extra.processor.WorkQueueProcessor;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -68,7 +69,7 @@ public class JetLinksConfiguration {
     @Bean
     public DefaultDecodedClientMessageHandler defaultDecodedClientMessageHandler(MessageHandler handler, ApplicationEventPublisher eventPublisher) {
         DefaultDecodedClientMessageHandler clientMessageHandler = new DefaultDecodedClientMessageHandler(handler,
-                EmitterProcessor.create()
+                WorkQueueProcessor.create()
 
         );
         AtomicLong counter = new AtomicLong();
