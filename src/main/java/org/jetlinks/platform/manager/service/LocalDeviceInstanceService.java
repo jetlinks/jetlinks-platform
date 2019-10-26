@@ -8,6 +8,7 @@ import org.hswebframework.web.exception.NotFoundException;
 import org.jetlinks.core.device.DeviceRegistry;
 import org.jetlinks.core.utils.FluxUtils;
 import org.jetlinks.platform.events.DeviceConnectedEvent;
+import org.jetlinks.platform.events.DeviceDisconnectedEvent;
 import org.jetlinks.platform.manager.entity.DeviceInstanceEntity;
 import org.jetlinks.platform.manager.entity.DeviceProductEntity;
 import org.jetlinks.platform.manager.entity.DevicePropertiesEntity;
@@ -59,6 +60,16 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
                 });
     }
 
+    @EventListener
+    public void handleDeviceConnectEvent(DeviceDisconnectedEvent event) {
+        if (deviceIdSink != null) {
+            deviceIdSink.next(event.getSession().getDeviceId());
+        } else {
+            syncState(Flux.just(event.getSession().getDeviceId()), false)
+                    .doOnError(err -> log.error(err.getMessage(), err))
+                    .subscribe((i) -> log.info("同步设备状态成功"));
+        }
+    }
     @EventListener
     public void handleDeviceConnectEvent(DeviceConnectedEvent event) {
         if (deviceIdSink != null) {

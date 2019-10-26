@@ -22,6 +22,7 @@ import org.jetlinks.core.message.ReadPropertyMessageSender;
 import org.jetlinks.core.message.event.EventMessage;
 import org.jetlinks.core.message.property.ReadPropertyMessageReply;
 import org.jetlinks.platform.events.DeviceMessageEvent;
+import org.jetlinks.platform.manager.entity.DeviceInstanceEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.MediaType;
@@ -153,8 +154,7 @@ public class DeviceMessageController {
 
     }
 
-
-    //获取设备所有属性
+        //获取设备所有属性
     @PostMapping("/{deviceId}/properties")
     @SneakyThrows
     public Flux<?> getProperties(@PathVariable String deviceId, @RequestBody Mono<List<String>> properties) {

@@ -18,6 +18,8 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+
 /**
  * @author zhouhao
  * @since 1.0.0
@@ -51,6 +53,8 @@ public class MqttServerVerticleSupplier implements VerticleSupplier, Environment
         MqttServer mqttServer = new MqttServer();
         mqttServer.setMqttServerOptions(mqttServerOptions);
         mqttServer.setRegistry(deviceRegistry);
+//        mqttServer.setMaxBufferSize(2);
+//        mqttServer.setAcceptConnectionTimeout(Duration.ofMillis(1));
         mqttServer.setGatewayServerMonitor(gatewayServerMonitor);
         mqttServer.setDeviceSessionManager(deviceSessionManager);
         mqttServer.setProtocolSupports(protocolSupports);
@@ -60,6 +64,6 @@ public class MqttServerVerticleSupplier implements VerticleSupplier, Environment
 
     @Override
     public void setEnvironment(Environment environment) {
-        publicServerAddress = environment.getProperty("vertx.mqtt.public-server-address", (String) null);
+        publicServerAddress = environment.getProperty("vertx.mqtt.public-server-address");
     }
 }
