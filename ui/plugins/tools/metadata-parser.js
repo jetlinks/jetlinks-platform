@@ -1,10 +1,64 @@
 define(["jquery"], function ($) {
 
+    var valueTypeCharts = {
+        "percent": function (value) {
+            return "<progress value=\"" + value + "\" max=\"100\" style=\"width: 100%\"></progress>";
+        },
+        "_default": function (value) {
+            return "<span class=\"info-key\">属性值" + value + "在正常范围内</span>";
+        }
+    }
+
+    var unifyUnit = {
+        "celsiusDegrees": {
+            "name": "摄氏度",
+            "symbol": "℃",
+            "type": "temperature",
+            "description": "温度单位:摄氏度(℃)",
+            "getCharts": function (value) {
+                return valueTypeCharts["_default"](value+"℃");
+            }
+        },
+        "percent": {
+            "name": "百分比",
+            "symbol": "%",
+            "type": "common",
+            "description": "百分比(%)",
+            "getCharts": function (value) {
+                return valueTypeCharts["percent"](value);
+            }
+        },
+        "count": {
+            "name": "次",
+            "symbol": "count",
+            "type": "common",
+            "description": "次",
+            "getCharts": function (value) {
+                return valueTypeCharts["_default"](value);
+            }
+        },
+        "_undefine": {
+            "name": "",
+            "symbol": "",
+            "type": "",
+            "description": "",
+            "getCharts": function (value) {
+                return valueTypeCharts["_default"](value);
+            }
+        }
+    }
+
     function normalProperty(property) {
         var resultMap = {};
         mapDeepCopy(property["expands"], resultMap);
         mapShallowCopy(property, resultMap);
         resultMap.getValueType = function () {
+            var unit = property["valueType"].unit;
+            if (unit) {
+                property["valueType"].unifyUnit = unifyUnit[unit];
+            } else {
+                property["valueType"].unifyUnit = unifyUnit["_undefine"];
+            }
             return property["valueType"];
         }
         return resultMap;
@@ -40,10 +94,10 @@ define(["jquery"], function ($) {
         }
         for (let i = 0; i < properties.length; i++) {
             var property = properties[i];
-            resultMap[property['name']] = normalProperty(property);
+            resultMap[property['id']] = normalProperty(property);
         }
-        resultMap.getProperty = function (name) {
-            return resultMap[name];
+        resultMap.getProperty = function (id) {
+            return resultMap[id];
         }
         return resultMap;
     }
