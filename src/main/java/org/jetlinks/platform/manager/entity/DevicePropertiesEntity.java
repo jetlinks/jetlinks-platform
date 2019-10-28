@@ -44,6 +44,10 @@ public class DevicePropertiesEntity extends GenericEntity<String> {
     @Column(name="update_time")
     private Date updateTime;
 
+    //未做任何处理的属性字符串类型值
+    @Column(name="value")
+    private String value;
+
 
     public Map<String,Object> toMap(){
         Map<String,Object> data = copyTo(HashMap.class);

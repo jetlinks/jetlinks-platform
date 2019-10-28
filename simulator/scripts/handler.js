@@ -18,7 +18,7 @@ simulator.bindHandler("/invoke-function", function (message, session) {
 simulator.bindHandler("/read-property", function (message, session) {
     var messageId = message.messageId;
     var properties = message.properties;
-    var initProperties = {"name": "test1","cpuUsage":"55","currentTemperature":"30"};
+    var initProperties = {"name": "test1","cpuUsage":"55","currentTemperature":"31"};
     var resultProperties = {};
     if (properties) {
         for (var i = 0; i < properties.length; i++) {

@@ -1,8 +1,6 @@
 package org.jetlinks.platform.manager.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hswebframework.web.api.crud.entity.QueryParamEntity;
-import org.hswebframework.web.bean.FastBeanCopier;
 import org.hswebframework.web.crud.service.GenericReactiveCrudService;
 import org.hswebframework.web.exception.NotFoundException;
 import org.jetlinks.core.device.DeviceRegistry;
@@ -10,19 +8,17 @@ import org.jetlinks.core.utils.FluxUtils;
 import org.jetlinks.platform.events.DeviceConnectedEvent;
 import org.jetlinks.platform.events.DeviceDisconnectedEvent;
 import org.jetlinks.platform.manager.entity.DeviceInstanceEntity;
-import org.jetlinks.platform.manager.entity.DeviceProductEntity;
-import org.jetlinks.platform.manager.entity.DevicePropertiesEntity;
+import org.jetlinks.platform.manager.enums.DeviceState;
 import org.jetlinks.platform.manager.web.response.DeviceInfo;
+import org.jetlinks.platform.manager.web.response.DeviceRunInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuple2;
-import reactor.util.function.Tuples;
 
 import javax.annotation.PostConstruct;
 import java.time.Duration;
@@ -49,6 +45,16 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
 
     private volatile FluxSink<String> deviceIdSink;
 
+    public Mono<DeviceRunInfo> getDeviceRunInfo(String deviceId) {
+        return registry
+                .getDevice(deviceId)
+                .flatMap(deviceOperator -> deviceOperator.getOnlineTime().switchIfEmpty(Mono.just(0L))
+                        .zipWith(deviceOperator.getOfflineTime().switchIfEmpty(Mono.just(0L)))
+                        .zipWith(deviceOperator.getState(), (t1, state) -> DeviceRunInfo.of(t1.getT1(), t1.getT2(),
+                                DeviceState.of(state))));
+    }
+
+
     @PostConstruct
     public void init() {
         syncState(Flux.create(fluxSink -> deviceIdSink = fluxSink), false)
@@ -72,6 +78,17 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
     }
     @EventListener
     public void handleDeviceConnectEvent(DeviceConnectedEvent event) {
+        if (deviceIdSink != null) {
+            deviceIdSink.next(event.getSession().getDeviceId());
+        } else {
+            syncState(Flux.just(event.getSession().getDeviceId()), false)
+                    .doOnError(err -> log.error(err.getMessage(), err))
+                    .subscribe((i) -> log.info("同步设备状态成功"));
+        }
+    }
+
+    @EventListener
+    public void handleDeviceDisConnectEvent(DeviceDisconnectedEvent event) {
         if (deviceIdSink != null) {
             deviceIdSink.next(event.getSession().getDeviceId());
         } else {
@@ -123,7 +140,8 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
                 .flatMap(Flux::fromIterable)
                 .flatMap(e -> getRepository().createUpdate()
                         .set(DeviceInstanceEntity::getState, org.jetlinks.platform.manager.enums.DeviceState.of(e.getKey()))
-                        .where().in(DeviceInstanceEntity::getId, e.getValue())
+                        .where()
+                        .in(DeviceInstanceEntity::getId, e.getValue())
                         .execute());
 
     }
