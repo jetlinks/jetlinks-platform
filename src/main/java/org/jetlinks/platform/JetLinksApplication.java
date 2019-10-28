@@ -3,6 +3,7 @@ package org.jetlinks.platform;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.hswebframework.web.authorization.basic.configuration.EnableAopAuthorize;
 import org.hswebframework.web.crud.annotation.EnableEasyormRepository;
 import org.hswebframework.web.starter.jackson.CustomCodecsAutoConfiguration;
 import org.hswebframework.web.starter.jackson.CustomJackson2JsonDecoder;
@@ -163,7 +164,7 @@ public class JetLinksApplication {
                     for (long i = initStartWith; i < sum; i++) {
                         DeviceInfo deviceInfo = new DeviceInfo();
                         deviceInfo.setId("test" + i);
-                        deviceInfo.setProtocol("jet-links");
+                        deviceInfo.setProtocol("jetlinks.v1.0");
                         deviceInfo.setProductId(productInfo.getId());
                         fluxSink.next(deviceInfo);
                     }

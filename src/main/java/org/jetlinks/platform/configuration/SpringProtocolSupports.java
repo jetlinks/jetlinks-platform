@@ -1,20 +1,24 @@
 package org.jetlinks.platform.configuration;
 
-import org.jetlinks.core.ProtocolSupport;
-import org.jetlinks.supports.protocol.StaticProtocolSupports;
+import org.jetlinks.core.ProtocolSupports;
+import org.jetlinks.core.defaults.CompositeProtocolSupports;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 
 @Component
-public class SpringProtocolSupports extends StaticProtocolSupports implements BeanPostProcessor {
-
+@Primary
+public class SpringProtocolSupports extends CompositeProtocolSupports implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(Object o, String s) throws BeansException {
-        if (o instanceof ProtocolSupport) {
-           register(((ProtocolSupport) o));
+        if (o == this) {
+            return o;
+        }
+        if (o instanceof ProtocolSupports) {
+            register(((ProtocolSupports) o));
         }
         return o;
     }

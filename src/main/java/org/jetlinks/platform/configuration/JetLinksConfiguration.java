@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hswebframework.web.event.GenericsPayloadApplicationEvent;
 import org.jetlinks.core.ProtocolSupports;
 import org.jetlinks.core.cluster.ClusterManager;
+import org.jetlinks.core.defaults.CompositeProtocolSupports;
 import org.jetlinks.core.device.DeviceOperationBroker;
 import org.jetlinks.core.device.DeviceRegistry;
 import org.jetlinks.core.message.codec.DefaultTransport;
@@ -12,6 +13,7 @@ import org.jetlinks.core.server.MessageHandler;
 import org.jetlinks.core.server.monitor.GatewayServerMetrics;
 import org.jetlinks.core.server.monitor.GatewayServerMonitor;
 import org.jetlinks.core.server.session.DeviceSessionManager;
+import org.jetlinks.core.spi.ServiceContext;
 import org.jetlinks.platform.events.DeviceConnectedEvent;
 import org.jetlinks.platform.events.DeviceDisconnectedEvent;
 import org.jetlinks.platform.events.DeviceMessageEvent;
@@ -22,6 +24,13 @@ import org.jetlinks.supports.official.JetLinksAuthenticator;
 import org.jetlinks.supports.official.JetLinksDeviceMetadataCodec;
 import org.jetlinks.supports.official.JetLinksMQTTDeviceMessageCodec;
 import org.jetlinks.supports.protocol.CompositeProtocolSupport;
+import org.jetlinks.supports.protocol.ServiceLoaderProtocolSupports;
+import org.jetlinks.supports.protocol.StaticProtocolSupports;
+import org.jetlinks.supports.protocol.management.ClusterProtocolSupportManager;
+import org.jetlinks.supports.protocol.management.ManagementProtocolSupports;
+import org.jetlinks.supports.protocol.management.ProtocolSupportLoader;
+import org.jetlinks.supports.protocol.management.ProtocolSupportManager;
+import org.jetlinks.supports.protocol.management.jar.JarProtocolSupportLoader;
 import org.jetlinks.supports.server.DefaultClientMessageHandler;
 import org.jetlinks.supports.server.DefaultDecodedClientMessageHandler;
 import org.jetlinks.supports.server.DefaultSendToDeviceMessageHandler;
@@ -130,6 +139,38 @@ public class JetLinksConfiguration {
 
         return sessionManager;
     }
+
+    @Bean(initMethod = "init")
+    public ServiceLoaderProtocolSupports serviceLoaderProtocolSupports(ServiceContext serviceContext) {
+        ServiceLoaderProtocolSupports supports= new ServiceLoaderProtocolSupports();
+        supports.setServiceContext(serviceContext);
+        return supports;
+    }
+
+    @Bean
+    public ProtocolSupportManager protocolSupportManager(ClusterManager clusterManager) {
+        return new ClusterProtocolSupportManager(clusterManager);
+    }
+
+    @Bean
+    public JarProtocolSupportLoader jarProtocolSupportLoader(ServiceContext serviceContext) {
+        JarProtocolSupportLoader loader = new JarProtocolSupportLoader();
+        loader.setServiceContext(serviceContext);
+        return loader;
+    }
+
+
+    @Bean
+    public LazyInitManagementProtocolSupports managementProtocolSupports(ProtocolSupportManager supportManager,
+                                                                         ProtocolSupportLoader loader,
+                                                                         ClusterManager clusterManager) {
+        LazyInitManagementProtocolSupports supports = new LazyInitManagementProtocolSupports();
+        supports.setClusterManager(clusterManager);
+        supports.setManager(supportManager);
+        supports.setLoader(loader);
+        return supports;
+    }
+
 
     @Bean
     public CompositeProtocolSupport jetLinksProtocolSupport() {
