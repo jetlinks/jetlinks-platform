@@ -15,8 +15,8 @@ importMiniui(function () {
         var tabsData = [
             {title: "设备信息", url: "/admin/device/instance/tab/device-info.html?id=" + id /*refreshOnClick: true*/},
             {title: "运行状态", url: "/admin/device/instance/tab/run-info.html?id=" + id},
-            {title: "设备日志", url: "/admin/device/instance/tab/device-log.html"},
-            {title: "在线调试", url: "/admin/device/instance/tab/device-debug.html"},
+            {title: "设备日志", url: "/admin/device/instance/tab/device-log.html?id=" + id},
+            {title: "在线调试", url: "/admin/device/instance/tab/device-debug.html?id=" + id}
         ]
         tabs.setTabs(tabsData);
 
