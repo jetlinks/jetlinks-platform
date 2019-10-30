@@ -20,8 +20,8 @@
                 <div class="form-item">
                     <label class="form-label">时间从：</label>
                     <div class="input-block component-body">
-                        <input name="createTimeGt" class="mini-datepicker" nullValue="null"
-                               format="yyyy-MM-dd H:mm:ss" timeFormat="H:mm:ss" showTime="true" showOkButton="true"
+                        <input name="createTime$GtE" class="mini-datepicker" nullValue="null"
+                               format="yyyy-MM-dd HH:mm:ss" timeFormat="HH:mm:ss" showTime="true" showOkButton="true"
                                showClearButton="false" width="100%"/>
                     </div>
                 </div>
@@ -30,8 +30,8 @@
                 <div class="form-item">
                     <label class="form-label">时间至：</label>
                     <div class="input-block component-body">
-                        <input name="createTimeLt" class="mini-datepicker" nullValue="null"
-                               format="yyyy-MM-dd H:mm:ss" timeFormat="H:mm:ss" showTime="true" showOkButton="true"
+                        <input name="createTime$Lt" class="mini-datepicker" nullValue="null"
+                               format="yyyy-MM-dd HH:mm:ss" timeFormat="HH:mm:ss" showTime="true" showOkButton="true"
                                showClearButton="false" width="100%"/>
                     </div>
                 </div>
@@ -39,8 +39,8 @@
             <div class="mini-col-4 form-component">
                 <div class="form-item">
                     <label class="form-label">日志类型：</label>
-                    <div class="input-block component-body">
-                        <input name="code$LIKE" style="width: 100%" class="mini-combobox">
+                    <div  class="input-block component-body">
+                        <input id="_type" multiSelect="true" name="type$IN" textField="name" style="width: 100%" class="mini-combobox">
                     </div>
                 </div>
             </div>
@@ -51,11 +51,11 @@
     </div>
     <div class="mini-fit">
         <div id="logDataGrid" class="mini-datagrid" style="width:100%;height: 100%;margin: auto;"
-             showPager="true" sortOrder="desc">
+             showPager="true">
             <div property="columns">
-                <div field="id" width="20" headerAlign="center" allowSort="true" align="center">类型</div>
-                <div field="name1" width="20" headerAlign="center" allowSort="true" renderer="renderTime" align="center">时间</div>
-                <div field="name2" width="60" headerAlign="center" allowSort="true" align="center">内容</div>
+                <div field="type.text" width="20" headerAlign="center"  align="center">类型</div>
+                <div field="createTime" width="20" headerAlign="center" allowSort="true" renderer="renderTime" align="center">时间</div>
+                <div field="content" width="60" headerAlign="center" align="center">内容</div>
             </div>
         </div>
     </div>

@@ -3,6 +3,24 @@ importResource("/admin/css/common.css");
 importMiniui(function () {
     mini.parse();
     require(["request", "miniui-tools", "search-box"], function (request, tools, SearchBox) {
+        var deviceState = [
+            {"id": "online", "text": "上线"},
+            {"id": "offline", "text": "离线"},
+            {"id": "notActive", "text": "未激活"}
+        ];
+        var comboboxState = mini.get("_state");
+        comboboxState.setData(deviceState);
+
+        request.get("device-product/_query/no-paging", function (response) {
+            var products = [];
+            if (response.status === 200) {
+                for (var i = 0; i < response.result.length; i++) {
+                    products.push({"id": response.result[i].id, "text": response.result[i].name})
+                }
+                var comboboxProduct = mini.get("_productId");
+                comboboxProduct.setData(products);
+            }
+        });
 
         new SearchBox({
             container: $("#search-box"),
@@ -15,7 +33,6 @@ importMiniui(function () {
         var grid = window.grid = mini.get("datagrid");
         tools.initGrid(grid);
 
-        //grid.setData([{"name1": "test1"}, {"name1": "test2"}])
         grid.load();
 
         grid.setUrl(request.basePath + "device-instance/_query");

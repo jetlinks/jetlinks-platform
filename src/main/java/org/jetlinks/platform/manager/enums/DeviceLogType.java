@@ -1,13 +1,12 @@
 package org.jetlinks.platform.manager.enums;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.hswebframework.web.dict.Dict;
 import org.hswebframework.web.dict.EnumDict;
 
 @AllArgsConstructor
 @Getter
-@Dict( "device-state")
 public enum DeviceLogType implements EnumDict<String> {
     event("事件上报"),
     readProperty("属性读取"),
@@ -19,10 +18,16 @@ public enum DeviceLogType implements EnumDict<String> {
     online("上线"),
     other("其它");
 
+    @JSONField(serialize = false)
     private String text;
 
     @Override
     public String getValue() {
         return name();
     }
+
+//    @Override
+//    public Object getWriteJSONObject() {
+//        return getValue();
+//    }
 }

@@ -17,9 +17,9 @@ importMiniui(function () {
         function propertyLoad() {
             request.get("device-instance/" + id + "/properties", function (response) {
                 var html = "";
-                console.log(response)
-                for (var i = 0; i < response.length; i++) {
-                    html += propertyPlate(response[i].propertyName, response[i].formatValue, response[i].property);
+                var properties = response.result;
+                for (var i = 0; i < properties.length; i++) {
+                    html += propertyPlate(properties[i].propertyName, properties[i].formatValue, properties[i].property);
                 }
                 $("#property-content").html(html);
             });
