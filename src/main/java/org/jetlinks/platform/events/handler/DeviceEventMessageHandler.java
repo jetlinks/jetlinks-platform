@@ -60,55 +60,68 @@ public class DeviceEventMessageHandler {
 
     @EventListener
     public void handleEvent(DeviceMessageEvent<EventMessage> event) {
-        EventMessage message = event.getMessage();
-        //属性上报
-        boolean isReportProperty = message.getHeader("report-property")
-                .filter(Boolean.TRUE::equals)
-                .map(Boolean.class::cast)
-                .orElse(false);
-        if (isReportProperty) {
-            syncDeviceProperty(message.getDeviceId(), ((Map) message.getData()), new Date(message.getTimestamp()));
+        try {
+            EventMessage message = event.getMessage();
+            //属性上报
+            boolean isReportProperty = message.getHeader("report-property")
+                    .filter(Boolean.TRUE::equals)
+                    .map(Boolean.class::cast)
+                    .orElse(false);
+            if (isReportProperty) {
+                syncDeviceProperty(message.getDeviceId(), ((Map) message.getData()), new Date(message.getTimestamp()));
 
-        } else {
-            syncEvent(message.getDeviceId(), message);
+            } else {
+                syncEvent(message.getDeviceId(), message);
+            }
+            DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
+                    .deviceId(message.getDeviceId())
+                    .createTime(new Date(message.getTimestamp()))
+                    .content(message.getData())
+                    .type(isReportProperty ? DeviceLogType.reportProperty : DeviceLogType.event)
+                    .build();
+            eventPublisher.publishEvent(deviceOperationType);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
-        DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
-                .deviceId(message.getDeviceId())
-                .createTime(new Date(message.getTimestamp()))
-                .content(message.getData())
-                .type(isReportProperty ? DeviceLogType.reportProperty : DeviceLogType.event)
-                .build();
-        eventPublisher.publishEvent(deviceOperationType);
     }
 
     @EventListener
     public void handleWriteProperty(DeviceMessageEvent<WritePropertyMessageReply> event) {
-        WritePropertyMessageReply message = event.getMessage();
-        if (message.isSuccess()) {
-            syncDeviceProperty(message.getDeviceId(), message.getProperties(), new Date(message.getTimestamp()));
+        try {
+            WritePropertyMessageReply message = event.getMessage();
+            if (message.isSuccess()) {
+                syncDeviceProperty(message.getDeviceId(), message.getProperties(), new Date(message.getTimestamp()));
+            }
+            DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
+                    .deviceId(message.getDeviceId())
+                    .createTime(new Date(message.getTimestamp()))
+                    .content(message.getProperties())
+                    .type(DeviceLogType.writeProperty)
+                    .build();
+            eventPublisher.publishEvent(deviceOperationType);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
-        DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
-                .deviceId(message.getDeviceId())
-                .createTime(new Date(message.getTimestamp()))
-                .content(message.getProperties())
-                .type(DeviceLogType.writeProperty)
-                .build();
-        eventPublisher.publishEvent(deviceOperationType);
     }
 
     @EventListener
     public void handleReadProperty(DeviceMessageEvent<ReadPropertyMessageReply> event) {
-        ReadPropertyMessageReply message = event.getMessage();
-        if (message.isSuccess()) {
-            syncDeviceProperty(message.getDeviceId(), message.getProperties(), new Date(message.getTimestamp()));
+        try {
+            ReadPropertyMessageReply message = event.getMessage();
+            if (message.isSuccess()) {
+                syncDeviceProperty(message.getDeviceId(), message.getProperties(), new Date(message.getTimestamp()));
+            }
+            DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
+                    .deviceId(message.getDeviceId())
+                    .createTime(new Date(message.getTimestamp()))
+                    .content(message.getProperties())
+                    .type(DeviceLogType.readProperty)
+                    .build();
+            eventPublisher.publishEvent(deviceOperationType);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
-        DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
-                .deviceId(message.getDeviceId())
-                .createTime(new Date(message.getTimestamp()))
-                .content(message.getProperties())
-                .type(DeviceLogType.readProperty)
-                .build();
-        eventPublisher.publishEvent(deviceOperationType);
+
     }
 
     private void syncEvent(String device, EventMessage message) {
@@ -229,31 +242,31 @@ public class DeviceEventMessageHandler {
     }
 
     private void syncDeviceProperty(List<DevicePropertiesEntity> list) {
-//        Bulk.Builder builder = new Bulk.Builder()
-//                .defaultIndex("device_properties")
-//                .defaultType("device");
-//
-//        for (DevicePropertiesEntity entity : list) {
-//
-//            builder.addAction(new Index
-//                    .Builder(entity.toMap())
-//                    .build());
-//            processor.onNext(entity);
-//        }
-//
-//        jestClient.executeAsync(builder.build(), new JestResultHandler<JestResult>() {
-//            @Override
-//            public void completed(JestResult result) {
-//                if (!result.isSucceeded()) {
-//                    log.error("保存设备属性记录失败:{}", result.getJsonString());
-//                }
-//            }
-//
-//            @Override
-//            public void failed(Exception ex) {
-//                log.error("保存设备属性记录失败", ex);
-//            }
-//        });
+        Bulk.Builder builder = new Bulk.Builder()
+                .defaultIndex("device_properties")
+                .defaultType("device");
+
+        for (DevicePropertiesEntity entity : list) {
+
+            builder.addAction(new Index
+                    .Builder(entity.toMap())
+                    .build());
+            processor.onNext(entity);
+        }
+
+        jestClient.executeAsync(builder.build(), new JestResultHandler<JestResult>() {
+            @Override
+            public void completed(JestResult result) {
+                if (!result.isSucceeded()) {
+                    log.error("保存设备属性记录失败:{}", result.getJsonString());
+                }
+            }
+
+            @Override
+            public void failed(Exception ex) {
+                log.error("保存设备属性记录失败", ex);
+            }
+        });
 
     }
 }
