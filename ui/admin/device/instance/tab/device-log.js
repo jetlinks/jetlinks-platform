@@ -5,7 +5,19 @@ importMiniui(function () {
     require(["request", "search-box", "miniui-tools"], function (request, SearchBox, tools) {
 
         var id = request.getParameter("id");
-
+        var deviceLogType = [
+            {"id": "event", "name": "事件上报"},
+            {"id": "readProperty", "name": "属性读取"},
+            {"id": "writeProperty", "name": "属性修改"},
+            {"id": "reportProperty", "name": "属性上报"},
+            {"id": "call", "name": "调用"},
+            {"id": "reply", "name": "回复"},
+            {"id": "offline", "name": "下线"},
+            {"id": "online", "name": "上线"},
+            {"id": "other", "name": "其它"}
+        ];
+        var comboboxType = mini.get("_type");
+        comboboxType.setData(deviceLogType);
         new SearchBox({
             container: $("#search-box"),
             onSearch: search,
@@ -16,12 +28,15 @@ importMiniui(function () {
         var grid = window.grid = mini.get("logDataGrid");
         tools.initGrid(grid);
         grid.setUrl(request.basePath + "device-operation/_query");
+
         function search() {
-            searchGrid("#search-box", grid, undefined, {"deviceId": id});
+            searchGrid("#search-box", grid, {"deviceId": id});
 
         }
+
         search();
-        function searchGrid(formEL, grid, defaultParam){
+
+        function searchGrid(formEL, grid, defaultParam) {
             var param = new mini.Form(formEL).getData(true, false);
             if (defaultParam) {
                 for (var field in defaultParam) {
@@ -32,13 +47,14 @@ importMiniui(function () {
             param = request.encodeQueryParam(param);
             grid.load(param);
         }
-        function transTimeFormat(param){
-            for (var key in param){
+
+        function transTimeFormat(param) {
+            for (var key in param) {
                 if (param["createTime$GtE"]) {
-                    param["createTime$GtE"] = param["createTime$GtE"].substring(0,10) + "T" + param["createTime$GtE"].substring(11,19);
+                    param["createTime$GtE"] = param["createTime$GtE"].substring(0, 10) + "T" + param["createTime$GtE"].substring(11, 19);
                 }
                 if (param["createTime$Lt"]) {
-                    param["createTime$Lt"] = param["createTime$Lt"].substring(0,10) + "T" + param["createTime$Lt"].substring(11,19);
+                    param["createTime$Lt"] = param["createTime$Lt"].substring(0, 10) + "T" + param["createTime$Lt"].substring(11, 19);
                 }
             }
         }

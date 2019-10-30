@@ -42,7 +42,7 @@ public class QueryParamTranslator {
     private static SearchSourceBuilder transSourceBuilder(QueryParam queryParam) {
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         if (queryParam.isPaging()) {
-            sourceBuilder.from(queryParam.getPageIndex());
+            sourceBuilder.from(queryParam.getPageIndex() * queryParam.getPageSize());
             sourceBuilder.size(queryParam.getPageSize());
         }
         queryParam.getSorts()
