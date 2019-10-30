@@ -8,12 +8,14 @@ import org.jetlinks.core.cluster.ClusterManager;
 import org.jetlinks.core.defaults.CompositeProtocolSupports;
 import org.jetlinks.core.device.DeviceOperationBroker;
 import org.jetlinks.core.device.DeviceRegistry;
+import org.jetlinks.core.message.Message;
 import org.jetlinks.core.message.codec.DefaultTransport;
 import org.jetlinks.core.server.MessageHandler;
 import org.jetlinks.core.server.monitor.GatewayServerMetrics;
 import org.jetlinks.core.server.monitor.GatewayServerMonitor;
 import org.jetlinks.core.server.session.DeviceSessionManager;
 import org.jetlinks.core.spi.ServiceContext;
+import org.jetlinks.gateway.vertx.mqtt.VertxMqttGatewayServerContext;
 import org.jetlinks.platform.events.DeviceConnectedEvent;
 import org.jetlinks.platform.events.DeviceDisconnectedEvent;
 import org.jetlinks.platform.events.DeviceMessageEvent;
@@ -42,6 +44,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import reactor.core.publisher.Mono;
+import reactor.extra.processor.TopicProcessor;
+import reactor.extra.processor.WaitStrategy;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -72,20 +76,23 @@ public class JetLinksConfiguration {
         return new ClusterDeviceRegistry(supports, manager, handler);
     }
 
-    @Bean
+    @Bean(destroyMethod = "shutdown")
     public DefaultDecodedClientMessageHandler defaultDecodedClientMessageHandler(MessageHandler handler, ApplicationEventPublisher eventPublisher) {
         DefaultDecodedClientMessageHandler clientMessageHandler = new DefaultDecodedClientMessageHandler(handler);
         clientMessageHandler.subscribe()
                 .onBackpressureBuffer(Duration.ofSeconds(30), 1024, message -> {
                     log.warn("无法处理更多消息:{}", message);
                 })
-                .subscribe(msg -> {
+                .doOnNext(msg->{
                     //转发消息到spring event
                     eventPublisher.publishEvent(new GenericsPayloadApplicationEvent<>(
                             clientMessageHandler,
                             new DeviceMessageEvent<>(msg),
                             msg.getClass()));
-                });
+                })
+                .metrics()
+                .onErrorContinue((err,r)-> log.error(err.getMessage(),err))
+                .subscribe();
 
         return clientMessageHandler;
     }
@@ -120,6 +127,8 @@ public class JetLinksConfiguration {
         };
     }
 
+
+
     @Bean(initMethod = "init", destroyMethod = "shutdown")
     public DefaultDeviceSessionManager deviceSessionManager(JetLinksProperties properties,
                                                             GatewayServerMonitor monitor,
@@ -131,8 +140,17 @@ public class JetLinksConfiguration {
 
         Optional.ofNullable(properties.getTransportLimit()).ifPresent(sessionManager::setTransportLimits);
 
-        sessionManager.onRegister().subscribe(session -> eventPublisher.publishEvent(new DeviceConnectedEvent(session)));
-        sessionManager.onUnRegister().subscribe(session -> eventPublisher.publishEvent(new DeviceDisconnectedEvent(session)));
+        sessionManager.onRegister()
+                .map(DeviceConnectedEvent::new)
+                .doOnNext(eventPublisher::publishEvent)
+                .onErrorContinue((err,r)-> log.error(err.getMessage(),err))
+                .subscribe();
+
+        sessionManager.onUnRegister()
+                .map(DeviceDisconnectedEvent::new)
+                .doOnNext(eventPublisher::publishEvent)
+                .onErrorContinue((err,r)-> log.error(err.getMessage(),err))
+                .subscribe();
 
         return sessionManager;
     }

@@ -1,6 +1,10 @@
 package org.jetlinks.platform.events.handler;
 
 import io.searchbox.client.JestClient;
+import io.searchbox.client.JestResult;
+import io.searchbox.client.JestResultHandler;
+import io.searchbox.core.Bulk;
+import io.searchbox.core.Index;
 import lombok.extern.slf4j.Slf4j;
 import org.jetlinks.core.device.DeviceOperator;
 import org.jetlinks.core.device.DeviceRegistry;
@@ -50,67 +54,58 @@ public class DeviceEventMessageHandler {
 
     @EventListener
     public void handleEvent(DeviceMessageEvent<EventMessage> event) {
-        try {
-            EventMessage message = event.getMessage();
-            //属性上报
-            boolean isReportProperty = message.getHeader("report-property")
-                    .filter(Boolean.TRUE::equals)
-                    .map(Boolean.class::cast)
-                    .orElse(false);
-            if (isReportProperty) {
-                syncDeviceProperty(message.getDeviceId(), ((Map) message.getData()), new Date(message.getTimestamp()));
+        EventMessage message = event.getMessage();
+        //属性上报
+        boolean isReportProperty = message.getHeader("report-property")
+                .filter(Boolean.TRUE::equals)
+                .map(Boolean.class::cast)
+                .orElse(false);
+        if (isReportProperty) {
+            syncDeviceProperty(message.getDeviceId(), ((Map) message.getData()), new Date(message.getTimestamp()));
 
-            } else {
-                syncEvent(message.getDeviceId(), message);
-            }
-            DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
-                    .deviceId(message.getDeviceId())
-                    .createTime(new Date(message.getTimestamp()))
-                    .content(message.getData())
-                    .type(isReportProperty ? DeviceLogType.reportProperty : DeviceLogType.event)
-                    .build();
-            eventPublisher.publishEvent(deviceOperationType);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+        } else {
+            syncEvent(message.getDeviceId(), message);
         }
+        DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
+                .deviceId(message.getDeviceId())
+                .createTime(new Date(message.getTimestamp()))
+                .content(message.getData())
+                .type(isReportProperty ? DeviceLogType.reportProperty : DeviceLogType.event)
+                .build();
+        eventPublisher.publishEvent(deviceOperationType);
+
     }
 
     @EventListener
     public void handleWriteProperty(DeviceMessageEvent<WritePropertyMessageReply> event) {
-        try {
-            WritePropertyMessageReply message = event.getMessage();
-            if (message.isSuccess()) {
-                syncDeviceProperty(message.getDeviceId(), message.getProperties(), new Date(message.getTimestamp()));
-            }
-            DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
-                    .deviceId(message.getDeviceId())
-                    .createTime(new Date(message.getTimestamp()))
-                    .content(message.getProperties())
-                    .type(DeviceLogType.writeProperty)
-                    .build();
-            eventPublisher.publishEvent(deviceOperationType);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+        WritePropertyMessageReply message = event.getMessage();
+        if (message.isSuccess()) {
+            syncDeviceProperty(message.getDeviceId(), message.getProperties(), new Date(message.getTimestamp()));
         }
+        DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
+                .deviceId(message.getDeviceId())
+                .createTime(new Date(message.getTimestamp()))
+                .content(message.getProperties())
+                .type(DeviceLogType.writeProperty)
+                .build();
+        eventPublisher.publishEvent(deviceOperationType);
+
     }
 
     @EventListener
     public void handleReadProperty(DeviceMessageEvent<ReadPropertyMessageReply> event) {
-        try {
-            ReadPropertyMessageReply message = event.getMessage();
-            if (message.isSuccess()) {
-                syncDeviceProperty(message.getDeviceId(), message.getProperties(), new Date(message.getTimestamp()));
-            }
-            DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
-                    .deviceId(message.getDeviceId())
-                    .createTime(new Date(message.getTimestamp()))
-                    .content(message.getProperties())
-                    .type(DeviceLogType.readProperty)
-                    .build();
-            eventPublisher.publishEvent(deviceOperationType);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+
+        ReadPropertyMessageReply message = event.getMessage();
+        if (message.isSuccess()) {
+            syncDeviceProperty(message.getDeviceId(), message.getProperties(), new Date(message.getTimestamp()));
         }
+        DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
+                .deviceId(message.getDeviceId())
+                .createTime(new Date(message.getTimestamp()))
+                .content(message.getProperties())
+                .type(DeviceLogType.readProperty)
+                .build();
+        eventPublisher.publishEvent(deviceOperationType);
 
     }
 

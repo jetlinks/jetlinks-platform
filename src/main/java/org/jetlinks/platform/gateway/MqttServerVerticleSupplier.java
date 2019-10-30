@@ -10,6 +10,7 @@ import org.jetlinks.core.device.DeviceRegistry;
 import org.jetlinks.core.server.monitor.GatewayServerMonitor;
 import org.jetlinks.core.server.session.DeviceSessionManager;
 import org.jetlinks.gateway.vertx.mqtt.MqttServer;
+import org.jetlinks.gateway.vertx.mqtt.VertxMqttGatewayServerContext;
 import org.jetlinks.platform.events.DeviceMessageEvent;
 import org.jetlinks.supports.server.ClientMessageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,10 @@ public class MqttServerVerticleSupplier implements VerticleSupplier, Environment
 
     @Autowired
     private ClientMessageHandler clientMessageHandler;
+
+    @Autowired
+    private VertxMqttGatewayServerContext context;
+
     @Getter
     @Setter
     private String publicServerAddress;
@@ -53,12 +58,11 @@ public class MqttServerVerticleSupplier implements VerticleSupplier, Environment
         MqttServer mqttServer = new MqttServer();
         mqttServer.setMqttServerOptions(mqttServerOptions);
         mqttServer.setRegistry(deviceRegistry);
-//        mqttServer.setMaxBufferSize(2);
-//        mqttServer.setAcceptConnectionTimeout(Duration.ofMillis(1));
         mqttServer.setGatewayServerMonitor(gatewayServerMonitor);
         mqttServer.setDeviceSessionManager(deviceSessionManager);
         mqttServer.setProtocolSupports(protocolSupports);
         mqttServer.setMessageHandler(clientMessageHandler);
+        mqttServer.setServerContext(context);
         return mqttServer;
     }
 

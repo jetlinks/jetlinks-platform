@@ -72,7 +72,11 @@ public class DeviceLogHandler {
 
     @EventListener
     public void handleDeviceOperationEvent(DeviceOperationLog operationLog) {
-        collectDeviceLog(Flux.just(operationLog));
+        if (deviceIdSink != null) {
+            deviceIdSink.next(operationLog);
+        } else {
+            collectDeviceLog(Flux.just(operationLog));
+        }
     }
 
     private void collectDeviceLog(Flux<DeviceOperationLog> deviceOperations) {
