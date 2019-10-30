@@ -5,7 +5,6 @@ import io.searchbox.client.JestResult;
 import io.searchbox.client.JestResultHandler;
 import io.searchbox.core.Bulk;
 import io.searchbox.core.Index;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jetlinks.core.device.DeviceOperator;
 import org.jetlinks.core.device.DeviceRegistry;
@@ -13,14 +12,12 @@ import org.jetlinks.core.message.event.EventMessage;
 import org.jetlinks.core.message.property.ReadPropertyMessageReply;
 import org.jetlinks.core.message.property.WritePropertyMessageReply;
 import org.jetlinks.core.metadata.DataType;
-import org.jetlinks.core.metadata.EventMetadata;
 import org.jetlinks.core.metadata.PropertyMetadata;
 import org.jetlinks.core.metadata.types.DateTimeType;
 import org.jetlinks.core.metadata.types.NumberType;
-import org.jetlinks.core.utils.FluxUtils;
 import org.jetlinks.platform.events.DeviceMessageEvent;
 import org.jetlinks.platform.events.GaugePropertyEvent;
-import org.jetlinks.platform.logger.DeviceOperationLog;
+import org.jetlinks.platform.manager.logger.DeviceOperationLog;
 import org.jetlinks.platform.manager.entity.DevicePropertiesEntity;
 import org.jetlinks.platform.manager.enums.DeviceLogType;
 import org.jetlinks.platform.manager.service.LocalDevicePropertiesService;
@@ -29,13 +26,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.EmitterProcessor;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -79,6 +73,7 @@ public class DeviceEventMessageHandler {
                 .type(isReportProperty ? DeviceLogType.reportProperty : DeviceLogType.event)
                 .build();
         eventPublisher.publishEvent(deviceOperationType);
+
     }
 
     @EventListener
@@ -94,10 +89,12 @@ public class DeviceEventMessageHandler {
                 .type(DeviceLogType.writeProperty)
                 .build();
         eventPublisher.publishEvent(deviceOperationType);
+
     }
 
     @EventListener
     public void handleReadProperty(DeviceMessageEvent<ReadPropertyMessageReply> event) {
+
         ReadPropertyMessageReply message = event.getMessage();
         if (message.isSuccess()) {
             syncDeviceProperty(message.getDeviceId(), message.getProperties(), new Date(message.getTimestamp()));
@@ -109,6 +106,7 @@ public class DeviceEventMessageHandler {
                 .type(DeviceLogType.readProperty)
                 .build();
         eventPublisher.publishEvent(deviceOperationType);
+
     }
 
     private void syncEvent(String device, EventMessage message) {
@@ -229,31 +227,31 @@ public class DeviceEventMessageHandler {
     }
 
     private void syncDeviceProperty(List<DevicePropertiesEntity> list) {
-//        Bulk.Builder builder = new Bulk.Builder()
-//                .defaultIndex("device_properties")
-//                .defaultType("device");
-//
-//        for (DevicePropertiesEntity entity : list) {
-//
-//            builder.addAction(new Index
-//                    .Builder(entity.toMap())
-//                    .build());
-//            processor.onNext(entity);
-//        }
-//
-//        jestClient.executeAsync(builder.build(), new JestResultHandler<JestResult>() {
-//            @Override
-//            public void completed(JestResult result) {
-//                if (!result.isSucceeded()) {
-//                    log.error("保存设备属性记录失败:{}", result.getJsonString());
-//                }
-//            }
-//
-//            @Override
-//            public void failed(Exception ex) {
-//                log.error("保存设备属性记录失败", ex);
-//            }
-//        });
+        Bulk.Builder builder = new Bulk.Builder()
+                .defaultIndex("device_properties")
+                .defaultType("device");
+
+        for (DevicePropertiesEntity entity : list) {
+
+            builder.addAction(new Index
+                    .Builder(entity.toMap())
+                    .build());
+            processor.onNext(entity);
+        }
+
+        jestClient.executeAsync(builder.build(), new JestResultHandler<JestResult>() {
+            @Override
+            public void completed(JestResult result) {
+                if (!result.isSucceeded()) {
+                    log.error("保存设备属性记录失败:{}", result.getJsonString());
+                }
+            }
+
+            @Override
+            public void failed(Exception ex) {
+                log.error("保存设备属性记录失败", ex);
+            }
+        });
 
     }
 }

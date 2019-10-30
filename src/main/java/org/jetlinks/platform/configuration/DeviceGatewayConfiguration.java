@@ -5,6 +5,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.mqtt.MqttServerOptions;
 import lombok.extern.slf4j.Slf4j;
+import org.jetlinks.gateway.vertx.mqtt.VertxMqttGatewayServerContext;
 import org.jetlinks.platform.gateway.VerticleSupplier;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,10 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class DeviceGatewayConfiguration {
 
+    @Bean(destroyMethod = "shutdown")
+    public VertxMqttGatewayServerContext vertxMqttGatewayServerContext(){
+        return new VertxMqttGatewayServerContext();
+    }
     @Bean
     @ConfigurationProperties(prefix = "vertx")
     public VertxOptions vertxOptions() {

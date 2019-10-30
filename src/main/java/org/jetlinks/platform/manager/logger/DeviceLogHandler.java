@@ -1,4 +1,4 @@
-package org.jetlinks.platform.logger;
+package org.jetlinks.platform.manager.logger;
 
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
@@ -10,6 +10,7 @@ import org.jetlinks.core.utils.FluxUtils;
 import org.jetlinks.platform.events.DeviceConnectedEvent;
 import org.jetlinks.platform.events.DeviceDisconnectedEvent;
 import org.jetlinks.platform.manager.enums.DeviceLogType;
+import org.jetlinks.platform.manager.enums.EsDataType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -71,34 +72,42 @@ public class DeviceLogHandler {
 
     @EventListener
     public void handleDeviceOperationEvent(DeviceOperationLog operationLog) {
-        collectDeviceLog(Flux.just(operationLog));
+        if (deviceIdSink != null) {
+            deviceIdSink.next(operationLog);
+        } else {
+            collectDeviceLog(Flux.just(operationLog));
+        }
     }
 
     private void collectDeviceLog(Flux<DeviceOperationLog> deviceOperations) {
-        FluxUtils.bufferRate(deviceOperations, 800, Duration.ofSeconds(5))
+        FluxUtils.bufferRate(deviceOperations, 800, Duration.ofSeconds(2))
                 .subscribe(this::recordLog);
-
     }
 
 
     private void recordLog(List<DeviceOperationLog> datas) {
-        Bulk.Builder builder = new Bulk.Builder()
-                .defaultIndex("device_operation")
-                .defaultType("device");
-        datas.forEach(data-> {
-            builder.addAction(new Index.Builder(data).build());
-        });
-        jestClient.executeAsync(builder.build(), new JestResultHandler<JestResult>() {
-            @Override
-            public void completed(JestResult result) {
-                if (!result.isSucceeded()) {
-                    log.error("保存设备日志失败:{}", result.getJsonString());
+        try {
+            Bulk.Builder builder = new Bulk.Builder()
+                    .defaultIndex(EsDataType.DEVICE_OPERATION.getIndex())
+                    .defaultType(EsDataType.DEVICE_OPERATION.getType());
+            datas.forEach(data -> builder.addAction(new Index.Builder(data.toSimpleMap()).build()));
+            jestClient.executeAsync(builder.build(), new JestResultHandler<JestResult>() {
+                @Override
+                public void completed(JestResult result) {
+                    if (!result.isSucceeded()) {
+                        log.error("保存设备日志失败:{}", result.getJsonString());
+                    }else{
+                        log.debug("保存设备日志成功:{}",datas.size());
+                    }
                 }
-            }
-            @Override
-            public void failed(Exception ex) {
-                log.error("保存设备日志失败", ex);
-            }
-        });
+
+                @Override
+                public void failed(Exception ex) {
+                    log.error("保存设备日志失败", ex);
+                }
+            });
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
     }
 }
