@@ -35,6 +35,7 @@ public class DeviceOperationLog {
     public Map<String, Object> toSimpleMap() {
         Map<String, Object> result = (Map) JSON.toJSON(this);
         result.put("type", type.getValue());
+        result.put("content", getContent().toString());
         return result;
     }
 }
