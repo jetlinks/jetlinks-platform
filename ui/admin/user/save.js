@@ -8,29 +8,38 @@ importMiniui(function () {
     require(["request", "miniui-tools"], function (request, tools) {
         var roleGrid = mini.get("datagrid");
         tools.initGrid(roleGrid);
-        roleGrid.setUrl(request.basePath + "role?paging=false");
+        roleGrid.setUrl(request.basePath + "dimension/_query/no-paging");
+        roleGrid.setDataField("result");
         roleGrid.load();
         var api = "user";
-        var func = request.post;
+        var func = request.patch;
         var id = request.getParameter("id");
 
         roleGrid.on("load", function () {
             if (id) {
                 loadData(id);
-                api += "/" + id;
-                func = request.put;
             }
         });
         $(".save-button").on("click", (function () {
             require(["message"], function (message) {
                 var data = getDataAndValidate();
-                if (!data)return;
+                console.log(data)
+                if (!data) return;
                 var loading = message.loading("提交中");
                 func(api, data, function (response) {
                     loading.close();
                     if (response.status === 200) {
-                        message.showTips("保存成功");
+
                         if (!id) id = response.result;
+                        var dimensionUser = getDimensionUserData(id, data.name);
+
+                        request.post("dimension-user/_batch", dimensionUser, function (res) {//todo 重复提交问题
+                            if (res.status === 200) {
+                                message.showTips("保存成功");
+                            } else {
+                                message.showTips("绑定维度失败："+ res.message, "danger");
+                            }
+                        });
                     } else {
                         message.showTips("保存失败:" + response.message, "danger");
                         if (response.result)
@@ -39,8 +48,37 @@ importMiniui(function () {
                 })
             });
         }));
+
+        function getDataAndValidate() {
+            var form = new mini.Form("#basic-info");
+            form.validate();
+            if (form.isValid() === false) {
+                return;
+            }
+            var data = form.getData();
+            if (data.password === defaultPassword) {
+                delete data.password;
+            }
+            console.log(id)
+            if (id) data.id = id;
+            return data;
+        }
+
+        function getDimensionUserData(id, userName) {
+
+            var dimensions = [];
+            $(mini.get("datagrid").getSelecteds()).each(function () {
+                this.userId = id;
+                this.userName = userName;
+                this.dimensionName = this.name;
+                this.dimensionId = this.id;
+                dimensions.push(this);
+            });
+            return dimensions;
+        }
     });
 });
+
 function loadData(id) {
     require(["request", "message"], function (request, message) {
         var loading = message.loading("加载中...");
@@ -62,21 +100,4 @@ function loadData(id) {
             }
         });
     });
-}
-function getDataAndValidate() {
-    var form = new mini.Form("#basic-info");
-    form.validate();
-    if (form.isValid() === false) {
-        return;
-    }
-    var data = form.getData();
-    if (data.password === defaultPassword) {
-        delete data.password;
-    }
-    var roles = [];
-    $(mini.get("datagrid").getSelecteds()).each(function () {
-        roles.push(this.id);
-    });
-    data.roles = roles;
-    return data;
 }

@@ -53,17 +53,16 @@ importMiniui(function () {
         var allPermissionMap = [];
 
         var api = "permission";
-        var func = request.post;
+        var func = request.patch;
         var id = request.getParameter("id");
         if (id) {
             loadData(id);
-            func = request.patch;
         } else {
             actionGrid.setData(defaultActionData);
         }
 
 
-        request.createQuery("permission/no-paging")
+        request.createQuery("permission/_query")
             .where()
             .not("id", id)
             .exec(function (resp) {
@@ -170,6 +169,7 @@ importMiniui(function () {
 
         $(".save-button").on("click", (function () {
             var data = getDataAndValidate();
+            if (!data.status) data.status = 1;
             if (!data) return;
             require(["message"], function (message) {
                 var loading = message.loading("提交中");
@@ -235,7 +235,6 @@ function loadData(id) {
                 mini.get('parent-grid').setData(response.result.parents);
 
                 if (response.result.optionalFields && response.result.optionalFields.length > 0) {
-                    console.log(response.result.optionalFields)
                     mini.get('field-accesses-grid').setData(response.result.optionalFields);
                 } else {
                     getDataView(id);

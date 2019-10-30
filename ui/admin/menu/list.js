@@ -6,7 +6,8 @@ importMiniui(function () {
         window.tools = tools;
         var grid = window.grid = mini.get("menu-grid");
         tools.initGrid(grid);
-        grid.setUrl(API_BASE_PATH + "menu?paging=false");
+        grid.setDataField("result");
+        grid.setUrl(API_BASE_PATH + "menu/_query/no-paging?paging=false");
         $(".search-button").on("click", function () {
             var keyword = mini.getbyName("keyword").getValue();
             var param = {};
@@ -27,10 +28,10 @@ importMiniui(function () {
         var control = {};
         var inited = false;
         var currentNode;
-        grid.on("update",function (e) {
-            if(currentNode){
+        grid.on("update", function (e) {
+            if (currentNode) {
 
-               // grid.addNode(node);
+                // grid.addNode(node);
                 grid.selectNode(currentNode);
                 grid.scrollIntoView(currentNode);
             }
@@ -40,19 +41,19 @@ importMiniui(function () {
             var all = e.result.data;
             if (window.onInit) {
                 window.onInit({
-                    addDefaultNode : function (node, index, parentNode) {
+                    addDefaultNode: function (node, index, parentNode) {
                         var old;
                         $(all).each(function () {
-                            if(this.url===node.url){
-                                old=this;
+                            if (this.url === node.url) {
+                                old = this;
                             }
                         });
-                        console.log(!old,node);
-                        if(!old){
-                            all.push(currentNode=node);
+                        console.log(!old, node);
+                        if (!old) {
+                            all.push(currentNode = node);
                             grid.addNode(node);
-                        }else{
-                            currentNode=old;
+                        } else {
+                            currentNode = old;
                         }
                     }
                 });
@@ -74,6 +75,7 @@ window.selectIcon = function (e) {
         iconSelector(function (icon) {
             e.sender.setValue(icon);
             e.sender.setText(icon);
+            console.log(e.sender)
         });
     })
 };
@@ -90,10 +92,11 @@ window.renderAction = function (e) {
             var api = "menu/";
             require(["request", "message"], function (request, message) {
                 var loading = message.loading("保存中...");
+                row.status = 1;
                 request.patch(api, row, function (res) {
                     loading.close();
-                    if (res.status == 200) {
-                        request.get(api + res.result, function (data) {
+                    if (res.status === 200) {
+                        request.get(api+"_query" ,request.encodeQueryParam(res.result), function (data) {
                             grid.updateNode(row, data.result);
                             grid.acceptRecord(row);
                             message.showTips("保存成功!");

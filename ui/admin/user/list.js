@@ -7,7 +7,7 @@ importMiniui(function () {
         var grid = window.grid = mini.get("datagrid");
         tools.initGrid(grid);
 
-        grid.setUrl(request.basePath + "user");
+        grid.setUrl(request.basePath + "user/_query");
 
         function search() {
             tools.searchGrid("#search-box", grid);
@@ -42,13 +42,34 @@ importMiniui(function () {
             if(request.getParameter("selector")==='1'){
                 html.push(
                     tools.createActionButton("选中", "icon-ok", function () {
-                        tools.closeWindow(row);
+                        require(["message"], function (message) {
+                            message.loading("绑定中..")
+                            request.get("autz-setting/_query/no-paging",
+                                request.encodeQueryParam({
+                                    permission: request.getParameter("permission"),
+                                    dimensionTarget: row.id
+                                }), function (res) {
+                                    message.loading().hide();
+                                    if (res.status === 200) {
+                                        if (res.result.length > 0) {
+                                            message.showTips("该维度已绑定..", "danger");
+                                        } else {
+                                            tools.closeWindow(row);
+                                        }
+                                    }
+                                });
+                        });
                     })
                 );
             }else{
                 html.push(
                     tools.createActionButton("用户赋权", "icon-find", function () {
-                        tools.openWindow("admin/autz-settings/setting.html?priority=10&merge=true&type=user&settingFor=" + row.id,
+                        tools.openWindow("admin/autz-settings/permission-setting.html?priority=10&merge=true&type=user" +
+                            "&settingFor=" + row.id
+                            + "&dimension=" + row.id
+                            + "&dimensionName=" + row.name
+                            + "&dimensionType=" + "user"
+                            + "&dimensionTypeName=" + "用户",
                             "用户赋权-" + row.name, "800", "600", function () {
                             });
                     })

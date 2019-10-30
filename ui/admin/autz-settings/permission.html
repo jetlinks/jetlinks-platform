@@ -9,30 +9,42 @@
 
 </head>
 <body  style="display: none">
-
 <div class="mini-fit mini-clearfix">
-    <div class="mini-col-6 container">
-        <div id="role-panel" class="mini-panel" title="角色" iconCls="icon-user" style="width:100%;height:400px;margin: auto"
-             showToolbar="true" showCollapseButton="true" buttons="add collapse" showFooter="true"
-             collapseOnTitleClick="true">
+    <div id="layout1" class="mini-layout" style="width:100%;height:100%;">
 
-            <div class="mini-toolbar">
-
-                <a class="mini-button bind-role">绑定角色</a>
-
-            </div>
+        <div title="维度" showProxyText="true" region="west" width="200" expanded="true" showSplitIcon="true">
             <div class="mini-fit">
-                <div id="role-grid" class="mini-datagrid" style="width:100%;height:100%;" idField="id"
+                <div id="dimension-type-grid" class="mini-datagrid" style="width:100%;height:100%;" idField="id"
                      allowResize="false"
                      allowCellEdit="true" allowCellSelect="true" multiSelect="true"
                      showPager="false">
                     <div property="columns">
-                        <div field="settingForName" align="center" headerAlign="center" width="100">角色名
-                        </div>
-                        <div name="actions" field="detail.actions" width="100" headerAlign="center" align="center">权限
-                            <input property="editor" multiSelect="true" valueField="action" textField="describe" data="window.permissionActions" class="mini-combobox" style="width:100%;"/>
+                        <div field="name" align="center" headerAlign="center" width="100">维度名称</div>
+                    </div>
+                </div>
 
+            </div>
+        </div>
+        <div title="权限设置" class="east" region="east" expanded="false" showSplitIcon="true" width="800">
+
+            <iframe id="ifm" style="width:100%;height:inherit;border: 0px;" runat="server"></iframe>
+        </div>
+        <div title="维度目标" region="center"  style="width: 30%;">
+            <div id="bind" class="mini-toolbar">
+
+                <a class="mini-button bind-dimension">绑定维度目标</a>
+
+            </div>
+            <div class="mini-fit">
+                <div id="dimension-grid" class="mini-datagrid" style="width:100%;height:100%;" idField="id"
+                     allowResize="false"
+                     allowCellEdit="true" allowCellSelect="true" multiSelect="true"
+                     showPager="false">
+                    <div property="columns">
+                        <div field="dimensionTargetName" align="center" headerAlign="center" width="100">名称
                         </div>
+<!--                        <div name="dimensionTargetName" field="dimensionTargetName" width="100" headerAlign="center" align="center">描述-->
+<!--                        </div>-->
 
                         <div name="action" width="60" align="center"  headerAlign="center">操作</div>
                     </div>
@@ -41,41 +53,6 @@
             </div>
         </div>
     </div>
-    <div class="mini-col-6 container">
-        <div id="user-panel" class="mini-panel" title="用户" iconCls="icon-user" style="width:100%;height:400px;margin: auto"
-             showToolbar="true" showCollapseButton="true" showFooter="true" collapseOnTitleClick="true">
-
-            <div class="mini-toolbar">
-
-                <a class="mini-button bind-user">绑定用户</a>
-
-            </div>
-            <div class="mini-fit">
-                <div id="user-grid" class="mini-datagrid" style="width:100%;height:100%;" idField="id"
-                     allowResize="false"
-                     allowCellEdit="true" allowCellSelect="true" multiSelect="true"
-                     showPager="false">
-                    <div property="columns">
-                        <div field="settingForName" align="center" headerAlign="center" width="100">用户名
-                        </div>
-                        <div name="actions" field="detail.actions" width="100" headerAlign="center" align="center">权限
-                            <input property="editor" multiSelect="true" valueField="action" textField="describe" data="window.permissionActions" class="mini-combobox" style="width:100%;"/>
-
-                        </div>
-
-                        <div name="action" width="60" align="center"  headerAlign="center">操作</div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
 </div>
 
 </body>
-<style>
-    .container{
-        padding: 5px;
-    }
-</style>

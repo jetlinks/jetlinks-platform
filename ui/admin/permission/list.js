@@ -2,11 +2,11 @@ importResource("/admin/css/common.css");
 
 importMiniui(function () {
     mini.parse();
-    require(["miniui-tools"], function (tools) {
+    require(["miniui-tools", "request"], function (tools, request) {
         window.tools = tools;
         var grid = window.grid = mini.get("datagrid");
         tools.initGrid(grid);
-        grid.setUrl(API_BASE_PATH + "permission");
+        grid.setUrl(API_BASE_PATH + "permission/_query");
 
         function search() {
             tools.searchGrid("#search-box", grid);
@@ -30,7 +30,6 @@ importMiniui(function () {
         });
         control.addPermission = function (standardsId) {
 
-            console.log(grid.selectNode(standardsId))
             if (standardsId) {
                 grid.select(standardsId);
             } else {

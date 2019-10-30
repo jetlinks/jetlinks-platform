@@ -32,9 +32,9 @@ define(["jquery", "storejs"], function ($, storejs) {
 
     $.ajaxSetup({ //设置全局性的Ajax选项
         beforeSend: function (r) {
-            var token = storejs.get("dcp-token");
+            var token = storejs.get("X-Access-Token");
             if (token) {
-                r.setRequestHeader("dcp-token", token);
+                r.setRequestHeader("X-Access-Token", token);
             }
         }, cache: true
     });
