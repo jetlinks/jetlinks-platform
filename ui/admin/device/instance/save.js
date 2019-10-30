@@ -5,10 +5,18 @@ var productName = '';
 importMiniui(function () {
     mini.parse();
     require(["request", "miniui-tools"], function (request, tools) {
-        var productIdCommbox = mini.get("productId");
-        productIdCommbox.setUrl(API_BASE_PATH + "device-product/_query/no-paging");
-        productIdCommbox.on('valuechanged', function () {
-            productName = productIdCommbox.getText();
+        request.get("device-product/_query/no-paging", function (response) {
+            var products = [];
+            if (response.status === 200) {
+                for (var i = 0; i < response.result.length; i++) {
+                    products.push({"id": response.result[i].id, "text": response.result[i].name})
+                }
+                var productIdCommbox = mini.get("productId");
+                productIdCommbox.setData(products);
+                productIdCommbox.on('valuechanged', function () {
+                    productName = productIdCommbox.getText();
+                });
+            }
         });
         var func = request.post;
         var id = request.getParameter("id");
