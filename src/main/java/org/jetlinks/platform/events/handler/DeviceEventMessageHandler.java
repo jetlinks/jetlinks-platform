@@ -49,6 +49,21 @@ public class DeviceEventMessageHandler {
     private ApplicationEventPublisher eventPublisher;
 
     @EventListener
+    public void handleWriteProperty(DeviceMessageEvent<WritePropertyMessageReply> event) {
+        WritePropertyMessageReply message = event.getMessage();
+        if (message.isSuccess()) {
+            syncDeviceProperty(message.getDeviceId(), message.getProperties(), new Date(message.getTimestamp()));
+        }
+        DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
+                .deviceId(message.getDeviceId())
+                .createTime(new Date(message.getTimestamp()))
+                .content(message.getProperties())
+                .type(DeviceLogType.writeProperty)
+                .build();
+        eventPublisher.publishEvent(deviceOperationType);
+    }
+
+    @EventListener
     public void handleEvent(DeviceMessageEvent<EventMessage> event) {
         EventMessage message = event.getMessage();
         //属性上报
@@ -72,25 +87,14 @@ public class DeviceEventMessageHandler {
     }
 
     @EventListener
-    public void handleWriteProperty(DeviceMessageEvent<WritePropertyMessageReply> event) {
-        WritePropertyMessageReply message = event.getMessage();
-        if (message.isSuccess()) {
-            syncDeviceProperty(message.getDeviceId(), message.getProperties(), new Date(message.getTimestamp()));
-        }
-        DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
-                .deviceId(message.getDeviceId())
-                .createTime(new Date(message.getTimestamp()))
-                .content(message.getProperties())
-                .type(DeviceLogType.writeProperty)
-                .build();
-        eventPublisher.publishEvent(deviceOperationType);
-    }
-
-    @EventListener
     public void handleReadProperty(DeviceMessageEvent<ReadPropertyMessageReply> event) {
         ReadPropertyMessageReply message = event.getMessage();
         if (message.isSuccess()) {
-            syncDeviceProperty(message.getDeviceId(), message.getProperties(), new Date(message.getTimestamp()));
+            try {
+                syncDeviceProperty(message.getDeviceId(), message.getProperties(), new Date(message.getTimestamp()));
+            }catch (Exception e){
+                log.error("同步设备属性错误:{}",e);
+            }
         }
         DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
                 .deviceId(message.getDeviceId())
