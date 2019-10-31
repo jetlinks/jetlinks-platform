@@ -108,6 +108,26 @@ require(["authorize"], function (authorize) {
                         });
                     }));
                 }
+                html.push(tools.createActionButton("删除", "icon-remove", function () {
+                    if (row._state === "added") {
+                        e.sender.removeNode(row);
+                    } else {
+                        require(["request", "message"], function (request, message) {
+                            message.confirm("确定删除该维度?", function () {
+                                var loading = message.loading("删除中...");
+                                request["delete"]("dimension/" + row.id, {}, function (res) {
+                                    loading.close();
+                                    if (res.status === 200) {
+                                        e.sender.removeNode(row);
+                                        message.showTips("删除成功");
+                                    } else {
+                                        message.showTips("删除失败:" + res.message);
+                                    }
+                                })
+                            });
+                        })
+                    }
+                }));
                 return html.join("");
             }
         });

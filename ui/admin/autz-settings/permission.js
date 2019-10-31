@@ -49,6 +49,7 @@ importMiniui(function () {
                 require(["message"], function (message) {
                     request.createQuery("autz-setting/_query/no-paging")
                         .where("dimensionType", window.nowSelectedType.id)
+                        .and("permission", permissionId)
                         .exec(function (response) {
                             dimensionGrid.unmask();
                             if (response.status === 200) {
@@ -90,7 +91,6 @@ importMiniui(function () {
             //点击表格时的操作
             dimensionGrid.on("rowclick", function (e) {
                 var row = e.record;
-                console.log(row)
                 if (ifmWin && ifmWin.init) {
                     doReload = function () {
                         ifmWin.init(
@@ -157,12 +157,12 @@ importMiniui(function () {
 
                         //todo 不同维度 关联关系不同
                         if (relationApi) {
-                            console.log(data)
                             var dimensionRelation = {};
                             dimensionRelation.dimensionId = window.nowSelectedType.id;
                             dimensionRelation.dimensionName = window.nowSelectedType.name;
                             dimensionRelation.userId = data.id;
                             dimensionRelation.userName = data.username;
+                            dimensionRelation.dimensionTypeId = window.nowSelectedType.id;
                             request.post(relationApi, dimensionRelation, function (res) {
 
                             });

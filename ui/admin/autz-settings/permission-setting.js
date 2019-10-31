@@ -35,13 +35,12 @@ importMiniui(function () {
         loadPermission(doInit);
         function doInit(call) {
 
+            if (permission) {
                 //如果是通过权限界面加载，只展示对应权限菜单
-                if (permission) {
-                    allPermission = $(allPermission).filter(function () {
+                allPermission = $(allPermission).filter(function () {
                         return permission === this.id;
                     });
                 }
-
                 permissionTree.setData(mini.clone(allPermission));
                  $("#permission-container").html("")
                 $(allPermission).each(function () {
@@ -50,12 +49,12 @@ importMiniui(function () {
                     allPermissionMap[this.id] = this;
                 });
                 mini.parse();
+
                 $(allPermission).each(function () {
                     var permission = this;
                     mini.get(permission.id).setData(permission.actions);
                     initDataAccessEditor(this);
                 });
-
                 loadSetting(function () {
 
                     $(setting).each(function () {
@@ -67,10 +66,10 @@ importMiniui(function () {
                             if (list) {
 
                                 list.setValue(actions);
-
                                 mini.get("panel-" + this.permission).expand()
                             }
                         }
+
                     });
                     if (permission) {
                         goPermission(permission)
@@ -374,7 +373,6 @@ importMiniui(function () {
                 settings.push(setting);
 
             }
-            console.log(settings)
             request.patch("autz-setting", settings, function (resp) {
                 if (resp.status === 200) {
                     message.showTips("保存成功");

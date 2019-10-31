@@ -62,7 +62,7 @@ importMiniui(function () {
         }
 
 
-        request.createQuery("permission/_query")
+        request.createQuery("permission/_query/no-paging")
             .where()
             .not("id", id)
             .exec(function (resp) {
@@ -275,23 +275,23 @@ function loadAccessTypesAndType() {
 }
 
 function getDataView(id) {
-    require(["request"], function (request) {
-        request.get("data-standards-service/data-standards/model/" + id, function (response) {
-            if (response.status === 200) {
-                var data = response.result;
-                if (data.datasourceConf) {
-                    var datasourceConf = JSON.parse(data.datasourceConf);
-                    var viewData = [];
-                    if (datasourceConf.columnGrid) {
-                        datasourceConf.columnGrid.forEach(function (e) {
-                            viewData.push({name: e.alias, describe: e.describe});
-                        });
-                    }
-                    mini.get('field-accesses-grid').setData(viewData);
-                }
-            }
-        });
-    });
+    // require(["request"], function (request) {
+    //     request.get("data-standards-service/data-standards/model/" + id, function (response) {
+    //         if (response.status === 200) {
+    //             var data = response.result;
+    //             if (data.datasourceConf) {
+    //                 var datasourceConf = JSON.parse(data.datasourceConf);
+    //                 var viewData = [];
+    //                 if (datasourceConf.columnGrid) {
+    //                     datasourceConf.columnGrid.forEach(function (e) {
+    //                         viewData.push({name: e.alias, describe: e.describe});
+    //                     });
+    //                 }
+    //                 mini.get('field-accesses-grid').setData(viewData);
+    //             }
+    //         }
+    //     });
+    // });
 }
 
 function getDataAndValidate() {

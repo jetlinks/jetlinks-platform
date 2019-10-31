@@ -31,15 +31,15 @@ importMiniui(function () {
                     if (response.status === 200) {
 
                         if (!id) id = response.result;
-                        var dimensionUser = getDimensionUserData(id, data.name);
-
-                        request.post("dimension-user/_batch", dimensionUser, function (res) {//todo 重复提交问题
-                            if (res.status === 200) {
-                                message.showTips("保存成功");
-                            } else {
-                                message.showTips("绑定维度失败："+ res.message, "danger");
-                            }
-                        });
+                        // var dimensionUser = getDimensionUserData(id, data.username);
+                        //
+                        // request.post("dimension-user/_batch", dimensionUser, function (res) {//todo 重复提交问题
+                        //     if (res.status === 200) {
+                        //         message.showTips("保存成功");
+                        //     } else {
+                        //         message.showTips("绑定维度失败："+ res.message, "danger");
+                        //     }
+                        // });
                     } else {
                         message.showTips("保存失败:" + response.message, "danger");
                         if (response.result)
@@ -59,7 +59,6 @@ importMiniui(function () {
             if (data.password === defaultPassword) {
                 delete data.password;
             }
-            console.log(id)
             if (id) data.id = id;
             return data;
         }
@@ -72,6 +71,7 @@ importMiniui(function () {
                 this.userName = userName;
                 this.dimensionName = this.name;
                 this.dimensionId = this.id;
+                this.dimensionTypeId = this.typeId;
                 dimensions.push(this);
             });
             return dimensions;
