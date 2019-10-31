@@ -12,13 +12,12 @@ import org.jetlinks.platform.manager.web.response.DeviceInfo;
 import org.jetlinks.platform.manager.web.response.DeviceRunInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.cache.CacheMono;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/device-instance")
@@ -52,6 +51,22 @@ public class DeviceInstanceController implements
     @GetMapping("/{deviceId}/property/{property:.+}")
     public Mono<DevicePropertiesEntity> getDeviceProperty(@PathVariable String deviceId, @PathVariable String property) {
         return propertiesService.getProperty(deviceId, property);
+    }
+
+    @PostMapping("/deploy/{deviceId:.+}")
+    public Mono<Integer> deviceDeploy(@PathVariable String deviceId) {
+        return service.deploy(deviceId);
+    }
+
+    /**
+     * 重置设备安全参数
+     *
+     * @param deviceId
+     * @return
+     */
+    @PostMapping("/reset/security/{deviceId:.+}")
+    public Mono<Object> resetSecurityProperties(@PathVariable String deviceId) {
+        return service.resetSecurityProperties(deviceId);
     }
 
 }

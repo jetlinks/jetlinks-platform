@@ -5,108 +5,16 @@ importMiniui(function () {
     require(["request", "miniui-tools", "metadata-parser", "message"], function (request, tools, metadataParser, message) {
         var _metadata = "";
         var id = request.getParameter("id");
-        /*request.get("device-instance/" + id, function (response) {
+        request.get("device-instance/" + id, function (response) {
             var data = response.result;
             var metadata = data.deriveMetadata;
             _metadata = metadata;
             initPropertyPlate(metadata);
-        });*/
-        var metadata = "{\n" +
-            "  \"id\": \"test-device\",\n" +
-            "  \"name\": \"测试设备\",\n" +
-            "  \"properties\": [\n" +
-            "    {\n" +
-            "      \"id\": \"name\",\n" +
-            "      \"name\": \"名称\",\n" +
-            "      \"valueType\": {\n" +
-            "        \"type\": \"string\"\n" +
-            "      }\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"id\": \"model\",\n" +
-            "      \"name\": \"型号\",\n" +
-            "      \"valueType\": {\n" +
-            "        \"type\": \"string\"\n" +
-            "      }\n" +
-            "    },\n" +
-            "        {\n" +
-            "            \"id\":\"currentTemperature\",\n" +
-            "            \"name\":\"当前温度\",\n" +
-            "            \"expands\":{\n" +
-            "                \"readonly\":true\n" +
-            "            },\n" +
-            "            \"valueType\":{\n" +
-            "                \"type\":\"double\",\n" +
-            "                \"unit\":\"celsiusDegrees\",\n" +
-            "                \"max\":100,\n" +
-            "                \"min\":1\n" +
-            "            }\n" +
-            "        },\n" +
-            "        {\n" +
-            "            \"id\":\"cpuUsage\",\n" +
-            "            \"name\":\"cpu使用率\",\n" +
-            "            \"readonly\":true,\n" +
-            "            \"valueType\":{\n" +
-            "                \"type\":\"double\",\n" +
-            "                \"unit\":\"percent\"\n" +
-            "            }\n" +
-            "        }\n" +
-            "  ],\n" +
-            "  \"functions\": [\n" +
-            "    {\n" +
-            "      \"id\": \"playVoice\",\n" +
-            "      \"name\": \"播放声音\",\n" +
-            "      \"inputs\": [\n" +
-            "        {\n" +
-            "          \"id\": \"content\",\n" +
-            "          \"name\": \"内容\",\n" +
-            "          \"valueType\": {\n" +
-            "            \"type\": \"string\"\n" +
-            "          }\n" +
-            "        },\n" +
-            "        {\n" +
-            "          \"id\": \"times\",\n" +
-            "          \"name\": \"播放次数\",\n" +
-            "          \"valueType\": {\n" +
-            "            \"type\": \"int\"\n" +
-            "          }\n" +
-            "        }\n" +
-            "      ]\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"id\": \"setColor\",\n" +
-            "      \"name\": \"灯光颜色\",\n" +
-            "      \"inputs\": [\n" +
-            "        {\n" +
-            "          \"id\": \"colorRgb\",\n" +
-            "          \"name\": \"颜色RGB值\",\n" +
-            "          \"valueType\": {\n" +
-            "            \"type\": \"string\"\n" +
-            "          }\n" +
-            "        }\n" +
-            "      ]\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"events\": [\n" +
-            "    {\n" +
-            "      \"id\": \"temperature\",\n" +
-            "      \"name\": \"温度\",\n" +
-            "      \"parameters\": [\n" +
-            "        {\n" +
-            "          \"id\": \"temperature\",\n" +
-            "          \"valueType\": {\n" +
-            "            \"type\": \"int\"\n" +
-            "          }\n" +
-            "        }\n" +
-            "      ]\n" +
-            "    }\n" +
-            "  ]\n" +
-            "}";
-        initPropertyPlate(metadata);
+        });
 
-        initDeviceRunInfo();
+        initDeviceRunInfo(false);
 
-        function initDeviceRunInfo() {
+        function initDeviceRunInfo(isRefresh) {
             request.get("device-instance/run-info/" + id, function (response) {
                 var data = response.result;
                 $(".device-state").text(data.state.text);
@@ -121,8 +29,10 @@ importMiniui(function () {
                     default:
                         explain = "设备未激活";
                 }
-
                 $(".device-online-time").text(explain);
+                if (isRefresh){
+                    message.showTips("刷新成功");
+                }
             });
         }
 
@@ -133,7 +43,7 @@ importMiniui(function () {
 
 
         $(".device-info-refresh").on("click", function () {
-            initDeviceRunInfo();
+            initDeviceRunInfo(true);
         });
 
         function structurePlate(propertyId, name, value, icon, chart) {
@@ -152,7 +62,7 @@ importMiniui(function () {
             request.get("device-instance/" + id + "/property/" + property.id, function (response) {
                 if (response.status === 200) {
                     var value = response.result.value;
-                    var plate1 = structurePlate(property.id, property.name, 30, unifyUnit.symbol, unifyUnit.getCharts(value));
+                    var plate1 = structurePlate(property.id, property.name, value, unifyUnit.symbol, unifyUnit.getCharts(value));
                     $(".propertyPlate").append(plate1);
                 }
             });
@@ -163,9 +73,11 @@ importMiniui(function () {
             var _this = this;
             request.get("device/" + id + "/property/" + propertyId, function (response) {
                 if (!response.status || response.status === 200) {
+                    var result =  response.result;
                     var unifyUnit = metadataParser.getProperties(_metadata).getProperty(propertyId).getValueType().unifyUnit;
-                    $(_this).parents(".row").find(".property-value").html(response[0][propertyId]);
-                    $(_this).parents(".row").find(".property-chart").html(unifyUnit.getCharts(response[0][propertyId]));
+                    $(_this).parents(".row").find(".property-value").html(result[0][propertyId]);
+                    $(_this).parents(".row").find(".property-chart").html(unifyUnit.getCharts(result[0][propertyId]));
+                    message.showTips("刷新成功");
                 } else {
                     message.showTips(response.message);
                 }

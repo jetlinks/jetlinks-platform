@@ -30,7 +30,7 @@ public class QueryParamTranslator {
         return request;
     }
 
-    private static QueryBuilder translate(QueryParam queryParam) {
+    public static QueryBuilder translate(QueryParam queryParam) {
         BoolQueryBuilder query = QueryBuilders.boolQuery();
         Objects.requireNonNull(queryParam, "QueryParam must not null.")
                 .getTerms()

@@ -2,7 +2,7 @@ importResource("/admin/css/common.css");
 
 importMiniui(function () {
     mini.parse();
-    require(["request", "miniui-tools", "search-box"], function (request, tools, SearchBox) {
+    require(["request", "miniui-tools", "search-box", "message"], function (request, tools, SearchBox, message) {
         var deviceState = [
             {"id": "online", "text": "上线"},
             {"id": "offline", "text": "离线"},
@@ -11,7 +11,7 @@ importMiniui(function () {
         var comboboxState = mini.get("_state");
         comboboxState.setData(deviceState);
 
-        request.get("device-product/_query/no-paging", function (response) {
+        request.get("device-product/_query/no-paging", request.encodeQueryParam({"state": 1}), function (response) {
             var products = [];
             if (response.status === 200) {
                 for (var i = 0; i < response.result.length; i++) {
@@ -49,6 +49,18 @@ importMiniui(function () {
             })
         });
 
+        function deviceDeploy(id) {
+            var loding = message.loading("发布中...");
+            request.post("device-instance/deploy/" + id, {}, function (response) {
+                loding.close();
+                if (response.result === 1){
+                    message.showTips("发布成功");
+                } else {
+                    message.showTips("发布失败");
+                }
+                grid.reload();
+            });
+        }
 
         window.renderAction = function (e) {
             var row = e.record;
@@ -62,6 +74,11 @@ importMiniui(function () {
                     grid.reload();
                 })
             }));
+            if (row.state.text === '未激活') {
+                html.push(tools.createActionLink("发布", "<sapn>&nbsp;&nbsp;&nbsp;发布</sapn>", function () {
+                    deviceDeploy(row.id);
+                }));
+            }
 
             return html.join("");
         }

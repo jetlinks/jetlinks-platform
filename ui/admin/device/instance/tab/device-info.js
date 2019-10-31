@@ -4,11 +4,70 @@ importMiniui(function () {
     mini.parse();
     require(["request", "miniui-tools", "message"], function (request, tools, message) {
         var id = request.getParameter("id");
-        request.get("device-instance/info/" + id, function (response) {
+        request.get("device-instance/info/" + id, {}, function (response) {
             var data = response.result;
             for (var key in data) {
                 $("._" + key).text(data[key]);
             }
+            handleSecurityProperties(data.security)
+        });
+
+        function handleSecurityProperties(security) {
+            if (security.omos === 'true') {
+                $("._omosText").text("是");
+                new mini.Form("#security-info").setData(security);
+                mini.getbyName("deviceKey").setReadOnly(false);
+                mini.getbyName("deviceSecret").setReadOnly(false);
+            } else {
+                $("._omosText").text("否");
+                new mini.Form("#security-info").setData(security);
+                $(".security-button-save").css("background","#e5e5e5");
+                $(".security-button-save").attr("disabled","disabled");
+                $(".security-button-reset").css("background","#e5e5e5");
+                $(".security-button-reset").css("color","#fff");
+                $(".security-button-reset").attr("disabled","disabled");
+            }
+        }
+
+        // function setSecurityDisabledStyle(disabled) {
+        //     if (disabled){
+        //
+        //     } else {
+        //         $(".security-button-save").css("background","#1890ff");
+        //         $(".security-button-save").attr("disabled","false");
+        //         $(".security-button-reset").css("background","#fff");
+        //         $(".security-button-reset").css("color","#626262");
+        //         $(".security-button-reset").attr("disabled","false");
+        //     }
+        // }
+
+        function getSecurityDataAndValidate() {
+            var form = new mini.Form("#security-info");
+            form.validate();
+            if (form.isValid() === false) {
+                return;
+            }
+            var data = form.getData();
+            data.omos = 'false';
+            return data;
+        }
+
+        $(".security-button-save").on('click', function () {
+            request.patch("device-instance", {"security": getSecurityDataAndValidate(), "id": id}, function (response) {
+                if (response.status === 200){
+                    message.showTips("保存成功");
+                }
+            })
+        });
+        $(".security-button-reset").on('click', function () {
+            request.post("device-instance/reset/security/" + id, {}, function (response) {
+                if (response.status === 200){
+                    var security = response.result;
+                    security["omos"] = 'true';
+                    handleSecurityProperties(security)
+                    message.showTips("重置成功");
+                }
+            })
         });
 
 
@@ -45,6 +104,7 @@ importMiniui(function () {
                         console.log(response[0][key])
                         $("._" + key).text(response[0][key]);
                     }
+                    message.showTips("刷新成功");
                 } else {
                     message.showTips(response.message);
                 }

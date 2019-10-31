@@ -8,11 +8,12 @@
     <script data-main="device-info.js" src="../../../boot.js" type="text/javascript"></script>
     <style type="text/css">
         .info-key {
-            font-size: 16px;
+            font-size: 14px;
+            margin-top: 10px;
         }
         .info-val {
             color: #8e8e8e;
-            font-size: 16px;
+            font-size: 14px;
             margin-left: 5px;
         }
         .info-div {
@@ -24,6 +25,41 @@
         }
         .refresh-effect:active{
             background: #cccccc;
+        }
+        .ljq-button-primary {
+            background: #1890ff;
+            color: #fff;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            display: inline-block;
+            font-size: 13px;
+            border-radius: 6px;
+            padding: 5px 8px 5px 8px;
+        }
+
+        .ljq-button-default {
+            background: #fff;
+            color: #626262;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            display: inline-block;
+            font-size: 13px;
+            border-radius: 6px;
+            padding: 5px 8px 5px 8px;
+        }
+
+        .ljq-button-primary:hover {
+            background: #00a2d4;
+        }
+
+        .ljq-button-primary:focus {
+            outline: 0;
+        }
+
+        .ljq-button-default:hover {
+            border: 1px solid #1890ff;
+        }
+
+        .ljq-button-default:focus {
+            outline: 0;
         }
     </style>
 </head>
@@ -58,14 +94,16 @@
                 <div class="mini-col-12">
                     <div class="mini-panel mini-panel-info" title="安全配置" width="auto"
                          showCollapseButton="false" showCloseButton="false">
-                        <div id="content2" class="row" style="margin: 2% 1% 8% 1%">
+                        <div id="security-info" class="row" style="margin: 2% 1% 8% 1%">
                             <div>
-                                <div class="mini-col-4 info-div"><span class="info-key">一机一密:</span><span
-                                        class="info-val _omos"></span></div>
-                                <div class="mini-col-4 info-div"><span class="info-key">DeviceKey:</span><span
-                                        class="info-val _deviceKey"></span></div>
-                                <div class="mini-col-4 info-div"><span class="info-key">DeviceSecret:</span><span
-                                        class="info-val _deviceSecret"></span></div>
+                                <div class="mini-col-2 info-div"><span class="info-key">一机一密:</span><span
+                                        class="info-val _omosText"></span></div>
+                                <div class="mini-col-4 info-div"><span class="info-key">DeviceKey:</span><input style="margin-left: 10px" width="60%" name="deviceKey" class="mini-textbox" readonly /></div>
+                                <div class="mini-col-4 info-div"><span class="info-key">DeviceSecret:</span><input style="margin-left: 10px" width="60%" name="deviceSecret" class="mini-textbox" readonly /></div>
+                                <div class="mini-col-2 info-div">
+                                    <button class="ljq-button-primary security-button-save">保存</button>
+                                    <button class="ljq-button-default security-button-reset">重置配置</button>
+                                </div>
                             </div>
                         </div>
                     </div>

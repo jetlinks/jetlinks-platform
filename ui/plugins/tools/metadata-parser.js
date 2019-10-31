@@ -30,33 +30,33 @@ define(["jquery"], function ($) {
                     var option = {
                         tooltip: {},
                         xAxis: {
-                            axisLine: {show:false},//轴线不显示
-                            axisTick: {show:false},//
-                            show:false,
+                            axisLine: {show: false},//轴线不显示
+                            axisTick: {show: false},//
+                            show: false,
                             data: ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00"]
                         },
                         yAxis: {
-                            show:false,
-                            axisLine: {show:false},//轴线不显示
-                            axisTick: {show:false},//
+                            show: false,
+                            axisLine: {show: false},//轴线不显示
+                            axisTick: {show: false},//
                             splitLine: {
                                 show: false //隐藏网格线
                             }
                         },
                         grid: {
                             top: '-1%',// 等价于 y: '16%'
-                            left: '-10%',
+                            left: '-3%',
                             right: '-10%',
-                            bottom: '-13%'
+                            bottom: '0'
                         },
                         series: [{
                             name: '温度',
                             type: 'line',
                             data: [5, 20, 40, 10, 10, 20, 5, 10, 20, 5],
-                            color: "#33CCFF",//颜色样式
+                            color: "#1990FF",//颜色样式
                             areaStyle: {},//折线下方阴影
-                            symbolSize: 2,   //设定实心点的大小
-                            center:["150%","50%"]
+                            symbolSize: 5,   //设定实心点的大小
+                            //center:["150%","50%"]
                         }]
                     };
                     // 使用刚指定的配置项和数据显示图表。

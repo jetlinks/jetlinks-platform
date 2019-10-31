@@ -5,7 +5,7 @@ var productName = '';
 importMiniui(function () {
     mini.parse();
     require(["request", "miniui-tools"], function (request, tools) {
-        request.get("device-product/_query/no-paging", function (response) {
+        request.get("device-product/_query/no-paging", request.encodeQueryParam({"state": 1}), function (response) {
             var products = [];
             if (response.status === 200) {
                 for (var i = 0; i < response.result.length; i++) {

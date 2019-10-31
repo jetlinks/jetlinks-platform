@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 import org.hswebframework.web.bean.FastBeanCopier;
 import org.jetlinks.platform.manager.entity.DeviceInstanceEntity;
 import org.jetlinks.platform.manager.entity.DeviceProductEntity;
+import org.springframework.util.StringUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author bsetfeng
@@ -37,13 +41,17 @@ public class DeviceInfo {
     //消息协议
     private String messageProtocol;
 
-    private String deviceKey;
+    private Object deviceKey;
 
 
-    private String deviceSecret;
+    private Object deviceSecret;
+
+    private String deriveMetadata;
 
     //一机一密
-    private String omos;
+    private Object omos;
+
+    private Map<String, Object> security;
 
     public static DeviceInfo of(DeviceInstanceEntity instance,
                                 DeviceProductEntity product) {
@@ -51,12 +59,13 @@ public class DeviceInfo {
         deviceInfo.setMessageProtocol(product.getMessageProtocol());
         deviceInfo.setTransportProtocol(product.getTransportProtocol());
         deviceInfo.setDeviceType(product.getDeviceType().getText());
-        if (instance.getSecurity() != null) {
-            deviceInfo.setOmos(instance.getSecurity().get("omos").toString());
-            deviceInfo.setDeviceKey(instance.getSecurity().get("deviceKey").toString());
-            deviceInfo.setDeviceSecret(instance.getSecurity().get("deviceSecret").toString());
+        deviceInfo.setClassification(product.getClassifiedId());
+        if (instance.getSecurity() == null || instance.getSecurity().size() == 0) {
+            deviceInfo.setSecurity(product.getSecurity());
         }
-
+        if (StringUtils.isEmpty(instance.getDeriveMetadata())){
+            deviceInfo.setDeriveMetadata(product.getMetadata());
+        }
         return deviceInfo;
     }
 }

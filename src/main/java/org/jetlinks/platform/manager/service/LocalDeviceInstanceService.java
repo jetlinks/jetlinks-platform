@@ -1,9 +1,11 @@
 package org.jetlinks.platform.manager.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hswebframework.web.crud.generator.Generators;
 import org.hswebframework.web.crud.service.GenericReactiveCrudService;
 import org.hswebframework.web.exception.BusinessException;
 import org.hswebframework.web.exception.NotFoundException;
+import org.hswebframework.web.id.IDGenerator;
 import org.jetlinks.core.device.DeviceRegistry;
 import org.jetlinks.core.device.ProductInfo;
 import org.jetlinks.core.utils.FluxUtils;
@@ -24,8 +26,11 @@ import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuple2;
 
 import javax.annotation.PostConstruct;
+import java.sql.SQLException;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,29 +46,58 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
     @Autowired
     private LocalDevicePropertiesService propertiesService;
 
+    /**
+     * 重置设备安全配置
+     *
+     * @param deviceId
+     * @return
+     */
+    public Mono<Object> resetSecurityProperties(String deviceId) {
+        Map<String, Object> security = new HashMap<>();
+        security.put("deviceKey", IDGenerator.MD5.generate());
+        security.put("deviceSecret", IDGenerator.MD5.generate());
+        security.put("omos", "true");
+        return createUpdate()
+                .set(DeviceInstanceEntity::getSecurity, security)
+                .where(DeviceInstanceEntity::getId, deviceId)
+                .execute()
+                .flatMap(integer -> {
+                    if (integer == 1) {
+                        return Mono.just(security);
+                    } else {
+                        return Mono.error(() -> new SQLException("重置安全参数错误"));
+                    }
+                });
+    }
 
-    public void deploy(String id) {
-        findById(Mono.just(id))
-                .zipWhen(instance -> deviceProductService
-                        .findById(Mono.just(instance.getProductId())), (instanceEntity, productEntity) -> {
-                    //判断型号是否注册，并注册之
-                    registry.getProduct(productEntity.getId())
-                            .switchIfEmpty(
-                                    registry.registry(ProductInfo.builder()
-                                            .id(productEntity.getId())
-                                            .metadata(productEntity.getMetadata())
-                                            .protocol(productEntity.getMessageProtocol())
-                                            .build()));
-                    return registry.registry(org.jetlinks.core.device.DeviceInfo.builder()
-                            .protocol(productEntity.getMessageProtocol())
-                            .id(instanceEntity.getId())
-                            .metadata(instanceEntity.getDeriveMetadata())
-                            .productId(instanceEntity.getProductId())
-                            .build());
-                })
+    public Mono<Integer> deploy(String id) {
+        return findById(Mono.just(id))
+                .flatMap(instance -> deviceProductService
+                        .findById(Mono.just(instance.getProductId()))
+                        .flatMap(productEntity -> registry.registry(
+                                org.jetlinks.core.device.DeviceInfo.builder()
+                                        .id(instance.getId())
+                                        .productId(instance.getProductId())
+                                        .build())
+                                .flatMap(deviceOperator -> deviceOperator.putState((byte) -1)
+                                        .flatMap(bool -> {
+                                            //设备配置为一机一密时设置安全配置到设备实例
+                                            if (productEntity.getSecurity() != null && "true".equals(productEntity.getSecurity().get("omos"))) {
+                                                return deviceOperator.setConfig("security", productEntity.getSecurity())
+                                                        .map(confBool -> confBool && bool);
+                                            } else {
+                                                return Mono.just(bool);
+                                            }
+                                        }))
+                                .doOnNext(re -> {
+                                    if (!re) {
+                                        throw new BusinessException("设置设备实例状态错误");
+                                    }
+                                }))
+                )
                 .doOnError(err -> log.error("设备实例发布错误:{}", err))
-                .switchIfEmpty(Mono.error(NotFoundException::new));
-
+                .switchIfEmpty(Mono.error(NotFoundException::new))
+                .then(deviceDeployUpdate(id));
     }
 
     private Mono<Integer> deviceDeployUpdate(String deviceId) {
