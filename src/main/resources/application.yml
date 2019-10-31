@@ -32,12 +32,14 @@ easyorm:
   default-schema: public # 数据库默认的schema
   dialect: postgres #数据库方言
 hsweb:
+  dict:
+    enum-packages: org.jetlinks
   file:
     upload:
       static-file-path: ./static/upload
       static-location: http://localhost:8844/upload
   webflux:
-    response-wrapper: enabled #开启响应包装器(将正常的Mono返回值包转为ResponseMessage)
+    response-wrapper: enabled #开启响应包装器(将返回值包转为ResponseMessage)
   auth:   #默认的用户配置
     users:
       admin:
@@ -48,7 +50,10 @@ hsweb:
             actions: ['query','save','delete']
   authorize:
     auto-parse: true
-
+  cache:
+    type: redis
+    redis:
+      local-cache-type: guava
 jetlinks:
   redis:
     hosts: redis://127.0.0.1:6379
