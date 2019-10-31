@@ -5,12 +5,104 @@ importMiniui(function () {
     require(["request", "miniui-tools", "metadata-parser", "message"], function (request, tools, metadataParser, message) {
         var _metadata = "";
         var id = request.getParameter("id");
-        request.get("device-instance/" + id, function (response) {
+        /*request.get("device-instance/" + id, function (response) {
             var data = response.result;
             var metadata = data.deriveMetadata;
             _metadata = metadata;
             initPropertyPlate(metadata);
-        });
+        });*/
+        var metadata = "{\n" +
+            "  \"id\": \"test-device\",\n" +
+            "  \"name\": \"测试设备\",\n" +
+            "  \"properties\": [\n" +
+            "    {\n" +
+            "      \"id\": \"name\",\n" +
+            "      \"name\": \"名称\",\n" +
+            "      \"valueType\": {\n" +
+            "        \"type\": \"string\"\n" +
+            "      }\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"id\": \"model\",\n" +
+            "      \"name\": \"型号\",\n" +
+            "      \"valueType\": {\n" +
+            "        \"type\": \"string\"\n" +
+            "      }\n" +
+            "    },\n" +
+            "        {\n" +
+            "            \"id\":\"currentTemperature\",\n" +
+            "            \"name\":\"当前温度\",\n" +
+            "            \"expands\":{\n" +
+            "                \"readonly\":true\n" +
+            "            },\n" +
+            "            \"valueType\":{\n" +
+            "                \"type\":\"double\",\n" +
+            "                \"unit\":\"celsiusDegrees\",\n" +
+            "                \"max\":100,\n" +
+            "                \"min\":1\n" +
+            "            }\n" +
+            "        },\n" +
+            "        {\n" +
+            "            \"id\":\"cpuUsage\",\n" +
+            "            \"name\":\"cpu使用率\",\n" +
+            "            \"readonly\":true,\n" +
+            "            \"valueType\":{\n" +
+            "                \"type\":\"double\",\n" +
+            "                \"unit\":\"percent\"\n" +
+            "            }\n" +
+            "        }\n" +
+            "  ],\n" +
+            "  \"functions\": [\n" +
+            "    {\n" +
+            "      \"id\": \"playVoice\",\n" +
+            "      \"name\": \"播放声音\",\n" +
+            "      \"inputs\": [\n" +
+            "        {\n" +
+            "          \"id\": \"content\",\n" +
+            "          \"name\": \"内容\",\n" +
+            "          \"valueType\": {\n" +
+            "            \"type\": \"string\"\n" +
+            "          }\n" +
+            "        },\n" +
+            "        {\n" +
+            "          \"id\": \"times\",\n" +
+            "          \"name\": \"播放次数\",\n" +
+            "          \"valueType\": {\n" +
+            "            \"type\": \"int\"\n" +
+            "          }\n" +
+            "        }\n" +
+            "      ]\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"id\": \"setColor\",\n" +
+            "      \"name\": \"灯光颜色\",\n" +
+            "      \"inputs\": [\n" +
+            "        {\n" +
+            "          \"id\": \"colorRgb\",\n" +
+            "          \"name\": \"颜色RGB值\",\n" +
+            "          \"valueType\": {\n" +
+            "            \"type\": \"string\"\n" +
+            "          }\n" +
+            "        }\n" +
+            "      ]\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"events\": [\n" +
+            "    {\n" +
+            "      \"id\": \"temperature\",\n" +
+            "      \"name\": \"温度\",\n" +
+            "      \"parameters\": [\n" +
+            "        {\n" +
+            "          \"id\": \"temperature\",\n" +
+            "          \"valueType\": {\n" +
+            "            \"type\": \"int\"\n" +
+            "          }\n" +
+            "        }\n" +
+            "      ]\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+        initPropertyPlate(metadata);
 
         initDeviceRunInfo();
 
@@ -60,7 +152,7 @@ importMiniui(function () {
             request.get("device-instance/" + id + "/property/" + property.id, function (response) {
                 if (response.status === 200) {
                     var value = response.result.value;
-                    var plate1 = structurePlate(property.id, property.name, value, unifyUnit.symbol, unifyUnit.getCharts(value));
+                    var plate1 = structurePlate(property.id, property.name, 30, unifyUnit.symbol, unifyUnit.getCharts(value));
                     $(".propertyPlate").append(plate1);
                 }
             });
