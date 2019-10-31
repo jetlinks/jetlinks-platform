@@ -2,12 +2,15 @@ package org.jetlinks.platform.manager.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hswebframework.web.crud.service.GenericReactiveCrudService;
+import org.hswebframework.web.exception.BusinessException;
 import org.hswebframework.web.exception.NotFoundException;
 import org.jetlinks.core.device.DeviceRegistry;
+import org.jetlinks.core.device.ProductInfo;
 import org.jetlinks.core.utils.FluxUtils;
 import org.jetlinks.platform.events.DeviceConnectedEvent;
 import org.jetlinks.platform.events.DeviceDisconnectedEvent;
 import org.jetlinks.platform.manager.entity.DeviceInstanceEntity;
+import org.jetlinks.platform.manager.entity.DeviceProductEntity;
 import org.jetlinks.platform.manager.enums.DeviceState;
 import org.jetlinks.platform.manager.web.response.DeviceInfo;
 import org.jetlinks.platform.manager.web.response.DeviceRunInfo;
@@ -40,7 +43,35 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
 
 
     public void deploy(String id) {
+        findById(Mono.just(id))
+                .zipWhen(instance -> deviceProductService
+                        .findById(Mono.just(instance.getProductId())), (instanceEntity, productEntity) -> {
+                    //判断型号是否注册，并注册之
+                    registry.getProduct(productEntity.getId())
+                            .switchIfEmpty(
+                                    registry.registry(ProductInfo.builder()
+                                            .id(productEntity.getId())
+                                            .metadata(productEntity.getMetadata())
+                                            .protocol(productEntity.getMessageProtocol())
+                                            .build()));
+                    return registry.registry(org.jetlinks.core.device.DeviceInfo.builder()
+                            .protocol(productEntity.getMessageProtocol())
+                            .id(instanceEntity.getId())
+                            .metadata(instanceEntity.getDeriveMetadata())
+                            .productId(instanceEntity.getProductId())
+                            .build());
+                })
+                .doOnError(err -> log.error("设备实例发布错误:{}", err))
+                .switchIfEmpty(Mono.error(NotFoundException::new));
 
+    }
+
+    private Mono<Integer> deviceDeployUpdate(String deviceId) {
+        return createUpdate()
+                .set(DeviceInstanceEntity::getRegistryTime, System.currentTimeMillis())
+                .set(DeviceInstanceEntity::getState, DeviceState.offline)
+                .where(DeviceInstanceEntity::getId, deviceId)
+                .execute();
     }
 
     private volatile FluxSink<String> deviceIdSink;
@@ -76,6 +107,7 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
                     .subscribe((i) -> log.info("同步设备状态成功"));
         }
     }
+
     @EventListener
     public void handleDeviceConnectEvent(DeviceConnectedEvent event) {
         if (deviceIdSink != null) {
