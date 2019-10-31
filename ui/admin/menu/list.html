@@ -26,14 +26,14 @@
              iconField="icon" allowCellValid="true"
              allowResize="true" expandOnLoad="true" allowLeafDropIn="true"
              allowCellEdit="true" allowCellSelect="true" sortField="sortIndex"
-             allowDrag="true" allowDrop="true" treeColumn="icon">
+             allowDrag="true" allowDrop="true" treeColumn="icon" showPager="false" pageSize="30">
             <div property="columns">
                 <div type="indexcolumn" width="50" align="center" headerAlign="center">拖动可排序</div>
                 <div field="icon" name="icon" headerAlign="center" align="left" width="100">图标
                     <input property="editor" onbuttonclick="selectIcon" required emptyText="e.g. icon-add" class="mini-buttonedit"/>
                 </div>
-                <div field="permissionId" name="permissionId" headerAlign="center" align="center" width="100">权限ID
-                    <input property="editor" required emptyText="e.g. user" class="mini-buttonedit"/>
+                <div field="permissionExpression" name="permissionExpression" headerAlign="center" align="center" width="100">权限表达式
+                    <input property="editor" required emptyText="e.g. user" class="mini-textarea"/>
                 </div>
                 <div field="name" headerAlign="center" align="center" width="100">菜单名称
                     <input property="editor" required emptyText="e.g. 权限管理" class="mini-textbox"/>

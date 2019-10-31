@@ -10,6 +10,19 @@ importMiniui(function () {
         var priority = request.getParameter("priority") || 0;
         var merge = request.getParameter("merge") || true;
         var permission = request.getParameter("permission");
+        var dimensionType = request.getParameter("dimensionType");
+        var dimensionTypeName = request.getParameter("dimensionTypeName");
+        var dimension = request.getParameter("dimension");
+        var dimensionName = request.getParameter("dimensionName");
+
+        window.init=function (param) {
+            permissionType = param.permissionType||permissionType;
+            dimensionTypeName = param.dimensionTypeName||dimensionTypeName;
+            dimension = param.dimension||dimension;
+            dimensionName = param.dimensionName||dimensionName;
+            permission = param.permission||permission;
+            doInit();
+        };
 
 
         var allPermission = [];
@@ -19,39 +32,55 @@ importMiniui(function () {
         var settingDetailMap = {};
         var permissionTree = mini.get('permission-tree');
 
-        loadPermission(function () {
-            permissionTree.setData(mini.clone(allPermission));
+        loadPermission(doInit);
+        function doInit(call) {
 
-            $(allPermission).each(function () {
-                var panel = createContainer(this);
-                $("#permission-container").append(panel);
-                allPermissionMap[this.id] = this;
-            });
-            mini.parse();
-            $(allPermission).each(function () {
-                var permission = this;
-                mini.get(permission.id).setData(permission.actions);
-                initDataAccessEditor(this);
-            });
-
-            loadSetting(function () {
-                $(setting.details).each(function () {
-                    settingDetailMap[this.permissionId] = this;
-                    var actions = this.actions.join(",");
-                    var list = mini.get(this.permissionId);
-                    if (list) {
-                        list.setValue(actions);
-                        mini.get("panel-" + this.permissionId).expand()
-                    }
-                });
-                if(permission){
-                    goPermission(permission)
+                //如果是通过权限界面加载，只展示对应权限菜单
+                if (permission) {
+                    allPermission = $(allPermission).filter(function () {
+                        return permission === this.id;
+                    });
                 }
-            });
 
-            bindDataAccessEvent();
+                permissionTree.setData(mini.clone(allPermission));
+                 $("#permission-container").html("")
+                $(allPermission).each(function () {
+                    var panel = createContainer(this);
+                    $("#permission-container").append(panel);
+                    allPermissionMap[this.id] = this;
+                });
+                mini.parse();
+                $(allPermission).each(function () {
+                    var permission = this;
+                    mini.get(permission.id).setData(permission.actions);
+                    initDataAccessEditor(this);
+                });
 
-        });
+                loadSetting(function () {
+
+                    $(setting).each(function () {
+                        settingDetailMap[this.permission] = this;
+
+                        if (this.actions) {
+                            var actions = this.actions.join(",");
+                            var list = mini.get(this.permission);
+                            if (list) {
+
+                                list.setValue(actions);
+
+                                mini.get("panel-" + this.permission).expand()
+                            }
+                        }
+                    });
+                    if (permission) {
+                        goPermission(permission)
+                    }
+                    if(call){call()}
+                });
+
+                bindDataAccessEvent();
+
+        }
         var current;
         permissionTree.on("nodeclick", function (e) {
             var id = e.node.id;
@@ -65,16 +94,16 @@ importMiniui(function () {
 
         function goPermission(id) {
             var box = mini.get("panel-" + id);
-            if(!box){
+            if (!box) {
                 return;
             }
             var panel = $(box.getEl());
             var container = $("#permission-container");
-
+            box.expand();
             if (panel.position().top === 0) {
                 return;
             }
-            box.expand();
+
             container.animate({
                 scrollTop: panel.offset().top - container.offset().top + container.scrollTop()
             }, 500);
@@ -159,7 +188,7 @@ importMiniui(function () {
                     }
                 });
 
-
+            /***********************字段权限保存*****************************/
             $(".save-field-access")
                 .unbind("click")
                 .bind("click", function () {
@@ -210,6 +239,7 @@ importMiniui(function () {
         $(".close-button").on("click", function () {
             tools.closeWindow()
         });
+
         function doEditDataAccess(id) {
             var win = mini.get('dataAccessWindow');
 
@@ -254,6 +284,7 @@ importMiniui(function () {
                         notDenyFields.push(this);
                     }
                 });
+            /***********************数据权限保存*****************************/
             $(".save-data-access")
                 .unbind("click")
                 .on("click", function () {
@@ -314,22 +345,47 @@ importMiniui(function () {
         $(".save-button").on('click', function () {
             readPermissionActions();
 
-            var loading = message.loading("加载中...");
-            var setting = {};
-            setting.settingFor = settingFor;
-            setting.type = type;
-            setting.details = [];
+            var loading = message.loading("保存中...");
+            var settings = [];
+            // var setting = {};
+            // setting.permission = permission;
+            // setting.dimensionType = dimensionType;
+            // setting.dimensionTypeName = dimensionTypeName;
+            // setting.dimensionTarget = dimension;
+            // setting.dimensionTargetName = dimensionName;
+            // setting.settingFor = settingFor;
+            // setting.type = type;
+            // setting.details = [];
+
             for (var i in settingDetailMap) {
-                setting.details.push(settingDetailMap[i])
-            }
-            request.put("autz-setting/merge", [setting], function (resp) {
-                loading.hide();
-                if (resp.status === 200) {
-                    message.showTips("保存成功")
+                var setting = {};
+                if (permission) {
+                    setting.permission = permission;
                 } else {
+                    setting.permission = settingDetailMap[i].permissionId || settingDetailMap[i].permission;
+                }
+                setting.dimensionType = dimensionType;
+                setting.dimensionTypeName = dimensionTypeName;
+                setting.dimensionTarget = dimension;
+                setting.dimensionTargetName = dimensionName;
+                setting.state = 1;
+                setting.actions = settingDetailMap[i].actions;
+                setting.id = settingDetailMap[i].id;
+                settings.push(setting);
+
+            }
+            console.log(settings)
+            request.patch("autz-setting", settings, function (resp) {
+                if (resp.status === 200) {
+                    message.showTips("保存成功");
+                    loadSetting(function(){
+                        loading.hide();
+                    });
+                } else {
+                    loading.hide();
                     message.showTips("保存失败", "danger");
                 }
-            })
+            });
 
         });
 
@@ -338,7 +394,7 @@ importMiniui(function () {
             var buttons = [];
             if (panel) {
                 var field = false;
-                if(!permission.supportDataAccessTypes){
+                if (!permission.supportDataAccessTypes) {
                     return;
                 }
                 if (permission.supportDataAccessTypes.indexOf('DENY_FIELDS') !== -1) {
@@ -356,7 +412,14 @@ importMiniui(function () {
         }
 
         function loadSetting(call) {
-            request.get("autz-setting/" + type + "/" + settingFor, function (resp) {
+
+            var data = {};
+            if (permission && permission !== "") {
+                data.permission = permission;
+            }
+            if (dimension) data.dimensionTarget = dimension;
+            var param = request.encodeQueryParam(data);
+            request.get("autz-setting/_query/no-paging", param, function (resp) {
                 if (resp.status === 200) {
                     setting = resp.result || {};
                     call();
@@ -365,7 +428,7 @@ importMiniui(function () {
         }
 
         function loadPermission(call) {
-            request.createQuery("permission/no-paging")
+            request.createQuery("permission/_query/no-paging")
                 .where()
                 .exec(function (resp) {
                     if (resp.status === 200) {
@@ -391,7 +454,7 @@ importMiniui(function () {
                                 });
                         }
 
-                        if(allPermission.length<=6){
+                        if (allPermission.length <= 6) {
                             mini.get('layout').removeRegion("east")
                         }
                         call();
@@ -425,7 +488,8 @@ importMiniui(function () {
                     repeatItems: 4,
                     repeatLayout: "table",
                     textField: "describe",
-                    valueField: "action"
+                    valueField: "action",
+                    idField: "action"
                 });
 
             panel.append(actionList);
@@ -433,7 +497,9 @@ importMiniui(function () {
             return panel;
         }
 
-
+        if(window.onInit){
+            window.onInit();
+        }
     });
 
 });

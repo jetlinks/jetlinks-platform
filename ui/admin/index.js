@@ -297,7 +297,7 @@ function initLogin() {
             var loding = message.loading("登录中...");
             var data = form.getData();
             request.post("authorize/login", {
-                token_type: "dcp-token",
+                token_type: "X-Access-Token",
                 username: data.username,
                 password: data.password
             }, function (e) {
@@ -305,7 +305,7 @@ function initLogin() {
                 if (e.status === 200) {
                     mini.get("loginWindow").hide();
                     require(["storejs"], function (store) {
-                        store.set("dcp-token", e.result.token);
+                        store.set("X-Access-Token", e.result.token);
                         if (window.onLoginSuccess) {
                             window.onLoginSuccess();
                         }
