@@ -24,6 +24,6 @@ hs_err_pid*
 /static/
 /upload
 /ui/upload/
-docker/*/data
+docker/data
 !ip2region.db
 !device-simulator.jar
