@@ -102,7 +102,7 @@ window.renderAction = function (e) {
                 })
             }
         })
-    )
+    );
     return html.join("");
 }
 

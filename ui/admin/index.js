@@ -326,9 +326,9 @@ function initLogin() {
         new mini.Form("#loginWindow").reset();
     });
     $(".login-out").on("click", function () {
-        require(["request", "message"], function (request, message) {
+        require(["request", "message", "authorize"], function (request, message, authorize) {
             message.confirm("确认退出系统?", function () {
-                request.put("user-lock/logout", {}, function (reponse) {
+                request.delete("user-token/user/" + authorize.user.id, function (reponse) {
                     window.location.reload();
                 });
             });
