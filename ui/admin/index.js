@@ -37,7 +37,6 @@ require([
             });
         }
 
-
         $(".go-index").on("click", function () {
             tabs.activeTab(tabs.getTab("index"))
         });
@@ -341,7 +340,7 @@ function initLogin() {
             });
         });
     });
-    initAuthorize();
+     initAuthorize();
 
 }
 
@@ -351,7 +350,11 @@ window.doLogin = function (callback, msg) {
     if (msg.result === 'expired'||msg.result.value==='expired') {
         mini.get("loginWindow").show();
         window.onLoginSuccess = function () {
-            initAuthorize(callback);
+            require(["authorize", 'request'], function (authorize, request) {
+                authorize.init(function () {
+                    initAuthorize(callback);
+                })
+            });
         };
     }
     //锁定
@@ -382,14 +385,15 @@ window.doLogin = function (callback, msg) {
 };
 
 function initAuthorize(call) {
-    require(["authorize", 'request'], function (authorize, request) {
-        authorize.init(function () {
-            initDashBoard();
-            initMenu();
-            $(".username").text(authorize.user.name);
-            if (call)
-                call();
 
-        });
+    require(["authorize", 'request'], function (authorize, request) {
+
+        initDashBoard();
+        initMenu();
+        $(".username").text((authorize.user||{}).name);
+        if (call){
+            call();
+        }
+
     });
 }

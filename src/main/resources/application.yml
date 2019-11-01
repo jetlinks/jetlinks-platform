@@ -26,12 +26,22 @@ spring:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: true
     default-property-inclusion: non_null
+
   resources:
     static-locations: file:./ui/,file:./static/,/,classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/, classpath:/public/
 easyorm:
   default-schema: public # 数据库默认的schema
   dialect: postgres #数据库方言
 hsweb:
+  cors:
+    enable: true
+    configs:
+        - path: /**
+          allowed-headers: "*"
+          allowed-methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+          allowed-origins: ["*"]
+          allow-credentials: true
+          max-age: 1800
   dict:
     enum-packages: org.jetlinks
   file:
@@ -71,6 +81,7 @@ logging:
     org.springframework.transaction: debug
     org.springframework.data.r2dbc.connectionfactory: debug
     io.micrometer: debug
+    org.hswebframework.expands: warn
     # org.springframework: warn
 
 vertx:
