@@ -36,10 +36,10 @@ importMiniui(function () {
                 loding.close();
                 if (response.result === 1){
                     message.showTips("发布成功");
+                    grid.reload();
                 } else {
-                    message.showTips("发布失败");
+                    message.showTips("发布失败", "danger");
                 }
-                grid.reload();
             });
         }
 
@@ -49,10 +49,10 @@ importMiniui(function () {
                 loding.close();
                 if (response.result === 1){
                     message.showTips("取消成功");
+                    grid.reload();
                 } else {
-                    message.showTips("取消失败");
+                    message.showTips("取消失败", "danger");
                 }
-                grid.reload();
             });
         }
 

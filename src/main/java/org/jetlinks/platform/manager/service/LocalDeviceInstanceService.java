@@ -81,16 +81,10 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
                                         .id(instance.getId())
                                         .productId(instance.getProductId())
                                         .build())
-                                .flatMap(deviceOperator -> deviceOperator.putState((byte) -1)
-                                        .flatMap(bool -> {
-                                            //设备配置为一机一密时设置安全配置到设备实例
-                                            if (productEntity.getSecurity() != null && "true".equals(productEntity.getSecurity().get("omos"))) {
-                                                return deviceOperator.setConfig("security", productEntity.getSecurity())
-                                                        .map(confBool -> confBool && bool);
-                                            } else {
-                                                return Mono.just(bool);
-                                            }
-                                        }))
+                                .flatMap(deviceOperator ->
+                                        Mono.zip(deviceOperator.putState((byte) -1),
+                                                deviceOperator.setConfig("productId", productEntity.getId()))
+                                                .map(tuple -> tuple.getT1() && tuple.getT2()))
                                 .doOnNext(re -> {
                                     if (!re) {
                                         throw new BusinessException("设置设备实例状态错误");
