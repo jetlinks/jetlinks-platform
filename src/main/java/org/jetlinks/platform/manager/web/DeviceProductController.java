@@ -41,15 +41,15 @@ public class DeviceProductController implements ReactiveServiceCrudController<De
         return productService.cancelDeploy(productId);
     }
 
-    /**
-     * 已发布的设备型号查询
-     *
-     * @return
-     */
-    @GetMapping("/registered/query")
-    public Flux<DeviceProductEntity> queryRegisteredDeviceProduct() {
-        return productService.queryRegisteredDeviceProduct();
-    }
+//    /**
+//     * 已发布的设备型号查询
+//     *
+//     * @return
+//     */
+//    @GetMapping("/registered/query")
+//    public Flux<DeviceProductEntity> queryRegisteredDeviceProduct() {
+//        return productService.queryRegisteredDeviceProduct();
+//    }
 
     @GetMapping("/getUnifyUnit")
     @Authorize(ignore = true)

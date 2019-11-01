@@ -95,15 +95,15 @@ public class DeviceLogHandler {
                 @Override
                 public void completed(JestResult result) {
                     if (!result.isSucceeded()) {
-                        log.error("保存设备日志失败:{}", result.getJsonString());
+                        log.error("保存设备操作日志失败:{}", result.getJsonString());
                     }else{
-                        log.debug("保存设备日志成功:{}",datas.size());
+                        log.debug("保存设备操作日志成功:{}",datas.size());
                     }
                 }
 
                 @Override
                 public void failed(Exception ex) {
-                    log.error("保存设备日志失败", ex);
+                    log.error("保存设备操作日志失败", ex);
                 }
             });
         } catch (Exception e) {

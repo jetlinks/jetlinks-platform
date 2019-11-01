@@ -16,6 +16,7 @@ importMiniui(function () {
 
         function initDeviceRunInfo(isRefresh) {
             request.get("device-instance/run-info/" + id, function (response) {
+                console.log(response)
                 var data = response.result;
                 $(".device-state").text(data.state.text);
                 var explain = "";

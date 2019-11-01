@@ -33,8 +33,6 @@ importMiniui(function () {
         var grid = window.grid = mini.get("datagrid");
         tools.initGrid(grid);
 
-        grid.load();
-
         grid.setUrl(request.basePath + "device-instance/_query");
 
         function search() {

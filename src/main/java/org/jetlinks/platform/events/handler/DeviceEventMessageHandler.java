@@ -12,6 +12,7 @@ import org.jetlinks.core.message.event.EventMessage;
 import org.jetlinks.core.message.property.ReadPropertyMessageReply;
 import org.jetlinks.core.message.property.WritePropertyMessageReply;
 import org.jetlinks.core.metadata.DataType;
+import org.jetlinks.core.metadata.EventMetadata;
 import org.jetlinks.core.metadata.PropertyMetadata;
 import org.jetlinks.core.metadata.types.DateTimeType;
 import org.jetlinks.core.metadata.types.NumberType;
@@ -111,48 +112,48 @@ public class DeviceEventMessageHandler {
 
     private void syncEvent(String device, EventMessage message) {
 
-//        registry.getDevice(device)
-//                .flatMap(DeviceOperator::getMetadata)
-//                .subscribe(metadata -> {
-//                    Object value = message.getData();
-//
-//                    List<PropertyMetadata> metadataList = metadata
-//                            .getEvent(message.getEvent())
-//                            .map(EventMetadata::getParameters)
-//                            .orElseGet(Collections::emptyList);
-//
-//                    Map<String, Object> data = new HashMap<>();
-//                    data.put("deviceId", device);
-//                    data.put("time", message.getTimestamp());
-//                    if (value instanceof Map) {
-//                        data.putAll(((Map) value));
-//                    } else if (metadataList.size() == 1) {
-//                        data.put(metadataList.get(0).getId(), value);
-//                    } else {
-//                        data.put("value", value);
-//                    }
-//                    Bulk.Builder builder = new Bulk.Builder()
-//                            .defaultIndex("device_event_".concat(message.getEvent()))
-//                            .defaultType("device");
-//
-//                    builder.addAction(new Index.Builder(data).build());
-//
-//
-//                    jestClient.executeAsync(builder.build(), new JestResultHandler<JestResult>() {
-//                        @Override
-//                        public void completed(JestResult result) {
-//                            if (!result.isSucceeded()) {
-//                                log.error("保存设备事件失败:{}", result.getJsonString());
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void failed(Exception ex) {
-//                            log.error("保存设备事件失败", ex);
-//                        }
-//                    });
-//                });
-//
+        registry.getDevice(device)
+                .flatMap(DeviceOperator::getMetadata)
+                .subscribe(metadata -> {
+                    Object value = message.getData();
+
+                    List<PropertyMetadata> metadataList = metadata
+                            .getEvent(message.getEvent())
+                            .map(EventMetadata::getParameters)
+                            .orElseGet(Collections::emptyList);
+
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("deviceId", device);
+                    data.put("time", message.getTimestamp());
+                    if (value instanceof Map) {
+                        data.putAll(((Map) value));
+                    } else if (metadataList.size() == 1) {
+                        data.put(metadataList.get(0).getId(), value);
+                    } else {
+                        data.put("value", value);
+                    }
+                    Bulk.Builder builder = new Bulk.Builder()
+                            .defaultIndex("device_event_".concat(message.getEvent()))
+                            .defaultType("device");
+
+                    builder.addAction(new Index.Builder(data).build());
+
+
+                    jestClient.executeAsync(builder.build(), new JestResultHandler<JestResult>() {
+                        @Override
+                        public void completed(JestResult result) {
+                            if (!result.isSucceeded()) {
+                                log.error("保存设备事件失败:{}", result.getJsonString());
+                            }
+                        }
+
+                        @Override
+                        public void failed(Exception ex) {
+                            log.error("保存设备事件失败", ex);
+                        }
+                    });
+                });
+
 
     }
 

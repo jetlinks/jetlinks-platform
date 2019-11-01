@@ -12,7 +12,6 @@ importMiniui(function () {
         tools.bindOnEnter("#search-box", search);
         var grid = window.grid = mini.get("datagrid");
         tools.initGrid(grid);
-        grid.load();
         grid.setUrl(request.basePath + "device-product/_query");
 
         function search() {
@@ -46,7 +45,7 @@ importMiniui(function () {
 
         function productCancelDeploy(id) {
             var loding = message.loading("取消中...");
-            request.post("device-product/deploy/" + id, {}, function (response) {
+            request.post("device-product/cancelDeploy/" + id, {}, function (response) {
                 loding.close();
                 if (response.result === 1){
                     message.showTips("取消成功");
