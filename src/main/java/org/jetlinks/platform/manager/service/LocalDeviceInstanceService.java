@@ -1,11 +1,13 @@
 package org.jetlinks.platform.manager.service;
 
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.hswebframework.web.crud.generator.Generators;
 import org.hswebframework.web.crud.service.GenericReactiveCrudService;
 import org.hswebframework.web.exception.BusinessException;
 import org.hswebframework.web.exception.NotFoundException;
 import org.hswebframework.web.id.IDGenerator;
+import org.jetlinks.core.device.DeviceConfigKey;
 import org.jetlinks.core.device.DeviceRegistry;
 import org.jetlinks.core.device.ProductInfo;
 import org.jetlinks.core.utils.FluxUtils;
@@ -111,12 +113,19 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
     private volatile FluxSink<String> deviceIdSink;
 
     public Mono<DeviceRunInfo> getDeviceRunInfo(String deviceId) {
-        return registry
-                .getDevice(deviceId)
-                .flatMap(deviceOperator -> deviceOperator.getOnlineTime().switchIfEmpty(Mono.just(0L))
-                        .zipWith(deviceOperator.getOfflineTime().switchIfEmpty(Mono.just(0L)))
-                        .zipWith(deviceOperator.getState(), (t1, state) -> DeviceRunInfo.of(t1.getT1(), t1.getT2(),
-                                DeviceState.of(state))));
+        return registry.getDevice(deviceId)
+                .flatMap(deviceOperator -> Mono.zip(
+                        deviceOperator.getOnlineTime().switchIfEmpty(Mono.just(0L)),//
+                        deviceOperator.getOfflineTime().switchIfEmpty(Mono.just(0L)),//
+                        deviceOperator.getState().map(DeviceState::of),//
+                        deviceOperator.getConfig(DeviceConfigKey.metadata).switchIfEmpty(Mono.just(""))
+                        ).map(tuple4 -> DeviceRunInfo.of(
+                        tuple4.getT1(),
+                        tuple4.getT2(),
+                        tuple4.getT3(),
+                        tuple4.getT4()
+                        ))
+                );
     }
 
 
@@ -194,14 +203,13 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
                         .publishOn(Schedulers.parallel())
                         .flatMap(operation -> {
                             if (force) {
-                                return operation.checkState()
-                                        .zipWith(Mono.just(operation.getDeviceId()));
+                                return operation.checkState().zipWith(Mono.just(operation.getDeviceId()));
                             }
-                            return operation.getState()
-                                    .zipWith(Mono.just(operation.getDeviceId()));
+                            return operation.getState().zipWith(Mono.just(operation.getDeviceId()));
                         })
                 , 800, Duration.ofSeconds(5))
-                .map(list -> list.stream().collect(Collectors.groupingBy(Tuple2::getT1, Collectors.mapping(Tuple2::getT2, Collectors.toSet()))))
+                .map(list -> list.stream()
+                        .collect(Collectors.groupingBy(Tuple2::getT1, Collectors.mapping(Tuple2::getT2, Collectors.toSet()))))
                 .map(Map::entrySet)
                 .flatMap(Flux::fromIterable)
                 .flatMap(e -> getRepository().createUpdate()

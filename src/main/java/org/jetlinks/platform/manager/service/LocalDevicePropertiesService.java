@@ -18,6 +18,7 @@ public class LocalDevicePropertiesService extends GenericReactiveCrudService<Dev
         return createQuery()
                 .where(DevicePropertiesEntity::getDeviceId, deviceId)
                 .and(DevicePropertiesEntity::getProperty, property)
-                .fetchOne();
+                .fetchOne()
+                .switchIfEmpty(Mono.just(new DevicePropertiesEntity()));
     }
 }

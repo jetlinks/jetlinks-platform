@@ -22,4 +22,6 @@ public class DeviceRunInfo {
 
     //设备状态
     private DeviceState state;
+
+    private String metadata;
 }
