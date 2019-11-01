@@ -13,6 +13,7 @@ import org.elasticsearch.common.Strings;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.hswebframework.easyorm.elasticsearch.ElasticSearchQueryParamTranslator;
 import org.hswebframework.web.api.crud.entity.QueryParamEntity;
+import org.hswebframework.web.authorization.annotation.Authorize;
 import org.hswebframework.web.exception.BusinessException;
 import org.hswebframework.web.exception.NotFoundException;
 import org.hswebframework.web.id.IDGenerator;
@@ -56,6 +57,7 @@ public class DeviceMessageController {
     private Map<String, EmitterProcessor<Object>> eventProcessor = new ConcurrentHashMap<>();
 
     @EventListener
+    @Authorize(ignore = true)
     public void handleDeviceEvent(DeviceMessageEvent<EventMessage> e) {
 
         Optional.ofNullable(eventProcessor.get(e.getMessage().getDeviceId()))

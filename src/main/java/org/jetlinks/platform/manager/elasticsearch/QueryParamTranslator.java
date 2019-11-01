@@ -29,6 +29,13 @@ public class QueryParamTranslator {
         log.debug("es查询参数:{}", request.source().toString());
         return request;
     }
+    public static SearchRequest translate(QueryParam queryParam, String index, String type) {
+        SearchRequest request = new SearchRequest(index)
+                .types(type)
+                .source(transSourceBuilder(queryParam));
+        log.debug("es查询参数:{}", request.source().toString());
+        return request;
+    }
 
     public static QueryBuilder translate(QueryParam queryParam) {
         BoolQueryBuilder query = QueryBuilders.boolQuery();

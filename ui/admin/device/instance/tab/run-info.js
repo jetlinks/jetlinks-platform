@@ -5,18 +5,12 @@ importMiniui(function () {
     require(["request", "miniui-tools", "metadata-parser", "message"], function (request, tools, metadataParser, message) {
         var _metadata = "";
         var id = request.getParameter("id");
-        // request.get("device-instance/" + id, function (response) {
-        //     var data = response.result;
-        //     var metadata = data.deriveMetadata;
-        //     _metadata = metadata;
-        //     initPropertyPlate(metadata);
-        // });
+        var productId = request.getParameter("productId");
 
         initDeviceRunInfo(false);
 
         function initDeviceRunInfo(isRefresh) {
             request.get("device-instance/run-info/" + id, function (response) {
-                console.log(response)
                 var data = response.result;
                 $(".device-state").text(data.state.text);
                 var explain = "";
@@ -31,9 +25,9 @@ importMiniui(function () {
                         explain = "设备未激活";
                 }
                 $(".device-online-time").text(explain);
-                if (isRefresh){
+                if (isRefresh) {
                     message.showTips("刷新成功");
-                }else {
+                } else {
                     initPropertyPlate(data.metadata);
                 }
             });
@@ -60,12 +54,13 @@ importMiniui(function () {
                 "        </div>";
         }
 
+        //加载属性板块
         function loadPropertyPlate(property) {
             var unifyUnit = property.getValueType().unifyUnit;
-            request.get("device-instance/" + id + "/property/" + property.id, function (response) {
+            request.get("device-instance/" + productId + "/property/" + property.id, function (response) {
                 if (response.status === 200) {
                     var value = response.result.value;
-                    if (value === '' || value === undefined){
+                    if (value === '' || value === undefined) {
                         value = '--';
                     }
                     var plate1 = structurePlate(property.id, property.name, value, unifyUnit.symbol, unifyUnit.getCharts(value));
@@ -74,12 +69,19 @@ importMiniui(function () {
             });
         }
 
+        //加载事件板块
+        function loadEventPlate(event) {
+            request.get("device-event/" + event.id + "/productId/" + event.id, function (response) {
+                console.log(response);
+            });
+        }
+
         $(document).on('click', '.property-refresh', function () {
             var propertyId = this.title;
             var _this = this;
             request.get("device/" + id + "/property/" + propertyId, function (response) {
                 if (!response.status || response.status === 200) {
-                    var result =  response.result;
+                    var result = response.result;
                     var unifyUnit = metadataParser.getProperties(_metadata).getProperty(propertyId).getValueType().unifyUnit;
                     $(_this).parents(".row").find(".property-value").html(result[0][propertyId]);
                     $(_this).parents(".row").find(".property-chart").html(unifyUnit.getCharts(result[0][propertyId]));
@@ -91,7 +93,7 @@ importMiniui(function () {
         });
 
         function initPropertyPlate(metadata) {
-            if (metadata === '' || metadata === undefined){
+            if (metadata === '' || metadata === undefined) {
                 return;
             }
             var properties = metadataParser.getProperties(metadata);
@@ -99,6 +101,16 @@ importMiniui(function () {
                 if (typeof (properties.getProperty(key)) === 'object') {
                     loadPropertyPlate(properties.getProperty(key));
                 }
+            }
+        }
+
+        function initEventPlate(metadata) {
+            if (metadata === '' || metadata === undefined) {
+                return;
+            }
+            var event = metadataParser.getEvents(metadata);
+            for (var key in event) {
+                loadEventPlate(event[key]);
             }
         }
     });
