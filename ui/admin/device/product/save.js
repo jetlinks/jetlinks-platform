@@ -432,10 +432,6 @@ importMiniui(function () {
         }
 
         $(".save-button").click(function () {
-
-            if (!id) {
-                productInfo.id = id;
-            }
             var attributeData = [];
             var functionData = [];
             var eventData = [];
@@ -446,6 +442,11 @@ importMiniui(function () {
                 return false;
             }
             productInfo.security = tools.getFormData("#security-info", true);
+
+            if (!id) {
+                productInfo.id = id;
+            }
+
             $(mini.get("attribute-list").getData()).each(function () {
                 attributeData.push(this.attributeInfoList);
             });
