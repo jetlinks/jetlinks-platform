@@ -44,4 +44,14 @@ public class LocalDeviceProductService extends GenericReactiveCrudService<Device
                                 .where(DeviceProductEntity::getId, id)
                                 .execute()));
     }
+
+    public Mono<Integer> cancelDeploy(String id){
+        return findById(Mono.just(id))
+                .flatMap(product -> registry.unRegistry(id)
+                        .flatMap(re -> createUpdate()
+                                .set(DeviceProductEntity::getState, DeviceProductState.unregistered.getValue())
+                                .where(DeviceProductEntity::getId, id)
+                                .execute()));
+    }
+
 }

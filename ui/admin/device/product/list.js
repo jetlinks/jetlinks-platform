@@ -44,6 +44,19 @@ importMiniui(function () {
             });
         }
 
+        function productCancelDeploy(id) {
+            var loding = message.loading("取消中...");
+            request.post("device-product/deploy/" + id, {}, function (response) {
+                loding.close();
+                if (response.result === 1){
+                    message.showTips("取消成功");
+                } else {
+                    message.showTips("取消失败");
+                }
+                grid.reload();
+            });
+        }
+
         window.renderAction = function (e) {
             var row = e.record;
             var html = [];
@@ -55,8 +68,8 @@ importMiniui(function () {
             }));
 
             if (row.state === 1){
-                html.push(tools.createActionButton("取消发布", "icon-upload", function () {
-                    //productDeploy(row.id);
+                html.push(tools.createActionButton("取消发布", "icon-download", function () {
+                    productCancelDeploy(row.id);
                 }));
             } else {
                 html.push(tools.createActionButton("发布", "icon-upload", function () {

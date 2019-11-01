@@ -36,6 +36,11 @@ public class DeviceProductController implements ReactiveServiceCrudController<De
         return productService.deploy(productId);
     }
 
+    @PostMapping("/cancelDeploy/{productId:.+}")
+    public Mono<Integer> cancelDeploy(@PathVariable String productId) {
+        return productService.cancelDeploy(productId);
+    }
+
     /**
      * 已发布的设备型号查询
      *
