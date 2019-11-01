@@ -381,8 +381,8 @@ importMiniui(function () {
             if (data) {
                 form.getField("id").setReadOnly(true);
                 form.setData(data);
-                if (data.outputs) {
-                    data.outputs.forEach(function (val) {
+                if (data.parameters) {
+                    data.parameters.forEach(function (val) {
                         var parameterId = "i" + new Date().getTime();
                         eventInfoOutputList.push(val);
                         addParameterHtml("event-info-output", parameterId, eventInfoOutputList, val);
@@ -393,7 +393,6 @@ importMiniui(function () {
             }
 
             $(".add-event-output").click(function () {
-                eventInfoOutputList.splice(0, eventInfoOutputList.length);
                 addEnum();
                 addParameter("event-info-output", eventInfoOutputList, "");
             });
@@ -611,7 +610,7 @@ importMiniui(function () {
                     return item.id == parameterInfo.id;
                 }), 1, parameterInfo);
                 var id = $("#parameter-info").attr("name");
-                mini.get("#data-" + id).setValue("参数名称：" + parameterInfo.name);
+                mini.get("#data-" + id).setValue("参数名称：" + parameterInfo.name + "(" + parameterInfo.id + ")");
                 bindDelOrUp(position, id, list, parameterInfo);
             } else {
                 var parameterId = "i" + new Date().getTime();
@@ -622,7 +621,7 @@ importMiniui(function () {
 
         function addParameterHtml(position, parameterId, list, parameter) {
             $("." + position).append("<div class=\"parameter-input\" id=\"" + parameterId + "\">\n" +
-                "    <input required id=\"data-" + parameterId + "\" name=\"" + parameterId + "\" readonly=\"true\" style=\"width: 72%\" class=\"mini-textbox\" value=\"参数名称：" + parameter.name + "\">\n" +
+                "    <input required id=\"data-" + parameterId + "\" name=\"" + parameterId + "\" readonly=\"true\" style=\"width: 72%\" class=\"mini-textbox\" value=\"参数名称：" + parameter.name + "(" + parameter.id + ")\">\n" +
                 "    <a class=\"text-button\" id=\"del" + parameterId + "\" href=\"javascript:void(0);\">删除</a>\n" +
                 "    <a class=\"text-button\" id=\"up" + parameterId + "\" href=\"javascript:void(0);\">编辑</a>\n" +
                 "</div>\n");
