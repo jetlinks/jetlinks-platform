@@ -31,10 +31,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 
 
-@SpringBootApplication(scanBasePackages = "org.jetlinks.platform",exclude ={
+@SpringBootApplication(scanBasePackages = "org.jetlinks.platform", exclude = {
         DataSourceAutoConfiguration.class
-       // CustomCodecsAutoConfiguration.class
-} )
+        // CustomCodecsAutoConfiguration.class
+})
 @EnableCaching
 //@EnableAsync
 @EnableEasyormRepository("org.jetlinks.platform.manager.entity")
@@ -42,16 +42,16 @@ import java.util.concurrent.atomic.AtomicLong;
 public class JetLinksApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(JetLinksApplication.class,args);
+        SpringApplication.run(JetLinksApplication.class, args);
     }
 
     @Profile("dev")
     @Component
-    public static class AdminAllAccess{
+    public static class AdminAllAccess {
 
         @EventListener
-        public void handleAuthEvent(AuthorizingHandleBeforeEvent e){
-            if(e.getContext().getAuthentication().getUser().getUsername().equals("admin")){
+        public void handleAuthEvent(AuthorizingHandleBeforeEvent e) {
+            if (e.getContext().getAuthentication().getUser().getUsername().equals("admin")) {
                 e.setAllow(true);
             }
         }
@@ -76,7 +76,7 @@ public class JetLinksApplication {
 
         @Override
         public void run(String... strings) {
-            String metadata="{\n" +
+            String metadata = "{\n" +
                     "  \"id\": \"test-device\",\n" +
                     "  \"name\": \"测试设备\",\n" +
                     "  \"properties\": [\n" +
@@ -168,9 +168,9 @@ public class JetLinksApplication {
                     "  ]\n" +
                     "}";
 
-            ProductInfo productInfo = new ProductInfo("test","jet-links",metadata);
+            ProductInfo productInfo = new ProductInfo("test", "jet-links", metadata);
 
-           registry.registry(productInfo).subscribe();
+            registry.registry(productInfo).subscribe();
 
             new Thread(() -> {
                 long sum = initStartWith + initDeviceNumber;
@@ -180,7 +180,7 @@ public class JetLinksApplication {
                     for (long i = initStartWith; i < sum; i++) {
                         DeviceInfo deviceInfo = new DeviceInfo();
                         deviceInfo.setId("test" + i);
-                        deviceInfo.setProtocol("jetlinks.v1.0");
+                        deviceInfo.setProtocol("fh3j-v2");
                         deviceInfo.setProductId(productInfo.getId());
                         fluxSink.next(deviceInfo);
                     }
@@ -189,16 +189,16 @@ public class JetLinksApplication {
                         .subscribeOn(Schedulers.parallel())
                         .subscribe(list -> CompletableFuture.runAsync(() -> {
                             for (DeviceInfo deviceInfo : list) {
-                               registry.registry(deviceInfo)
-                               .flatMap(operator->{
-                                   Map<String, Object> all = new HashMap<>();
-                                   all.put("secureId", "test");
-                                   all.put("secureKey", "test");
-                                   counter.incrementAndGet();
-                                  return operator.setConfigs(all);
+                                registry.registry(deviceInfo)
+                                        .flatMap(operator -> {
+                                            Map<String, Object> all = new HashMap<>();
+                                            all.put("secureId", "test");
+                                            all.put("secureKey", "test");
+                                            counter.incrementAndGet();
+                                            return operator.setConfigs(all);
 
-                               }).subscribe()
-                               ;
+                                        }).subscribe()
+                                ;
                             }
                             log.info("batch registry device :{}", counter.get());
                         }));
