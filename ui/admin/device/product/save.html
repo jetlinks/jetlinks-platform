@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/>
+    <meta name="renderer" content="webkit"/>
+    <title>设备型号</title>
+    <script data-main="save.js" src="../../boot.js" type="text/javascript"></script>
+</head>
+<body style="display: none">
+<div class="mini-fit">
+    <div id="tabs" class="mini-tabs" activeIndex="0" style="width:100%;height:99%;" plain="true" activechanged="onClick">
+        <div title="型号信息">
+            <div id="essentialInfo" class="mini-panel" title="基本信息" style="width:100%;height:48%;margin-top: 10px;" expanded="true"
+                 showToolbar="true" showFooter="false" showCollapseButton="false" showCloseButton="false">
+                <div id="product-info" class="mini-clearfix search-box">
+                    <div class="mini-col-4 form-component breadth">
+                        <div class="form-item">
+                            <label class="form-label">型号ID：</label>
+                            <div class="input-block component-body">
+                                <input style="width: 100%;" borderStyle="border:0" readOnly="true" class="mini-textbox" value="保存后自动生成"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mini-col-4 form-component breadth">
+                        <div class="form-item">
+                            <label class="form-label">型号名称：</label>
+                            <div class="input-block component-body">
+                                <input required name="name" emptyText="请输入" style="width: 100%" class="mini-textbox">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mini-col-4 form-component breadth">
+                        <div class="form-item">
+                            <label class="form-label">分类目录：</label>
+                            <div class="input-block component-body">
+                                <input required emptyText="请选择分类目录" name="classifiedId" id="directoryId" allowInput="true"
+                                       style="width: 100%" class="mini-combobox" textField="text" valueField="value">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mini-col-4 form-component breadth">
+                        <div class="form-item">
+                            <label class="form-label">设备类型：</label>
+                            <div class="input-block component-body">
+                                <input required name="deviceType" style="width: 100%" value="device"
+                                       data="[{text:'设备',value:'device'},{text:'网关',value:'gateway'}]"
+                                       textField="text" valueField="value" class="mini-radiobuttonlist"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mini-col-4 form-component breadth">
+                        <div class="form-item">
+                            <label class="form-label">连接协议：</label>
+                            <div class="input-block component-body">
+                                <input required emptyText="请选择连接协议" name="transportProtocol" textField="name"
+                                       allowInput="true" valueField="id" style="width: 100%" class="mini-combobox">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mini-col-4 form-component breadth">
+                        <div class="form-item">
+                            <label class="form-label">消息协议：</label>
+                            <div class="input-block component-body">
+                                <input required emptyText="请选择消息协议" name="messageProtocol" textField="name"
+                                       allowInput="true" valueField="id" style="width: 100%" class="mini-combobox">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mini-col-4 form-component" style="width: 100%;">
+                        <div class="form-item">
+                            <label class="form-label">说明：</label>
+                            <div class="input-block component-body">
+                                <input name="describe" emptyText="请输入备注" style="width: 100%;height: 120px;" class="mini-textarea"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="securityConfig" class="mini-panel" title="安全配置" style="width:100%;height:40%;margin-top: 10px;" expanded="true"
+                 showToolbar="true" showFooter="false" showCollapseButton="false" showCloseButton="false">
+                <div id="security-info" class="mini-clearfix search-box">
+                    <div class="mini-col-4 form-component breadth">
+                        <div class="form-item">
+                            <label class="form-label">一机一密：</label>
+                            <div class="input-block component-body">
+                                <input required name="omos" style="width: 100%" value="false"
+                                       data="[{text:'是',id:'true'},{text:'否',id:'false'}]"
+                                       textField="text" valueField="id" class="mini-radiobuttonlist"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mini-col-4 form-component breadth">
+                        <div class="form-item">
+                            <label class="form-label">DeviceKey：</label>
+                            <div class="input-block component-body">
+                                <input required name="secureId" style="width: 100%" class="mini-textbox">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mini-col-4 form-component breadth">
+                        <div class="form-item">
+                            <label class="form-label">DeviceSecret：</label>
+                            <div class="input-block component-body">
+                                <input required name="secureKey" style="width: 100%" class="mini-textbox">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div title="设备定义">
+            <div id="attributeConfig" class="mini-panel" title="属性定义" style="width:99%;height:50%;margin-top: 10px;" expanded="true"
+                 howFooter="false" showCollapseButton="false" showCloseButton="false">
+                <div class="mini-fit">
+                    <div id="attribute-list" class="mini-datagrid" style="width:100%;height: 100%;margin: auto;" idField="attributeInfoList" showPager="false">
+                        <div property="columns">
+                            <div field="id" width="100" headerAlign="center" allowSort="true" align="center">属性标识</div>
+                            <div field="name" width="100" headerAlign="center" allowSort="true" align="center">属性名称</div>
+                            <div field="dataType" width="100" headerAlign="center" allowSort="true" align="center">数据类型</div>
+                            <div field="readOnly" width="100" headerAlign="center" align="center">是否只读</div>
+                            <div field="description" width="100" headerAlign="center" align="center">说明</div>
+                            <div name="attributeList" width="30" renderer="renderAction" headerAlign="center" align="center">操作</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="functionConfig" class="mini-panel" title="功能定义" style="width:99%;height:50%;margin-top: 10px;" expanded="true"
+                 showToolbar="true" showFooter="false" showCollapseButton="false" showCloseButton="false">
+                <div class="mini-fit">
+                    <div id="function-list" class="mini-datagrid" style="width:100%;height: 100%;margin: auto;" idField="functionDataList"  showPager="false">
+                        <div property="columns">
+                            <div field="id" width="100" headerAlign="center" allowSort="true" align="center">功能标识</div>
+                            <div field="name" width="100" headerAlign="center" allowSort="true" align="center">功能名称</div>
+                            <div field="inputs" name="inputs" width="100" headerAlign="center" allowSort="true" align="center">输入参数</div>
+                            <div field="outputs" name="outputs" width="100" headerAlign="center" align="center">输出参数</div>
+                            <div field="description" width="100" headerAlign="center" align="center">说明</div>
+                            <div name="functionList" width="30" renderer="renderAction" headerAlign="center" align="center">操作</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="eventConfig" class="mini-panel" title="事件定义" style="width:99%;height:50%;margin-top: 10px;" expanded="true"
+                 showToolbar="true" showFooter="false" showCollapseButton="false" showCloseButton="false">
+                <div class="mini-fit">
+                    <div id="event-list" class="mini-datagrid" style="width:100%;height: 100%;margin: auto;" idField="eventDataList" showPager="false">
+                        <div property="columns">
+                            <div field="id" width="100" headerAlign="center" allowSort="true" align="center">事件标识</div>
+                            <div field="name" width="100" headerAlign="center" allowSort="true" align="center">事件名称</div>
+                            <div field="outputs" name="outputs" width="100" headerAlign="center" allowSort="true" align="center">输出参数</div>
+                            <div field="level" width="100" headerAlign="center" align="center">事件级别</div>
+                            <div field="description" width="100" headerAlign="center" align="center">说明</div>
+                            <div name="eventList" width="30" renderer="renderAction" headerAlign="center" align="center">操作</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="width: 97%; text-align:center;margin: auto;position: fixed;bottom: 0;" align="center">
+        <a class="mini-button save-button" name="save" iconCls="fa-check">保存</a>
+        <a class="mini-button cancel-button" plain="true" iconCls="fa-times text-danger">关闭</a>
+    </div>
+</div>
+
+<div id="attributeEditor" class="mini-window" title="属性配置" style="width:500px;height:600px;"
+     showMaxButton="false" showCollapseButton="false" showShadow="false"
+     showToolbar="true" showFooter="false" showModal="false" allowDrag="true">
+    <div class="mini-fit">
+        <div id="attribute-info" class="mini-clearfix search-box">
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">属性标识：</label>
+                    <div class="input-block component-body">
+                        <input required name="id" emptyText="请输入属性标识" style="width: 90%" class="mini-textbox">
+                    </div>
+                </div>
+            </div>
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">属性名称：</label>
+                    <div class="input-block component-body">
+                        <input required name="name" emptyText="请输入属性名称" style="width: 90%" class="mini-textbox">
+                    </div>
+                </div>
+            </div>
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">数据类型：</label>
+                    <div class="input-block component-body">
+                        <input required name="dataType" emptyText="请选择数据类型" data="dataType" valueField="id"
+                               allowInput="true" textField="text" style="width: 90%" class="mini-combobox">
+                    </div>
+                </div>
+            </div>
+            <div class="attribute-config" id="attributeConfigCategory">
+
+            </div>
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">是否只读：</label>
+                    <div class="input-block component-body">
+                        <input required name="readOnly" style="width: 90%" value="false"
+                               data="[{text:'是',id:true},{text:'否',id:false}]"
+                               textField="text" valueField="id" class="mini-radiobuttonlist"/>
+                    </div>
+                </div>
+            </div>
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">设备上报：</label>
+                    <div class="input-block component-body">
+                        <input required name="report" style="width: 90%" value="true"
+                               data="[{text:'是',id:true},{text:'否',id:false}]"
+                               textField="text" valueField="id" class="mini-radiobuttonlist"/>
+                    </div>
+                </div>
+            </div>
+            <div class="mini-col-4 form-component" style="width: 100%;">
+                <div class="form-item">
+                    <label class="form-label">说明：</label>
+                    <div class="input-block component-body">
+                        <input name="description" emptyText="请输入备注" style="width: 80%;height: 120px;" class="mini-textarea"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="width: 200px;margin: auto" align="center">
+        <a class="mini-button attribute-save-button" name="save" iconCls="fa-check">保存</a>
+        <a class="mini-button" onclick="mini.get('attributeEditor').hide()" plain="true" iconCls="fa-times text-danger">关闭</a>
+    </div>
+</div>
+
+<div id="functionEditor" class="mini-window" title="功能配置" style="width:500px;height:600px;"
+     showMaxButton="false" showCollapseButton="false" showShadow="false"
+     showToolbar="true" showFooter="false" showModal="false" allowDrag="true">
+    <div class="mini-fit">
+        <div id="function-info" class="mini-clearfix search-box">
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">功能标识：</label>
+                    <div class="input-block component-body">
+                        <input required name="id" emptyText="请输入功能标识" style="width: 90%" class="mini-textbox">
+                    </div>
+                </div>
+            </div>
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">功能名称：</label>
+                    <div class="input-block component-body">
+                        <input required name="name" emptyText="请输入功能名称" style="width: 90%" class="mini-textbox">
+                    </div>
+                </div>
+            </div>
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">是否异步：</label>
+                    <div class="input-block component-body">
+                        <input required name="isAsync" value="false" style="width: 90%"
+                               data="[{text:'是',id:true},{text:'否',id:false}]"
+                               textField="text" valueField="id" class="mini-radiobuttonlist"/>
+                    </div>
+                </div>
+            </div>
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">输入参数：</label>
+                    <div class="input-block component-body">
+                        <div class="functions-info-input"></div>
+                        <div class="add-parameter-colour"><a class="text-button add-function-input" href="javascript:void(0);">+添加参数</a></div>
+                    </div>
+                </div>
+            </div>
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">输出参数：</label>
+                    <div class="input-block component-body">
+                        <div class="functions-info-output"></div>
+                        <div class="add-parameter-colour"><a class="text-button add-function-output" href="javascript:void(0);">+添加参数</a></div>
+                    </div>
+                </div>
+            </div>
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">描述：</label>
+                    <div class="input-block component-body">
+                        <input name="description" emptyText="请输入备注" style="width: 90%;height: 120px;" class="mini-textarea"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="width: 200px;margin: auto" align="center">
+        <a class="mini-button function-save-button" name="save" iconCls="fa-check">保存</a>
+        <a class="mini-button" onclick="mini.get('functionEditor').hide()" plain="true" iconCls="fa-times text-danger">关闭</a>
+    </div>
+</div>
+
+<div id="eventEditor" class="mini-window" title="事件配置" style="width:500px;height:600px;"
+     showMaxButton="false" showCollapseButton="false" showShadow="false"
+     showToolbar="true" showFooter="false" showModal="false" allowDrag="true">
+    <div class="mini-fit">
+        <div id="event-info" class="mini-clearfix search-box">
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">事件标识：</label>
+                    <div class="input-block component-body">
+                        <input required name="id" emptyText="请输入事件标识" style="width: 90%" class="mini-textbox">
+                    </div>
+                </div>
+            </div>
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">事件名称：</label>
+                    <div class="input-block component-body">
+                        <input required name="name" emptyText="请输入事件名称" style="width: 90%" class="mini-textbox">
+                    </div>
+                </div>
+            </div>
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">事件类型：</label>
+                    <div class="input-block component-body">
+                        <input required name="eventType" value="1" style="width: 90%"
+                               data="[{text:'数据上报',id:'reportData'},{text:'事件上报',id:'reportEvent'}]"
+                               textField="text" valueField="id" class="mini-radiobuttonlist"/>
+                    </div>
+                </div>
+            </div>
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">事件级别：</label>
+                    <div class="input-block component-body">
+                        <input required name="level" value="2" style="width: 90%"
+                               data="[{text:'普通',id:'ordinary'},{text:'警告',id:'warn'},{text:'紧急',id:'urgent'}]"
+                               textField="text" valueField="id" class="mini-radiobuttonlist"/>
+                    </div>
+                </div>
+            </div>
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">输出参数：</label>
+                    <div class="input-block component-body">
+                        <div class="event-info-output">
+                        </div>
+                        <div class="add-parameter-colour"><a class="text-button add-event-output" href="javascript:void(0);">+添加参数</a></div>
+                    </div>
+                </div>
+            </div>
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">描述：</label>
+                    <div class="input-block component-body">
+                        <input name="description" emptyText="请输入备注" style="width: 90%;height: 120px;" class="mini-textarea"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="width: 200px;margin: auto" align="center">
+        <a class="mini-button event-save-button" name="save" iconCls="fa-check">保存</a>
+        <a class="mini-button" onclick="mini.get('eventEditor').hide()" plain="true" iconCls="fa-times text-danger">关闭</a>
+    </div>
+</div>
+
+<div id="structEditor" class="mini-window" title="新增参数" style="width:500px;height:600px;"
+     showMaxButton="false" showCollapseButton="false" showShadow="false"
+     showToolbar="true" showFooter="false" showModal="false" allowDrag="true">
+    <div class="mini-fit">
+        <div id="parameter-info" class="mini-clearfix search-box" name="parameter">
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">属性标识：</label>
+                    <div class="input-block component-body">
+                        <input required name="id" emptyText="请输入属性标识" style="width: 90%" class="mini-textbox">
+                    </div>
+                </div>
+            </div>
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">属性名称：</label>
+                    <div class="input-block component-body">
+                        <input required name="name" emptyText="请输入属性名称" style="width: 90%" class="mini-textbox">
+                    </div>
+                </div>
+            </div>
+            <div class="mini-col-11 form-component breadth">
+                <div class="form-item">
+                    <label class="form-label">数据类型：</label>
+                    <div class="input-block component-body">
+                        <input required name="dataType" emptyText="请选择数据类型" data="dataType" valueField="id"
+                               allowInput="true" textField="text" style="width: 90%" class="mini-combobox">
+                    </div>
+                </div>
+            </div>
+            <div class="struct-config" id="struct-config">
+
+            </div>
+            <div class="mini-col-4 form-component" style="width: 100%;">
+                <div class="form-item">
+                    <label class="form-label">说明：</label>
+                    <div class="input-block component-body">
+                        <input name="description" emptyText="请输入备注" style="width: 80%;height: 120px;" class="mini-textarea"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="width: 200px;margin: auto" align="center">
+        <a class="mini-button struct-save-button" name="save" iconCls="fa-check">保存</a>
+        <a class="mini-button" onclick="mini.get('structEditor').hide()" plain="true" iconCls="fa-times text-danger">关闭</a>
+    </div>
+</div>
+
+</body>
+</html>

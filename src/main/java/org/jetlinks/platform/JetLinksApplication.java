@@ -4,11 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hswebframework.web.authorization.basic.configuration.EnableAopAuthorize;
-import org.hswebframework.web.authorization.events.AuthorizationDecodeEvent;
 import org.hswebframework.web.authorization.events.AuthorizingHandleBeforeEvent;
 import org.hswebframework.web.crud.annotation.EnableEasyormRepository;
-import org.hswebframework.web.starter.jackson.CustomCodecsAutoConfiguration;
-import org.hswebframework.web.starter.jackson.CustomJackson2JsonDecoder;
 import org.jetlinks.core.device.DeviceInfo;
 import org.jetlinks.core.device.DeviceRegistry;
 import org.jetlinks.core.device.ProductInfo;
@@ -31,27 +28,27 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 
 
-@SpringBootApplication(scanBasePackages = "org.jetlinks.platform", exclude = {
+@SpringBootApplication(scanBasePackages = "org.jetlinks.platform",exclude ={
         DataSourceAutoConfiguration.class
-        // CustomCodecsAutoConfiguration.class
-})
+       // CustomCodecsAutoConfiguration.class
+} )
 @EnableCaching
 //@EnableAsync
 @EnableEasyormRepository("org.jetlinks.platform.manager.entity")
-@EnableAopAuthorize
+//@EnableAopAuthorize
 public class JetLinksApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(JetLinksApplication.class, args);
+        SpringApplication.run(JetLinksApplication.class,args);
     }
 
     @Profile("dev")
     @Component
-    public static class AdminAllAccess {
+    public static class AdminAllAccess{
 
         @EventListener
-        public void handleAuthEvent(AuthorizingHandleBeforeEvent e) {
-            if (e.getContext().getAuthentication().getUser().getUsername().equals("admin")) {
+        public void handleAuthEvent(AuthorizingHandleBeforeEvent e){
+            if(e.getContext().getAuthentication().getUser().getUsername().equals("admin")){
                 e.setAllow(true);
             }
         }
@@ -76,7 +73,7 @@ public class JetLinksApplication {
 
         @Override
         public void run(String... strings) {
-            String metadata = "{\n" +
+            String metadata="{\n" +
                     "  \"id\": \"test-device\",\n" +
                     "  \"name\": \"测试设备\",\n" +
                     "  \"properties\": [\n" +
@@ -168,7 +165,7 @@ public class JetLinksApplication {
                     "  ]\n" +
                     "}";
 
-            ProductInfo productInfo = new ProductInfo("test", "jet-links", metadata);
+            ProductInfo productInfo = new ProductInfo("test","jet-links",metadata);
 
             registry.registry(productInfo).subscribe();
 
@@ -180,7 +177,7 @@ public class JetLinksApplication {
                     for (long i = initStartWith; i < sum; i++) {
                         DeviceInfo deviceInfo = new DeviceInfo();
                         deviceInfo.setId("test" + i);
-                        deviceInfo.setProtocol("fh3j-v2");
+                        deviceInfo.setProtocol("jetlinks.v1.0");
                         deviceInfo.setProductId(productInfo.getId());
                         fluxSink.next(deviceInfo);
                     }
@@ -190,7 +187,7 @@ public class JetLinksApplication {
                         .subscribe(list -> CompletableFuture.runAsync(() -> {
                             for (DeviceInfo deviceInfo : list) {
                                 registry.registry(deviceInfo)
-                                        .flatMap(operator -> {
+                                        .flatMap(operator->{
                                             Map<String, Object> all = new HashMap<>();
                                             all.put("secureId", "test");
                                             all.put("secureKey", "test");

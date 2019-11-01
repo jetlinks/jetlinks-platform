@@ -1,19 +1,21 @@
 package org.jetlinks.platform.manager.web;
 
-import org.hswebframework.web.api.crud.entity.QueryParamEntity;
-import org.hswebframework.web.authorization.annotation.QueryAction;
+import org.hswebframework.web.authorization.annotation.Authorize;
 import org.hswebframework.web.authorization.annotation.Resource;
-import org.hswebframework.web.crud.service.ReactiveCrudService;
+import org.hswebframework.web.crud.web.ResponseMessage;
 import org.hswebframework.web.crud.web.reactive.ReactiveServiceCrudController;
+import org.jetlinks.core.metadata.unit.UnifyUnit;
 import org.jetlinks.platform.manager.entity.DeviceProductEntity;
 import org.jetlinks.platform.manager.service.LocalDeviceProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/device-product")
@@ -29,6 +31,16 @@ public class DeviceProductController implements ReactiveServiceCrudController<De
     }
 
 
+    @PostMapping("/deploy/{productId:.+}")
+    public Mono<Integer> deviceDeploy(@PathVariable String productId) {
+        return productService.deploy(productId);
+    }
+
+    @PostMapping("/cancelDeploy/{productId:.+}")
+    public Mono<Integer> cancelDeploy(@PathVariable String productId) {
+        return productService.cancelDeploy(productId);
+    }
+
     /**
      * 已发布的设备型号查询
      *
@@ -37,5 +49,18 @@ public class DeviceProductController implements ReactiveServiceCrudController<De
     @GetMapping("/registered/query")
     public Flux<DeviceProductEntity> queryRegisteredDeviceProduct() {
         return productService.queryRegisteredDeviceProduct();
+    }
+
+    @GetMapping("/getUnifyUnit")
+    @Authorize(ignore = true)
+    public ResponseMessage<List<Map<String, String>>> getUnifyUnit() {
+        List<Map<String, String>> list = new ArrayList<>();
+        for (UnifyUnit unifyUnit : UnifyUnit.values()) {
+            Map<String, String> map = new HashMap<>();
+            map.put("id", String.valueOf(unifyUnit));
+            map.put("text", String.valueOf(unifyUnit) + "(" + unifyUnit.getName() + ")");
+            list.add(map);
+        }
+        return ResponseMessage.ok(list);
     }
 }

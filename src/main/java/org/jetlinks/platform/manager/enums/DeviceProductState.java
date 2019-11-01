@@ -10,9 +10,9 @@ import org.hswebframework.web.dict.EnumDict;
 @Dict("device-product-state")
 public enum DeviceProductState implements EnumDict<Byte> {
     unregistered("未发布", (byte) 0),
-    registered("已发布", (byte) 0),
+    registered("已发布", (byte) 1),
     other("其它", (byte) -100),
-    forbidden("禁用", (byte) 0);
+    forbidden("禁用", (byte) -1);
 
     private String text;
 

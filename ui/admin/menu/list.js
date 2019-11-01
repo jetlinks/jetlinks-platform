@@ -75,7 +75,6 @@ window.selectIcon = function (e) {
         iconSelector(function (icon) {
             e.sender.setValue(icon);
             e.sender.setText(icon);
-            console.log(e.sender)
         });
     })
 };
@@ -89,17 +88,26 @@ window.renderAction = function (e) {
 
     if (row._state === "added" || row._state === "modified") {
         html.push(tools.createActionButton("保存", "fa fa-check text-success", function () {
+
             var api = "menu/";
             require(["request", "message"], function (request, message) {
+                var func = request.post;
+                if (row.id) {
+                    func = request.put;
+                    api += row.id;
+                }
+
                 var loading = message.loading("保存中...");
                 row.status = 1;
-                request.patch(api, row, function (res) {
+                func(api, row, function (res) {
                     loading.close();
                     if (res.status === 200) {
-                        request.get(api+"_query" ,request.encodeQueryParam(res.result), function (data) {
+                        var id = res.result.id ? res.result.id : row.id;
+                        request.get("menu/" + id, function (data) {
                             grid.updateNode(row, data.result);
                             grid.acceptRecord(row);
                             message.showTips("保存成功!");
+                            console.log(data.result);
                         });
                     } else {
                         message.showTips("保存失败:" + res.message, "danger");
@@ -108,7 +116,9 @@ window.renderAction = function (e) {
             });
         }));
     }
+
     html.push(tools.createActionButton("删除菜单", "fa fa-times text-danger", function () {
+        console.log(row);
         if (row._state === "added") {
             e.sender.removeNode(row);
         } else {
@@ -117,7 +127,8 @@ window.renderAction = function (e) {
                     var loading = message.loading("删除中...");
                     request["delete"]("menu/" + row.id, {}, function (res) {
                         loading.close();
-                        if (res.status == 200) {
+                        if (res.status === 200) {
+                            message.showTips("删除成功")
                             e.sender.removeNode(row);
                         } else {
                             message.showTips("删除失败:" + res.message);
