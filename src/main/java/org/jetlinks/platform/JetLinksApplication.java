@@ -4,11 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hswebframework.web.authorization.basic.configuration.EnableAopAuthorize;
-import org.hswebframework.web.authorization.events.AuthorizationDecodeEvent;
 import org.hswebframework.web.authorization.events.AuthorizingHandleBeforeEvent;
 import org.hswebframework.web.crud.annotation.EnableEasyormRepository;
-import org.hswebframework.web.starter.jackson.CustomCodecsAutoConfiguration;
-import org.hswebframework.web.starter.jackson.CustomJackson2JsonDecoder;
 import org.jetlinks.core.device.DeviceInfo;
 import org.jetlinks.core.device.DeviceRegistry;
 import org.jetlinks.core.device.ProductInfo;
@@ -170,7 +167,7 @@ public class JetLinksApplication {
 
             ProductInfo productInfo = new ProductInfo("test","jet-links",metadata);
 
-           registry.registry(productInfo).subscribe();
+            registry.registry(productInfo).subscribe();
 
             new Thread(() -> {
                 long sum = initStartWith + initDeviceNumber;
@@ -189,16 +186,16 @@ public class JetLinksApplication {
                         .subscribeOn(Schedulers.parallel())
                         .subscribe(list -> CompletableFuture.runAsync(() -> {
                             for (DeviceInfo deviceInfo : list) {
-                               registry.registry(deviceInfo)
-                               .flatMap(operator->{
-                                   Map<String, Object> all = new HashMap<>();
-                                   all.put("secureId", "test");
-                                   all.put("secureKey", "test");
-                                   counter.incrementAndGet();
-                                  return operator.setConfigs(all);
+                                registry.registry(deviceInfo)
+                                        .flatMap(operator->{
+                                            Map<String, Object> all = new HashMap<>();
+                                            all.put("secureId", "test");
+                                            all.put("secureKey", "test");
+                                            counter.incrementAndGet();
+                                            return operator.setConfigs(all);
 
-                               }).subscribe()
-                               ;
+                                        }).subscribe()
+                                ;
                             }
                             log.info("batch registry device :{}", counter.get());
                         }));
