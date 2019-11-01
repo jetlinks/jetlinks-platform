@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hswebframework.web.authorization.basic.configuration.EnableAopAuthorize;
+import org.hswebframework.web.authorization.events.AuthorizationDecodeEvent;
+import org.hswebframework.web.authorization.events.AuthorizingHandleBeforeEvent;
 import org.hswebframework.web.crud.annotation.EnableEasyormRepository;
 import org.hswebframework.web.starter.jackson.CustomCodecsAutoConfiguration;
 import org.hswebframework.web.starter.jackson.CustomJackson2JsonDecoder;
@@ -18,6 +20,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
@@ -40,6 +43,18 @@ public class JetLinksApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(JetLinksApplication.class,args);
+    }
+
+    @Profile("dev")
+    @Component
+    public static class AdminAllAccess{
+
+        @EventListener
+        public void handleAuthEvent(AuthorizingHandleBeforeEvent e){
+            if(e.getContext().getAuthentication().getUser().getUsername().equals("admin")){
+                e.setAllow(true);
+            }
+        }
     }
 
     @Profile({"dev"})
