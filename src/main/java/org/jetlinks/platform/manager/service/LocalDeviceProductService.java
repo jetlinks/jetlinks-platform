@@ -24,16 +24,16 @@ public class LocalDeviceProductService extends GenericReactiveCrudService<Device
     private DeviceRegistry registry;
 
 
-    public Flux<DeviceProductEntity> queryRegisteredDeviceProduct() {
-        return createQuery()
-                .where()
-                .fetch()
-                .filter(productEntity -> productEntity.getState() != DeviceProductState.registered.getValue());
-    }
+//    public Flux<DeviceProductEntity> queryRegisteredDeviceProduct() {
+////        return createQuery()
+////                .where()
+////                .fetch()
+////                .filter(productEntity -> !productEntity.getState().equals(DeviceProductState.registered.getValue()));
+////    }
 
     public Mono<Integer> deploy(String id) {
         return findById(Mono.just(id))
-                .flatMap(product -> registry.registry(new ProductInfo(id, product.getMetadata(), product.getMessageProtocol()))
+                .flatMap(product -> registry.registry(new ProductInfo(id, product.getMessageProtocol(), product.getMetadata()))
                         .flatMap(deviceProductOperator -> deviceProductOperator.setConfigs(product.getSecurity()))
                         .doOnNext(re -> {
                             if (!re) {
@@ -48,6 +48,7 @@ public class LocalDeviceProductService extends GenericReactiveCrudService<Device
     public Mono<Integer> cancelDeploy(String id){
         return findById(Mono.just(id))
                 .flatMap(product -> registry.unRegistry(id)
+                        .thenReturn(true)
                         .flatMap(re -> createUpdate()
                                 .set(DeviceProductEntity::getState, DeviceProductState.unregistered.getValue())
                                 .where(DeviceProductEntity::getId, id)
