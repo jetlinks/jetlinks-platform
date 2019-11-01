@@ -19,7 +19,7 @@ function createScopeHtml(html) {
     unitValue.append("<div class=\"form-item\">");
     unitValue.append("<label class=\"form-label\">单位：</label>");
     unitValue.append("<div class=\"input-block component-body \">\n" +
-        "<input required name=\"unit\" id=\"unifyUnit\" emptyText=\"请选择单位\" style=\"width: 90%\" valueField=\"id\" allowInput=\"true\" textField=\"text\" class=\"mini-combobox\"></div>");
+        "<input name=\"unit\" id=\"unifyUnit\" showNullItem='true' emptyText=\"请选择单位\" style=\"width: 90%\" valueField=\"id\" allowInput=\"true\" textField=\"text\" class=\"mini-combobox\"></div>");
     return html.append(labelValue).append(stepValue).append(unitValue);
 }
 
@@ -94,7 +94,7 @@ var dataType = [
             textValue.append("<div class=\"form-item\">");
             textValue.append("<label class=\"form-label\">时间格式：</label>");
             textValue.append("<div class=\"input-block component-body \">\n" +
-                "<input style=\"width: 90%;\" borderStyle=\"border:0\" class=\"mini-textbox\" readOnly=\"true\" value=\"String类型的UTC时间戳 (毫秒)\"/></div>");
+                "<input style=\"width: 90%;\" name=\"dateFormat\" class=\"mini-textbox\" emptyText=\"不输入默认为:String类型的UTC时间戳 (毫秒)\"/></div>");
             html.append(textValue);
         }
     },
@@ -137,12 +137,14 @@ importMiniui(function () {
     require(["request", "miniui-tools", "message", "search-box"], function (request, tools, message, SearchBox) {
         window.tools = tools;
 
+        new mini.Form("#product-info").getField("id").setReadOnly(false);
+
         var func = request.post;
-        var id = request.getParameter("id");
+        var dataId = request.getParameter("id");
         var api = "device-product";
-        if (id) {
-            loadData(id);
-            api += "/" + id;
+        if (dataId) {
+            loadData(dataId);
+            api += "/" + dataId;
             func = request.put;
         }
 
@@ -436,15 +438,18 @@ importMiniui(function () {
             var eventData = [];
 
             var productInfo = tools.getFormData("#product-info", true);
+
+            if (dataId) {
+                productInfo.id = dataId;
+            } else {
+                productInfo.status = 0;
+                productInfo.createTime = new Date().getTime();
+            }
             if (!productInfo) {
                 message.showTips("保存失败:请检查型号基本信息", "danger");
                 return false;
             }
             productInfo.security = tools.getFormData("#security-info", true);
-
-            if (!id) {
-                productInfo.id = id;
-            }
 
             $(mini.get("attribute-list").getData()).each(function () {
                 attributeData.push(this.attributeInfoList);
@@ -456,10 +461,6 @@ importMiniui(function () {
                 eventData.push(this.eventDataList);
             });
             productInfo.metadata = JSON.stringify({"properties": attributeData, "functions": functionData, "events": eventData});
-            if (!id) {
-                productInfo.status = 0;
-                productInfo.createTime = new Date().getTime();
-            }
 
             var loading = message.loading("提交中");
             func(api, productInfo, function (response) {
@@ -653,7 +654,9 @@ importMiniui(function () {
             request.get("device-product/" + id, function (response) {
                 if (response.status === 200) {
                     var data = response.result;
-                    new mini.Form("#product-info").setData(data);
+                    var form = new mini.Form("#product-info");
+                    form.getField("id").setReadOnly(true);
+                    form.setData(data);
                     mini.getByName("deviceType").setValue(data.deviceType.value);
                     new mini.Form("#security-info").setData(data.security);
                     var metadata = JSON.parse(data.metadata);
