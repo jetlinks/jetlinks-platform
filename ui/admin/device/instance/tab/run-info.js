@@ -5,12 +5,12 @@ importMiniui(function () {
     require(["request", "miniui-tools", "metadata-parser", "message"], function (request, tools, metadataParser, message) {
         var _metadata = "";
         var id = request.getParameter("id");
-        request.get("device-instance/" + id, function (response) {
-            var data = response.result;
-            var metadata = data.deriveMetadata;
-            _metadata = metadata;
-            initPropertyPlate(metadata);
-        });
+        // request.get("device-instance/" + id, function (response) {
+        //     var data = response.result;
+        //     var metadata = data.deriveMetadata;
+        //     _metadata = metadata;
+        //     initPropertyPlate(metadata);
+        // });
 
         initDeviceRunInfo(false);
 
@@ -32,6 +32,8 @@ importMiniui(function () {
                 $(".device-online-time").text(explain);
                 if (isRefresh){
                     message.showTips("刷新成功");
+                }else {
+                    initPropertyPlate(data.metadata);
                 }
             });
         }
@@ -51,7 +53,7 @@ importMiniui(function () {
                 "            <div class=\"row\">\n" +
                 "                <div class=\"mini-col-11\" style=\"margin-bottom: 10%\"><span class=\"info-key\">" + name + "</span></div>\n" +
                 "                <div class=\"mini-col-1\" style=\"margin-bottom: 10%\"><i class=\"fa fa-refresh refresh-effect property-refresh\" title='" + propertyId + "'></i></div>\n" +
-                "                <div class=\"mini-col-12\" style=\"margin-bottom: 20%\"><span class=\"info-value-big property-value\">" + value + "</span><span>" + icon + "</span><span class=\"mac\"></span></div>\n" +
+                "                <div class=\"mini-col-12\" style=\"margin-bottom: 20%\"><span class=\"info-value-big property-value\">" + value + "</span><span class=\"info-value-big property-value\" >" + icon + "</span><span class=\"mac\"></span></div>\n" +
                 "                <div class=\"mini-col-12 property-chart\">" + chart + "</div>\n" +
                 "            </div>\n" +
                 "        </div>";
@@ -62,6 +64,9 @@ importMiniui(function () {
             request.get("device-instance/" + id + "/property/" + property.id, function (response) {
                 if (response.status === 200) {
                     var value = response.result.value;
+                    if (value === '' || value === undefined){
+                        value = '--';
+                    }
                     var plate1 = structurePlate(property.id, property.name, value, unifyUnit.symbol, unifyUnit.getCharts(value));
                     $(".propertyPlate").append(plate1);
                 }
@@ -85,6 +90,9 @@ importMiniui(function () {
         });
 
         function initPropertyPlate(metadata) {
+            if (metadata === '' || metadata === undefined){
+                return;
+            }
             var properties = metadataParser.getProperties(metadata);
             for (var key in properties) {
                 if (typeof (properties.getProperty(key)) === 'object') {
