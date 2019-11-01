@@ -18,7 +18,8 @@
                         <div class="form-item">
                             <label class="form-label">型号ID：</label>
                             <div class="input-block component-body">
-                                <input style="width: 100%;" borderStyle="border:0" readOnly="true" class="mini-textbox" value="保存后自动生成"/>
+                                <!--borderStyle="border:0" readOnly="true"-->
+                                <input style="width: 100%;" name="id" class="mini-textbox" emptyText="请输入型号ID,不输入则系统自动生成"/>
                             </div>
                         </div>
                     </div>
@@ -26,7 +27,7 @@
                         <div class="form-item">
                             <label class="form-label">型号名称：</label>
                             <div class="input-block component-body">
-                                <input required name="name" emptyText="请输入" style="width: 100%" class="mini-textbox">
+                                <input required name="name" emptyText="请输入型号名称" style="width: 100%" class="mini-textbox">
                             </div>
                         </div>
                     </div>
@@ -128,7 +129,7 @@
             <div id="functionConfig" class="mini-panel" title="功能定义" style="width:99%;height:50%;margin-top: 10px;" expanded="true"
                  showToolbar="true" showFooter="false" showCollapseButton="false" showCloseButton="false">
                 <div class="mini-fit">
-                    <div id="function-list" class="mini-datagrid" style="width:100%;height: 100%;margin: auto;" idField="functionDataList"  showPager="false">
+                    <div id="function-list" class="mini-datagrid" style="width:100%;height: 100%;margin: auto;" idField="functionDataList" showPager="false">
                         <div property="columns">
                             <div field="id" width="100" headerAlign="center" allowSort="true" align="center">功能标识</div>
                             <div field="name" width="100" headerAlign="center" allowSort="true" align="center">功能名称</div>
