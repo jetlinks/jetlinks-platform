@@ -5,13 +5,12 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetlinks.core.device.DeviceConfigKey;
 import org.jetlinks.core.device.DeviceRegistry;
-import org.jetlinks.core.message.ChildDeviceMessage;
-import org.jetlinks.core.message.ChildDeviceMessageReply;
-import org.jetlinks.core.message.DeviceMessage;
-import org.jetlinks.core.message.Message;
+import org.jetlinks.core.message.*;
 import org.jetlinks.core.message.event.EventMessage;
 import org.jetlinks.core.message.function.FunctionInvokeMessageReply;
 import org.jetlinks.core.message.property.ReadPropertyMessageReply;
+import org.jetlinks.platform.events.DeviceConnectedEvent;
+import org.jetlinks.platform.events.DeviceDisconnectedEvent;
 import org.jetlinks.platform.events.DeviceMessageEvent;
 import org.jetlinks.rule.engine.api.RuleData;
 import org.jetlinks.rule.engine.api.executor.ExecutionContext;
@@ -33,6 +32,7 @@ import java.util.function.Function;
 
 @Component
 @Slf4j
+@SuppressWarnings("all")
 public class DeviceMessageConsumerNode extends CommonExecutableRuleNodeFactoryStrategy<DeviceMessageConsumerNode.Config> {
 
     private EmitterProcessor<Map<String, Object>> processor;
@@ -42,6 +42,45 @@ public class DeviceMessageConsumerNode extends CommonExecutableRuleNodeFactorySt
 
     public DeviceMessageConsumerNode() {
         processor = EmitterProcessor.create(false);
+    }
+
+    @EventListener
+    public void handleDeviceMessage(DeviceDisconnectedEvent event) {
+        if (processor.hasDownstreams()) {
+            Map<String, Object> msg = new HashMap<>();
+            msg.put("type", "offline");
+            msg.put("deviceId", event.getSession().getDeviceId());
+            msg.put("timestamp",System.currentTimeMillis());
+
+            event.getSession()
+                    .getOperator()
+                    .getConfig(DeviceConfigKey.productId)
+                    .map(r -> {
+                        msg.put("productId", r);
+                        return msg;
+                    }).switchIfEmpty(Mono.just(msg))
+                    .subscribe(processor::onNext);
+        }
+
+    }
+
+    @EventListener
+    public void handleDeviceMessage(DeviceConnectedEvent event) {
+        if (processor.hasDownstreams()) {
+            Map<String, Object> msg = new HashMap<>();
+            msg.put("type", "online");
+            msg.put("deviceId", event.getSession().getDeviceId());
+            msg.put("timestamp",System.currentTimeMillis());
+            event.getSession()
+                    .getOperator()
+                    .getConfig(DeviceConfigKey.productId)
+                    .map(r -> {
+                        msg.put("productId", r);
+                        return msg;
+                    }).switchIfEmpty(Mono.just(msg))
+                    .subscribe(processor::onNext);
+        }
+
     }
 
     @EventListener
@@ -70,7 +109,7 @@ public class DeviceMessageConsumerNode extends CommonExecutableRuleNodeFactorySt
         Disposable disposable = processor
                 .filter(map -> StringUtils.isEmpty(config.getProductId()) || config.getProductId().equals(map.get("productId")))
                 .map(RuleData::create)
-                .flatMap(data->context.getOutput().write(Mono.just(data)))
+                .flatMap(data -> context.getOutput().write(Mono.just(data)))
                 .subscribe();
 
         context.onStop(disposable::dispose);
@@ -92,11 +131,14 @@ public class DeviceMessageConsumerNode extends CommonExecutableRuleNodeFactorySt
             msg.put("type", "read-property");
         } else if (message instanceof FunctionInvokeMessageReply) {
             msg.put("type", "invoke-function");
+        } else if (message instanceof DeviceOnlineMessage) {
+            msg.put("type", "online");
+        } else if (message instanceof DeviceOfflineMessage) {
+            msg.put("type", "offline");
         }
         msg.put("message", message);
         if (message instanceof DeviceMessage) {
             String device = ((DeviceMessage) message).getDeviceId();
-
             return registry
                     .getDevice(device)
                     .flatMap(operator -> operator.getConfig(DeviceConfigKey.productId))

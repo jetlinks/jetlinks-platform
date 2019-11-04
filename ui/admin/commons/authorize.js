@@ -34,7 +34,9 @@ define(["request", "jquery"], function (request, $) {
                 rowMap[this.id] = this;
             });
             autz.hasPermission = function () {
-                if (arguments.length === 0) return true;
+                if (arguments.length === 0||autz.user.username==='admin') {
+                    return true;
+                }
                 var permission = arguments[0];
                 //用户持有的权限
                 var per = permissionMap[permission];

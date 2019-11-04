@@ -8,8 +8,8 @@ importMiniui(function () {
     hide();
 
     var typeData = [
-        {id: "jar", text: "jar"},
-        {id: "other", text: "其他"}];
+        {id: "jar", text: "jar"}
+    ];
     var typeBox = mini.getbyName("type");
     var provider = mini.getbyName("provider");
     var location = mini.getbyName("location");
@@ -38,26 +38,28 @@ importMiniui(function () {
             var func = request.post;
             var id = request.getParameter("id");
             var type = request.getParameter("type")
-            var api = "protocol";
             if (id) {
                 loadData(id);
-                api += "/" + id;
-                func = request.put;
             }
             if (type && type === "jar") show();
             $(".save-button").on("click", (function () {
                 require(["message"], function (message) {
                     var data = getDataAndValidate();
+                    if (!data) return;
+                    var api = "protocol";
+                    if (id) {
+                        api += "/" + id;
+                        func = request.put;
+                    }
                     if (!id) {
                         data.state = 0;
                     }
-                    if (!data) return;
                     var loading = message.loading("提交中");
                     func(api, data, function (response) {
                         loading.close();
                         if (response.status === 200) {
                             message.showTips("保存成功");
-                            if (!id) id = response.result;
+                            if (!id) id = response.result.id;
                         } else {
                             message.showTips("保存失败:" + response.message, "danger");
                             if (response.result)
@@ -87,7 +89,7 @@ importMiniui(function () {
                         loading.hide();
                         if (response.status === 200) {
                             var data = response.result;
-                            if (type==="jar"){
+                            if (type === "jar") {
                                 data.provider = data.configuration.provider;
                                 data.location = data.configuration.location;
                             }
@@ -131,12 +133,15 @@ function initWebUploader(WebUploader, storejs, responseCall) {
 
         // 选择文件的按钮。可选。
         // 内部根据当前运行是创建，可能是input元素，也可能是flash.
-        pick: '#upload-button',
+        pick: {
+            id: '#upload-button',
+            multiple: false
+        },
         multiple: false,
         auto: true,
         threads: 1,
-        duplicate: true,
-        extensions: 'xlsx,csv,jar',
+        duplicate: false,
+        extensions: 'jar',
         // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
         resize: false
     });
@@ -148,7 +153,7 @@ function initWebUploader(WebUploader, storejs, responseCall) {
 
 
     uploader.on("uploadBeforeSend", function (e, param, headers) {
-        let token = storejs.get("X-Access-Token");
+        var token = storejs.get("X-Access-Token");
         if (token) {
             headers['X-Access-Token'] = token;
         }
@@ -164,5 +169,9 @@ function initWebUploader(WebUploader, storejs, responseCall) {
     uploader.on('uploadComplete', function (file) {
 
     });
+
+    window.setTimeout(function () {
+        $($(".webuploader-container").children()[1]).css("height", "32")
+    }, 1000)
 
 }
