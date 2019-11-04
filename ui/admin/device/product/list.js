@@ -26,7 +26,7 @@ importMiniui(function () {
             })
         });
 
-        window.createTime = function(e){
+        window.createTime = function (e) {
             return mini.formatDate(new Date(e.value), "yyyy-MM-dd HH:mm:ss");
         };
 
@@ -34,7 +34,7 @@ importMiniui(function () {
             var loding = message.loading("发布中...");
             request.post("device-product/deploy/" + id, {}, function (response) {
                 loding.close();
-                if (response.result === 1){
+                if (response.result === 1) {
                     message.showTips("发布成功");
                     grid.reload();
                 } else {
@@ -44,17 +44,32 @@ importMiniui(function () {
         }
 
         function productCancelDeploy(id) {
-            var loding = message.loading("取消中...");
+            var loding = message.loading("重新发布中...");
             request.post("device-product/cancelDeploy/" + id, {}, function (response) {
                 loding.close();
-                if (response.result === 1){
-                    message.showTips("取消成功");
+                if (response.result === 1) {
+                    message.showTips("重新发布成功");
                     grid.reload();
                 } else {
-                    message.showTips("取消失败", "danger");
+                    message.showTips("重新发布失败", "danger");
                 }
             });
         }
+
+        window.stateAction = function (e) {
+            var html = "";
+            var row = e.record;
+            if (row.state === 1) {
+                html = tools.createActionButton("已发布,重新发布", "fa fa-check text-success", function () {
+                    productDeploy(row.id);
+                });
+            } else {
+                html = tools.createActionButton("未发布,现在发布", "fa fa-times text-danger", function () {
+                    productDeploy(row.id);
+                })
+            }
+            return html
+        };
 
         window.renderAction = function (e) {
             var row = e.record;
@@ -65,16 +80,6 @@ importMiniui(function () {
                     grid.reload();
                 });
             }));
-
-            if (row.state === 1){
-                html.push(tools.createActionButton("取消发布", "icon-download", function () {
-                    productCancelDeploy(row.id);
-                }));
-            } else {
-                html.push(tools.createActionButton("发布", "icon-upload", function () {
-                    productDeploy(row.id);
-                }));
-            }
 
             html.push(tools.createActionButton("删除", "icon-remove", function () {
                 require(["message", "request"], function (message, request) {
