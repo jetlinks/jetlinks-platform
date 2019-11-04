@@ -33,8 +33,6 @@ importMiniui(function () {
         var grid = window.grid = mini.get("datagrid");
         tools.initGrid(grid);
 
-        grid.load();
-
         grid.setUrl(request.basePath + "device-instance/_query");
 
         function search() {
@@ -53,7 +51,7 @@ importMiniui(function () {
             var loding = message.loading("发布中...");
             request.post("device-instance/deploy/" + id, {}, function (response) {
                 loding.close();
-                if (response.result === 1){
+                if (response.result === 1) {
                     message.showTips("发布成功");
                 } else {
                     message.showTips("发布失败");
@@ -64,13 +62,14 @@ importMiniui(function () {
 
         window.renderAction = function (e) {
             var row = e.record;
+            console.log(row)
             var html = [];
 
             // if (authorize.hasPermission("home-supplier", "update")) {
             //
             // }
             html.push(tools.createActionLink("查看", "查看", function () {
-                tools.openWindow("admin/device/instance/detail.html?id=" + row.id, "查看设备", "1300", "850", function () {
+                tools.openWindow("admin/device/instance/detail.html?id=" + row.id + "&productId=" + row.productId, "查看设备", "1300", "850", function () {
                     grid.reload();
                 })
             }));

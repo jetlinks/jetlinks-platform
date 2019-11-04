@@ -6,21 +6,25 @@ import io.searchbox.client.JestResultHandler;
 import io.searchbox.core.Bulk;
 import io.searchbox.core.Index;
 import lombok.extern.slf4j.Slf4j;
+import org.jetlinks.core.Value;
 import org.jetlinks.core.device.DeviceOperator;
 import org.jetlinks.core.device.DeviceRegistry;
 import org.jetlinks.core.message.event.EventMessage;
 import org.jetlinks.core.message.property.ReadPropertyMessageReply;
 import org.jetlinks.core.message.property.WritePropertyMessageReply;
 import org.jetlinks.core.metadata.DataType;
+import org.jetlinks.core.metadata.DeviceMetadata;
+import org.jetlinks.core.metadata.EventMetadata;
 import org.jetlinks.core.metadata.PropertyMetadata;
-import org.jetlinks.core.metadata.types.DateTimeType;
-import org.jetlinks.core.metadata.types.NumberType;
+import org.jetlinks.core.metadata.types.*;
 import org.jetlinks.platform.events.DeviceMessageEvent;
 import org.jetlinks.platform.events.GaugePropertyEvent;
+import org.jetlinks.platform.manager.entity.ElasticSearchIndexEntity;
 import org.jetlinks.platform.manager.logger.DeviceOperationLog;
 import org.jetlinks.platform.manager.entity.DevicePropertiesEntity;
 import org.jetlinks.platform.manager.enums.DeviceLogType;
 import org.jetlinks.platform.manager.service.LocalDevicePropertiesService;
+import org.jetlinks.platform.manager.utils.GenerateDeviceEventIndex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
@@ -30,6 +34,10 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -64,7 +72,11 @@ public class DeviceEventMessageHandler {
             syncDeviceProperty(message.getDeviceId(), ((Map) message.getData()), new Date(message.getTimestamp()));
 
         } else {
-            syncEvent(message.getDeviceId(), message);
+            try {
+                syncEvent(message.getDeviceId(), message);
+            } catch (Exception e) {
+                log.error("同步事件数据到es错误：{}", e);
+            }
         }
         DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
                 .deviceId(message.getDeviceId())
@@ -109,50 +121,57 @@ public class DeviceEventMessageHandler {
 
     }
 
-    private void syncEvent(String device, EventMessage message) {
 
-//        registry.getDevice(device)
-//                .flatMap(DeviceOperator::getMetadata)
-//                .subscribe(metadata -> {
-//                    Object value = message.getData();
-//
-//                    List<PropertyMetadata> metadataList = metadata
-//                            .getEvent(message.getEvent())
-//                            .map(EventMetadata::getParameters)
-//                            .orElseGet(Collections::emptyList);
-//
-//                    Map<String, Object> data = new HashMap<>();
-//                    data.put("deviceId", device);
-//                    data.put("time", message.getTimestamp());
-//                    if (value instanceof Map) {
-//                        data.putAll(((Map) value));
-//                    } else if (metadataList.size() == 1) {
-//                        data.put(metadataList.get(0).getId(), value);
-//                    } else {
-//                        data.put("value", value);
-//                    }
-//                    Bulk.Builder builder = new Bulk.Builder()
-//                            .defaultIndex("device_event_".concat(message.getEvent()))
-//                            .defaultType("device");
-//
-//                    builder.addAction(new Index.Builder(data).build());
-//
-//
-//                    jestClient.executeAsync(builder.build(), new JestResultHandler<JestResult>() {
-//                        @Override
-//                        public void completed(JestResult result) {
-//                            if (!result.isSucceeded()) {
-//                                log.error("保存设备事件失败:{}", result.getJsonString());
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void failed(Exception ex) {
-//                            log.error("保存设备事件失败", ex);
-//                        }
-//                    });
-//                });
-//
+    private void syncEvent(String device, EventMessage message) {
+        registry.getDevice(device)
+                .flatMap(deviceOperator ->
+                        Mono.zip(
+                                deviceOperator.getConfig("productId")
+                                        .map(Value::asString)
+                                        .switchIfEmpty(Mono.just("")),
+                                deviceOperator.getMetadata()))
+                .subscribe(tuple2 -> {
+                    DeviceMetadata metadata = tuple2.getT2();
+                    Object value = message.getData();
+                    List<PropertyMetadata> metadataList = metadata
+                            .getEvent(message.getEvent())
+                            .map(EventMetadata::getParameters)
+                            .orElseGet(Collections::emptyList);
+
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("deviceId", device);
+                    data.put("productId", tuple2.getT1());
+                    data.put("createTime", PropertyValueTrans.transDateFormat(new Date(message.getTimestamp())));
+                    Object tempValue = PropertyValueTrans.transValueFormat(value, metadataList);
+                    if (tempValue instanceof Map) {
+                        data.putAll(((Map) tempValue));
+                    } else {
+                        data.put("value", tempValue);
+                    }
+                    ElasticSearchIndexEntity indexEntity =
+                            GenerateDeviceEventIndex.generateIndex(tuple2.getT1(), message.getEvent());
+                    Bulk.Builder builder = new Bulk.Builder()
+                            .defaultIndex(indexEntity.getIndex())
+                            .defaultType(indexEntity.getType());
+
+                    builder.addAction(new Index.Builder(data).build());
+
+
+                    jestClient.executeAsync(builder.build(), new JestResultHandler<JestResult>() {
+                        @Override
+                        public void completed(JestResult result) {
+                            if (!result.isSucceeded()) {
+                                log.error("保存设备事件失败:{}", result.getJsonString());
+                            }
+                        }
+
+                        @Override
+                        public void failed(Exception ex) {
+                            log.error("保存设备事件失败", ex);
+                        }
+                    });
+                });
+
 
     }
 
