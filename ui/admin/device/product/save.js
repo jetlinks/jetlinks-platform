@@ -176,7 +176,12 @@ importMiniui(function () {
         request.get("protocol/supports", function (response) {
             if (response.status === 200) {
                 var messageProtocol = mini.getByName("messageProtocol");
-                messageProtocol.setData(response.result);
+                var data = [];
+                response.result.forEach(function (val) {
+                    console.log(val);
+                    data.push({"id": val.id, "name": val.name + "(" + val.id + ")"})
+                });
+                messageProtocol.setData(data);
             }
         });
 
@@ -226,7 +231,7 @@ importMiniui(function () {
                     } else {
                         valData = val.valueType;
                     }
-                    setConfigData(val.dataType,valData,"attribute",structInfoList,"attributeConfigCategory");
+                    setConfigData(val.dataType, valData, "attribute", structInfoList, "attributeConfigCategory");
                 }, 100)
             }
 
@@ -476,7 +481,7 @@ importMiniui(function () {
                     } else {
                         valData = val.valueType;
                     }
-                    setConfigData(val.dataType,valData,"event",eventInfoOutputList,"eventInfoOutput");
+                    setConfigData(val.dataType, valData, "event", eventInfoOutputList, "eventInfoOutput");
                 }, 100)
             } else {
                 form.getField("id").setReadOnly(false);
