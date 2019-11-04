@@ -119,6 +119,9 @@ importMiniui(function () {
 
                 function init() {
                     ifmWin = ifm[0].contentWindow;
+                    ifmWin.onClose=function () {
+                        layout.collapseRegion("east");
+                    }
                     if (ifmWin.init) {
                         doReload && doReload();
                     } else {
@@ -142,7 +145,7 @@ importMiniui(function () {
                 var dimension = dimensionTypeMap[dimensionType];
                 openBindDimensionWindow(dimension.uri, dimension.typeName, dimension.relationApi);
             } else {
-                openBindDimensionWindow("admin/dimension/list.html?selector=1", "维度目标");
+                openBindDimensionWindow("admin/dimension/selector.html?selector=1", "维度目标");
             }
 
         });
@@ -176,6 +179,7 @@ importMiniui(function () {
                             dimensionType: window.nowSelectedType.id,
                             dimensionTypeName: window.nowSelectedType.name,
                             permission: permissionId,
+                            merge: true,
                             state: 1
                         };
                         dimensionGrid.loading();
