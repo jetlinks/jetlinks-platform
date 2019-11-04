@@ -14,7 +14,7 @@ var menus = [{
     "name": "系统设置",
     "parentId": "-1",
     "path": "sOrB",
-    "permissionId": "",
+    "permissionExpression": "",
     "sortIndex": 1,
     "status": 1,
     "url": ""
@@ -24,7 +24,7 @@ var menus = [{
     "name": "数据字典",
     "parentId": "e9dc96d6b677cbae865670e6813f5e8b",
     "path": "sOrB-fhFG",
-    "permissionId": "dictionary",
+    "permissionExpression": "resource:dictionary",
     "sortIndex": 101,
     "status": 1,
     "url": "admin/dictionary/list.html"
@@ -34,7 +34,7 @@ var menus = [{
     "name": "菜单管理",
     "parentId": "e9dc96d6b677cbae865670e6813f5e8b",
     "path": "sOrB-i2ea",
-    "permissionId": "menu",
+    "permissionExpression": "resource:menu",
     "sortIndex": 102,
     "status": 1,
     "url": "admin/menu/list.html"
@@ -44,7 +44,7 @@ var menus = [{
     "name": "权限管理",
     "parentId": "e9dc96d6b677cbae865670e6813f5e8b",
     "path": "sOrB-X27v",
-    "permissionId": "permission,autz-setting",
+    "permissionExpression": "resource:permission",
     "sortIndex": 103,
     "status": 1,
     "url": "admin/permission/list.html"
@@ -54,10 +54,70 @@ var menus = [{
     "name": "用户管理",
     "parentId": "e9dc96d6b677cbae865670e6813f5e8b",
     "path": "sOrB-Dz7b",
-    "permissionId": "user",
+    "permissionExpression": "resource:user",
     "sortIndex": 105,
     "status": 1,
     "url": "admin/user/list.html"
+},{
+    "icon": "fa fa-users",
+    "id": "42fc4f83d12cc172e4690937eb15752a",
+    "name": "维度管理",
+    "parentId": "e9dc96d6b677cbae865670e6813f5e8b",
+    "path": "sOrB-rBBu",
+    "permissionExpression": "resource:dimension",
+    "sortIndex": 103,
+    "status": 1,
+    "url": "admin/dimension/list.html"
+},{
+    "icon": "fa fa-fighter-jet",
+    "id": "1191174249033035776",
+    "name": "协议管理",
+    "parentId": "",
+    "path": "eIah",
+    "permissionExpression": "",
+    "sortIndex": 3,
+    "status": 1,
+    "url": ""
+}, {
+    "icon": "fa fa-exchange",
+    "id": "1191174514977075200",
+    "name": "协议管理",
+    "parentId": "1191174249033035776",
+    "path": "eIah0-vXS7",
+    "permissionExpression": "resource:protocol",
+    "sortIndex": 301,
+    "status": 1,
+    "url": "admin/protocol/list.html"
+}, {
+    "icon": "fa fa-puzzle-piece",
+    "id": "1190175990379909120",
+    "name": "设备管理",
+    "parentId": "",
+    "path": "Y8ea",
+    "permissionExpression": "",
+    "sortIndex": 2,
+    "status": 1,
+    "url": ""
+}, {
+    "icon": "fa fa-female",
+    "id": "1190181865777729536",
+    "name": "设备型号",
+    "parentId": "1190175990379909120",
+    "path": "Y8ea-B1HL",
+    "permissionExpression": "resource:device-product",
+    "sortIndex": 201,
+    "status": 1,
+    "url": "admin/device/product/list.html"
+}, {
+    "icon": "fa fa-print",
+    "id": "1190181869565186048",
+    "name": "设备实例",
+    "parentId": "1190175990379909120",
+    "path": "Y8ea-fZut",
+    "permissionExpression": "resource:device-instance",
+    "sortIndex": 202,
+    "status": 1,
+    "url": "admin/device/instance/list.html"
 }];
 
 
