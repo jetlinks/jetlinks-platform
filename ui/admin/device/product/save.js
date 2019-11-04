@@ -6,14 +6,14 @@ function createScopeHtml(html) {
     labelValue.append("<div class=\"form-item\">");
     labelValue.append("<label class=\"form-label\">取值范围：</label>");
     labelValue.append("<div class=\"input-block component-body \">\n" +
-        "<input required name=\"min\" emptyText=\"最小值\" style=\"width: 43.5%\" class=\"mini-textbox\">~\n" +
-        "<input required name=\"max\" emptyText=\"最大值\" style=\"width: 43.5%\" class=\"mini-textbox\"></div>");
+        "<input name=\"min\" emptyText=\"最小值\" style=\"width: 43.5%\" class=\"mini-textbox\">~\n" +
+        "<input name=\"max\" emptyText=\"最大值\" style=\"width: 43.5%\" class=\"mini-textbox\"></div>");
 
     var stepValue = $("<div class=\"mini-col-11 form-component breadth\">");
     stepValue.append("<div class=\"form-item\">");
     stepValue.append("<label class=\"form-label\">步长：</label>");
     stepValue.append("<div class=\"input-block component-body \">\n" +
-        "<input required name=\"step\" emptyText=\"请输入步长\" style=\"width: 90%\" class=\"mini-textbox\"></div>");
+        "<input name=\"step\" emptyText=\"请输入步长\" style=\"width: 90%\" class=\"mini-textbox\"></div>");
 
     var unitValue = $("<div class=\"mini-col-11 form-component breadth\">");
     unitValue.append("<div class=\"form-item\">");
@@ -178,7 +178,6 @@ importMiniui(function () {
                 var messageProtocol = mini.getByName("messageProtocol");
                 var data = [];
                 response.result.forEach(function (val) {
-                    console.log(val);
                     data.push({"id": val.id, "name": val.name + "(" + val.id + ")"})
                 });
                 messageProtocol.setData(data);
@@ -282,7 +281,6 @@ importMiniui(function () {
                     }
                 })
             } else if (dataType === "object") {
-                list = [];
                 val.forEach(function (val) {
                     var parameterId = "i" + new Date().getTime();
                     list.push(val);
@@ -381,7 +379,7 @@ importMiniui(function () {
                                 }
                             })
                         } else if (val.dataType === "object") {
-                            eventInfoOutputList = [];
+                            functionOutputInfoList = [];
                             var parameterId = "i" + new Date().getTime();
                             functionOutputInfoList.push(val.outputs);
                             addParameterHtml("output-object-struct", parameterId, functionOutputInfoList, val.outputs);
@@ -398,7 +396,6 @@ importMiniui(function () {
             $(".function-save-button").unbind("click").on("click", function () {
                 var functionInfo = tools.getFormData("#function-info", true);
                 functionOperation();
-                //var inputs = getConfigData(functionInfo.inputDataType, "functionInputConfig", functionInputInfoList, "input");
                 var outputs = getConfigData(functionInfo.dataType, "functionOutputConfig", functionOutputInfoList, "output");
                 if (functionInfo.dataType === "object") {
                     outputs = functionOutputInfoList[0];
@@ -712,8 +709,9 @@ importMiniui(function () {
         }
 
         function addParameterHtml(position, parameterId, list, parameter) {
+            var val = parameter.name + "：" + parameter.id + "(" + parameter.dataType + ")";
             $("." + position).append("<div class=\"parameter-input\" id=\"" + parameterId + "\">\n" +
-                "    <input required id=\"data-" + parameterId + "\" name=\"" + parameterId + "\" readonly=\"true\" style=\"width: 72%\" class=\"mini-textbox\" value=\"参数名称：" + parameter.name + "(" + parameter.id + ")\">\n" +
+                "    <input required id=\"data-" + parameterId + "\" name=\"" + parameterId + "\" readonly=\"true\" style=\"width: 72%\" class=\"mini-textbox\" value=\"" + val + "\">\n" +
                 "    <a class=\"text-button\" id=\"del" + parameterId + "\" href=\"javascript:void(0);\">删除</a>\n" +
                 "    <a class=\"text-button\" id=\"up" + parameterId + "\" href=\"javascript:void(0);\">编辑</a>\n" +
                 "</div>\n");
