@@ -147,6 +147,8 @@ importMiniui(function () {
                                     }, function (resp) {
                                         if (resp.status !== 200) {
                                             printLog("error", resp.message)
+                                        }else{
+                                            printLog("info", "测试通过")
                                         }
                                     })
                                 }, true)
@@ -362,7 +364,6 @@ importMiniui(function () {
                         if (startResponse.status === 200) {
                             contexts.push(startResponse.result);
                             request.post("rule-engine/debug/" + debugId + "/" + startResponse.result, data, function (response) {
-                                pollLog();
                                 if (response.status !== 200) {
                                     printLog("error", response.message)
                                 } else {
@@ -382,43 +383,30 @@ importMiniui(function () {
 
         var timeout;
 
-        function pollLog(call) {
-            doInDebug(function (debugId) {
-                request.get("rule-engine/debug/" + debugId + "/logs/20", function (response) {
-                    if (response.status === 200) {
-                        $(response.result).each(function () {
-                            var log = this;
-                            if (log.type === 'log') {
-                                printLog(log.message.level, log.type, "\t:\t", log.message.message);
-                            } else {
-                                printLog("info", log.type, "\t:\t", log.message)
-                            }
-                            // console.log(log)
-                        });
-                        if (response.result.length > 0) {
-                            pollLog(call);
-                        } else {
-                            if (call) {
-                                call();
-                            }
-                        }
-                    } else if (response.status === 404) {
-                        storejs.remove('ruleEngineDebugSessionId');
-                        debugSessionId = null;
-                    } else {
-                        printLog("error", response.message)
-                    }
-                })
-            })
-        }
+        var polling = false;
 
         function timingPollLog() {
-            if (timeout) {
-                window.clearTimeout(timeout);
+            if (polling) {
+                return;
             }
-            pollLog(function () {
-                timeout = window.setTimeout(timingPollLog, 1000);
-            });
+            polling = true;
+            var es = new EventSource(window.API_BASE_PATH + "rule-engine/debug/" + debugSessionId + "/logs/?:X_Access_Token="+request.getToken());
+            es.onmessage = function (ev) {
+                var log = JSON.parse(ev.data);
+                if (log.type === 'log') {
+                    printLog(log.message.level, log.type, "\t:\t", log.message.message);
+                } else {
+                    printLog("info", log.type, "\t:\t", log.message)
+                }
+            };
+
+            es.onerror = function (ev) {
+                console.error(ev)
+               // printLog("error", "error", "\t:\t", ev.message);
+                closeSession();
+                es.close();
+                polling=false;
+            }
         }
 
         var len = 0;
@@ -563,10 +551,10 @@ importMiniui(function () {
         var tagMatch = mini.get('tag-match');
         var schedulingGrid = mini.get('scheduling-grid');
 
-        request.get("rule-engine/workers",function (response) {
-                if(response.status===200){
-                    mini.get('fixed-worker-conf').setData(response.result);
-                }
+        request.get("rule-engine/workers", function (response) {
+            if (response.status === 200) {
+                mini.get('fixed-worker-conf').setData(response.result);
+            }
         });
         schedulingGrid.getColumn("action").renderer = function (e) {
             return tools.createActionButton("删除", "icon-remove", function () {

@@ -76,6 +76,7 @@ jetlinks:
 logging:
   level:
     org.jetlinks: debug
+    rule.engine: debug
     org.hswebframework: debug
     org.springframework.transaction: debug
     org.springframework.data.r2dbc.connectionfactory: debug

@@ -7,6 +7,9 @@ import org.hswebframework.ezorm.rdb.mapping.annotation.EnumCodec;
 import org.hswebframework.web.api.crud.entity.GenericEntity;
 import org.hswebframework.web.api.crud.entity.RecordCreationEntity;
 import org.jetlinks.platform.manager.enums.RuleInstanceState;
+import org.jetlinks.rule.engine.api.Rule;
+import org.jetlinks.rule.engine.api.model.RuleEngineModelParser;
+import org.jetlinks.rule.engine.api.model.RuleModel;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -24,7 +27,7 @@ public class RuleInstanceEntity extends GenericEntity<String> implements RecordC
         return super.getId();
     }
 
-    @Column(name = "model_id",length = 32)
+    @Column(name = "model_id", length = 32)
     private String modelId;
 
     @Column(name = "name")
@@ -40,7 +43,7 @@ public class RuleInstanceEntity extends GenericEntity<String> implements RecordC
     @ColumnType(jdbcType = JDBCType.CLOB)
     private String modelMeta;
 
-    @Column(name = "model_version")
+    @Column(name = "model_version", nullable = false)
     private Integer modelVersion;
 
     @Column(name = "create_time")
@@ -54,11 +57,17 @@ public class RuleInstanceEntity extends GenericEntity<String> implements RecordC
     @ColumnType(javaType = String.class)
     private RuleInstanceState state;
 
-    @Column(name = "scheduler_id")
-    private String schedulerId;
-
     @Column(name = "instance_detail_json")
     @ColumnType(jdbcType = JDBCType.CLOB)
     private String instanceDetailJson;
 
+
+    public Rule toRule(RuleEngineModelParser parser) {
+        RuleModel model = parser.parse(modelType, modelMeta);
+        Rule rule = new Rule();
+        rule.setModel(model);
+        rule.setVersion(modelVersion);
+        rule.setId(getId());
+        return rule;
+    }
 }

@@ -36,14 +36,14 @@ public class RuleModelEntity extends GenericEntity<String> implements RecordCrea
     @Column(name = "description")
     private String description;
 
-    @Column(name = "model_type")
+    @Column(name = "model_type",nullable = false)
     private String modelType;
 
     @Column(name = "model_meta")
     @ColumnType(jdbcType = JDBCType.CLOB)
     private String modelMeta;
 
-    @Column(name = "version")
+    @Column(name = "version",nullable = false)
     private Integer version;
 
     @Column(name = "creator_id")
@@ -72,10 +72,6 @@ public class RuleModelEntity extends GenericEntity<String> implements RecordCrea
         instanceEntity.setModelMeta(getModelMeta());
         instanceEntity.setModelType(getModelType());
 
-        Authentication.current()
-                .map(Authentication::getUser)
-                .map(User::getId)
-                .ifPresent(instanceEntity::setCreatorId);
 
         return instanceEntity;
 

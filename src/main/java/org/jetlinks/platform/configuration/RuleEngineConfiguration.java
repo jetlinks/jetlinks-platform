@@ -1,5 +1,6 @@
 package org.jetlinks.platform.configuration;
 
+import org.jetlinks.core.cluster.ClusterManager;
 import org.jetlinks.rule.engine.api.ConditionEvaluator;
 import org.jetlinks.rule.engine.api.RuleEngine;
 import org.jetlinks.rule.engine.api.executor.ExecutableRuleNodeFactory;
@@ -12,8 +13,10 @@ import org.jetlinks.rule.engine.condition.supports.ScriptConditionEvaluatorStrat
 import org.jetlinks.rule.engine.condition.supports.ScriptEvaluator;
 import org.jetlinks.rule.engine.executor.DefaultExecutableRuleNodeFactory;
 import org.jetlinks.rule.engine.executor.ExecutableRuleNodeFactoryStrategy;
+import org.jetlinks.rule.engine.executor.node.timer.TimerNode;
 import org.jetlinks.rule.engine.model.DefaultRuleModelParser;
 import org.jetlinks.rule.engine.model.RuleModelParserStrategy;
+import org.jetlinks.rule.engine.model.antv.AntVG6RuleModelParserStrategy;
 import org.jetlinks.rule.engine.standalone.StandaloneRuleEngine;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -44,6 +47,16 @@ public class RuleEngineConfiguration {
     @Bean
     public DefaultWorkerNodeSelector defaultWorkerNodeSelector() {
         return new DefaultWorkerNodeSelector();
+    }
+
+    @Bean
+    public TimerNode timerNode(ClusterManager clusterManager){
+        return new TimerNode(clusterManager);
+    }
+
+    @Bean
+    public AntVG6RuleModelParserStrategy antVG6RuleModelParserStrategy(){
+        return new AntVG6RuleModelParserStrategy();
     }
 
     @Bean

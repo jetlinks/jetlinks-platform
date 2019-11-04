@@ -66,7 +66,7 @@ importMiniui(function () {
             return nodeNameMap[e.record.nodeId];
         }
 
-        let nodeId;
+        var nodeId;
         function searchLog() {
             if (!nodeId)  nodeId = "";
             searchGrid("#search-box-log", logGrid, {"instanceId": id,"nodeId": nodeId});
@@ -111,7 +111,7 @@ importMiniui(function () {
 
 
         function initNodeNameMap(allNodes){
-            for (let i = 0; i < allNodes.length; i++){
+            for (var i = 0; i < allNodes.length; i++){
                 nodeNameMap[allNodes[i]["id"]] = allNodes[i]["label"];
             }
         }
@@ -227,9 +227,9 @@ importMiniui(function () {
 
             var resp = mini.get("response");
             resp.setValue("执行中...");
-            request.post("rule-engine/instance/" + id + "/" + startWithNode + "/to/" + endWithNode, executeParam.getValue(), function (response) {
+            request.post("rule-engine/instance/" + id + "/_execute/" + startWithNode + "/" + endWithNode, executeParam.getValue(), function (response) {
                 if (response.status === 200) {
-                    resp.setValue(response.result);
+                    resp.setValue(JSON.stringify(response.result));
                 } else {
                     resp.setValue("失败:" + response.message);
                 }
@@ -247,8 +247,8 @@ importMiniui(function () {
         }
 
         $(".clear-error").on('click',function () {
-            let data = executeParam.getValue();
-            let obj = JSON.parse(data);
+            var data = executeParam.getValue();
+            var obj = JSON.parse(data);
             delete obj.attributes["error_type"];
             delete obj.attributes["error_message"];
             delete obj.attributes["error_stack"];

@@ -48,9 +48,7 @@ public class DeviceMessageConsumerNode extends CommonExecutableRuleNodeFactorySt
     public void handleDeviceMessage(DeviceMessageEvent event) {
         if (processor.hasDownstreams()) {
             convertMessage(event)
-                    .onErrorContinue((err, data) -> {
-                        log.error(err.getMessage(), err);
-                    })
+                    .onErrorContinue((err, data) -> log.error(err.getMessage(), err))
                     .subscribe(processor::onNext);
         }
     }
@@ -72,7 +70,8 @@ public class DeviceMessageConsumerNode extends CommonExecutableRuleNodeFactorySt
         Disposable disposable = processor
                 .filter(map -> StringUtils.isEmpty(config.getProductId()) || config.getProductId().equals(map.get("productId")))
                 .map(RuleData::create)
-                .subscribe(data -> context.getOutput().write(Mono.just(data)));
+                .flatMap(data->context.getOutput().write(Mono.just(data)))
+                .subscribe();
 
         context.onStop(disposable::dispose);
     }
