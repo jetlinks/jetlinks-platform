@@ -4,23 +4,21 @@ JetLinks的核心功能整合,以及实现简单的业务功能.
 
 # 启动
 
-启动项目需要`Redis`,`ElasticSearch`,
+启动项目需要`Redis`,`ElasticSearch`,`Postgresql`
 你可以通过配置文件`application.yml`的配置项
 `jetlinks.redis`以及`spring.elasticsearch.jest.uris`配置相关信息
 
+也可以使用docker启动相关环境
+```bash
+   $ cd docker
+   $ docker-compose up
+```
+
+使用maven命令:`mvn spring-boot:run` 或者使用IDE启动`JetLinksApplication.main`
 
 # 测试
-1. 成功启动服务后,运行模拟器`simulator/start.sh`,观察控制台日志.
-2. 浏览器打开 http://127.0.0.1:8844/device/test0/property/name ,观察服务以及模拟器控制台.
-3. 在浏览器中实时获取设备上报数据
-```js
- // F12打开浏览器开发者模式执行
- var source= new EventSource("http://localhost:8844/device/test0/event");
- source.onmessage = function(e){
-     console.log(e.data)
- }
- 
-```
+1. 成功启动服务后, 打开浏览器:`http://127.0.0.1:8844` 账号密码:`admin`
+2. 使用模拟器模拟设备 
 
 模拟器使用方式请[点击查看](https://github.com/jetlinks/device-simulator)
 

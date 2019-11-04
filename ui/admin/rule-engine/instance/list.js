@@ -11,7 +11,7 @@ importMiniui(function () {
 
         var grid = window.grid = mini.get("datagrid");
         tools.initGrid(grid);
-        grid.setUrl(API_BASE_PATH + "rule-engine/instance/");
+        grid.setUrl(API_BASE_PATH + "rule-engine/instance/_query");
 
         function search() {
             tools.searchGrid("#search-box", grid);
@@ -22,24 +22,6 @@ importMiniui(function () {
         $(".add-button").click(function () {
             mini.get('add-model').show()
         });
-
-        $(".create-model-button").unbind("click").on("click", function () {
-            var data = tools.getFormData("#addModelForm", true);
-            if (data) {
-                var loading = message.loading("提交中...");
-                request.post("workflow/model/", data, function (response) {
-                    loading.hide();
-                    if (response.status === 201 || response.status === 200) {
-                        new mini.Form("#addModelForm").clear();
-                        mini.get("add-model").hide();
-                        edit(response.result.id);
-                    } else {
-                        message.showTips("创建失败:" + response.message);
-                    }
-                })
-            }
-        });
-
 
         grid.getColumn("action").renderer = function (e) {
             var row = e.record;
