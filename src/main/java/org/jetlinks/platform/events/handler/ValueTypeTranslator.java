@@ -31,7 +31,7 @@ public class ValueTypeTranslator {
     }
 
     private static Map<String, Object> propertyMetadataToMap(Map<String, Object> map, List<PropertyMetadata> metadataList) {
-        Map<String, PropertyMetadata> metadataMap = toMapStructure(metadataList);
+        Map<String, PropertyMetadata> metadataMap = toMap(metadataList);
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             PropertyMetadata property = metadataMap.get(entry.getKey());
             if (null != property) {
@@ -41,7 +41,7 @@ public class ValueTypeTranslator {
         return map;
     }
 
-    private static Map<String, PropertyMetadata> toMapStructure(List<PropertyMetadata> metadata) {
+    private static Map<String, PropertyMetadata> toMap(List<PropertyMetadata> metadata) {
         return metadata.stream()
                 .collect(Collectors.toMap(PropertyMetadata::getId, Function.identity()));
     }
@@ -66,7 +66,7 @@ public class ValueTypeTranslator {
                 return value;
             }
         } catch (Exception e) {
-            log.error("设备上报值与元数据值不匹配.value:{},DataTypeClass:{}", value, dataType.getClass());
+            log.error("设备上报值与元数据值不匹配.value:{},DataTypeClass:{}", value, dataType.getClass(), e);
             return value;
         }
     }
