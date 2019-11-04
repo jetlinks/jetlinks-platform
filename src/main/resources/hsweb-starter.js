@@ -72,13 +72,13 @@ var versions = [
 ];
 
 function initialize(context) {
+    var database = context.database;
+
+    database.dml().insert("s_menu").values(menus).execute().sync();
 
 }
 
 function install(context) {
-    var database = context.database;
-
-    database.dml().insert("s_menu").values(menus).execute().sync();
 
      
 }
