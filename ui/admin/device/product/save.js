@@ -500,7 +500,7 @@ importMiniui(function () {
             if (dataId) {
                 productInfo.id = dataId;
             } else {
-                productInfo.status = 0;
+                productInfo.state = 0;
                 productInfo.createTime = new Date().getTime();
             }
             if (!productInfo) {
