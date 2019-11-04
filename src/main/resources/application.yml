@@ -21,9 +21,6 @@ spring:
   redis:
     host: 127.0.0.1
     port: 6379
-    lettuce:
-      pool:
-        max-active: 32
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/jetlinks
     username: postgres

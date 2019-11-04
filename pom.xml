@@ -417,28 +417,16 @@
             <artifactId>hsweb-easy-orm-elasticsearch</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.influxdb</groupId>
-            <artifactId>influxdb-java</artifactId>
-            <version>2.15</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.influxdb</groupId>-->
+<!--            <artifactId>influxdb-java</artifactId>-->
+<!--            <version>2.15</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.8.5</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
         </dependency>
 
         <dependency>
