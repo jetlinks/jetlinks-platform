@@ -1,5 +1,6 @@
 package org.jetlinks.platform.manager.web;
 
+import org.hswebframework.ezorm.rdb.operator.dml.query.SortOrder;
 import org.hswebframework.web.api.crud.entity.TreeSupportEntity;
 import org.hswebframework.web.authorization.Authentication;
 import org.hswebframework.web.authorization.AuthenticationUtils;
@@ -18,9 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -34,7 +33,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/menu")
 @Authorize
 @Resource(id = "menu", name = "菜单管理", group = "system")
-public class WebFluxMenuController implements ReactiveServiceCrudController<MenuEntity, String> {
+public class MenuController implements ReactiveServiceCrudController<MenuEntity, String> {
 
     @Autowired
     private DefaultMenuService defaultMenuService;
@@ -64,7 +63,10 @@ public class WebFluxMenuController implements ReactiveServiceCrudController<Menu
                 }
             }
         }
-        return group.values();
+        List<MenuEntity> list = new ArrayList<>(group.values());
+        Collections.sort(list);
+
+        return list;
     }
 
     @GetMapping("user-own/tree")
