@@ -68,7 +68,7 @@ importMiniui(function () {
                     productDeploy(row.id);
                 })
             }
-            return html
+            return html;
         };
 
         window.renderAction = function (e) {

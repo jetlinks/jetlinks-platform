@@ -176,7 +176,12 @@ importMiniui(function () {
         request.get("protocol/supports", function (response) {
             if (response.status === 200) {
                 var messageProtocol = mini.getByName("messageProtocol");
-                messageProtocol.setData(response.result);
+                var data = [];
+                response.result.forEach(function (val) {
+                    console.log(val);
+                    data.push({"id": val.id, "name": val.name + "(" + val.id + ")"})
+                });
+                messageProtocol.setData(data);
             }
         });
 
@@ -218,8 +223,15 @@ importMiniui(function () {
                     form.getField("readOnly").setValue(val.expands.readOnly);
                     form.getField("report").setValue(val.expands.report);
 
-                    setConfigData(val);
-
+                    var valData;
+                    if (val.dataType === "enum") {
+                        valData = val.valueType.elements;
+                    } else if (val.dataType === "object") {
+                        valData = val.valueType.properties;
+                    } else {
+                        valData = val.valueType;
+                    }
+                    setConfigData(val.dataType, valData, "attribute", structInfoList, "attributeConfigCategory");
                 }, 100)
             }
 
@@ -257,30 +269,31 @@ importMiniui(function () {
         }
 
         $(".add-function").click(function () {
-            addFunction();
+            addFunction("");
         });
 
-        function setConfigData(val,place,list) {
-            if (val.dataType === "enum") {
-                val.valueType.elements.forEach(function (val, e) {
+        function setConfigData(dataType, val, place, list, form) {
+            if (dataType === "enum") {
+                val.forEach(function (val, e) {
                     if (e === 0) {
-                        new mini.Form("#enum-0-attribute").setData(val);
+                        new mini.Form("#enum-0-" + place).setData(val);
                     } else {
-                        addEnumFrame("attribute", val);
+                        addEnumFrame(place, val);
                     }
                 })
-            } else if (val.dataType === "object") {
-                structInfoList = [];
-                val.valueType.properties.forEach(function (val) {
+            } else if (dataType === "object") {
+                list = [];
+                val.forEach(function (val) {
                     var parameterId = "i" + new Date().getTime();
-                    structInfoList.push(val);
-                    addParameterHtml("attribute-object-struct", parameterId, structInfoList, val);
+                    list.push(val);
+                    addParameterHtml(place + "-object-struct", parameterId, list, val);
                 });
             } else {
-                var structConf = new mini.Form("#attributeConfigCategory");
-                structConf.setData(val.valueType);
+                var structConf = new mini.Form("#" + form);
+                structConf.setData(val);
             }
         }
+
         function getConfigData(dataType, obtainId, list, place) {
             var valueType = {};
             if (dataType === "enum") {
@@ -313,28 +326,15 @@ importMiniui(function () {
             $(".functions-info-input").html("");
             $(".function-output-config").html("");
 
+            if (data !== "")
+                form.getField("dataType").setValue(data.functionDataList.dataType);
+
             $(".add-function-input").click(function () {
                 addEnum("input");
                 addParameter("functions-info-input", functionInputInfoList, "");
             });
-            /*form.getField("inputDataType").on("valueChanged", function (e) {
-                var selected = e.selected;
-                var html = $(".function-input-config");
-                html.html("");
-                if (selected && selected.createEditor) {
-                    selected.createEditor("input", html);
-                }
-                mini.parse();
-                if (selected.id === "int" || selected.id === "float" || selected.id === "double") {
-                    gainUnit();
-                }
-                addEnum("input");
-                $(".add-object-struct").click(function () {
-                    addParameter("input-object-struct", functionInputInfoList, "");
-                });
-            });*/
 
-            form.getField("outputDataType").on("valueChanged", function (e) {
+            form.getField("dataType").on("valueChanged", function (e) {
                 var selected = e.selected;
                 var html = $(".function-output-config");
                 html.html("");
@@ -356,22 +356,41 @@ importMiniui(function () {
             });
 
             if (data) {
-                form.getField("outputDataType").doValueChanged();
+                form.getField("dataType").doValueChanged();
+                window.setTimeout(function () {
+                    form.getField("id").setReadOnly(true);
+                    form.setData(data);
+                    var val = data.functionDataList;
+                    form.getField("isAsync").setValue(val.isAsync);
+                    form.getField("dataType").setValue(val.dataType);
 
-                form.getField("id").setReadOnly(true);
-                form.setData(data);
-                if (data.outputs) {
-                    data.inputs.forEach(function (val) {
-                        var parameterId = "i" + new Date().getTime();
-                        functionInputInfoList.push(val);
-                        addParameterHtml("input-object-struct", parameterId, functionInputInfoList, val);
-                    });
-                }
-                if (data.outputs) {
-                    var parameterId = "i" + new Date().getTime();
-                    functionOutputInfoList.push(data.outputs);
-                    addParameterHtml("output-object-struct", parameterId, functionOutputInfoList, data.outputs);
-                }
+                    if (val.inputs) {
+                        val.inputs.forEach(function (val) {
+                            var parameterId = "i" + new Date().getTime();
+                            functionInputInfoList.push(val);
+                            addParameterHtml("functions-info-input", parameterId, functionInputInfoList, val);
+                        });
+                    }
+                    if (val.outputs) {
+                        if (val.dataType === "enum") {
+                            val.outputs.elements.forEach(function (i, e) {
+                                if (e === 0) {
+                                    new mini.Form("#enum-0-output").setData(i);
+                                } else {
+                                    addEnumFrame("output", i);
+                                }
+                            })
+                        } else if (val.dataType === "object") {
+                            eventInfoOutputList = [];
+                            var parameterId = "i" + new Date().getTime();
+                            functionOutputInfoList.push(val.outputs);
+                            addParameterHtml("output-object-struct", parameterId, functionOutputInfoList, val.outputs);
+                        } else {
+                            var structConf = new mini.Form("#functionOutputConfig");
+                            structConf.setData(val.outputs);
+                        }
+                    }
+                }, 100);
             } else {
                 form.getField("id").setReadOnly(false);
             }
@@ -380,8 +399,8 @@ importMiniui(function () {
                 var functionInfo = tools.getFormData("#function-info", true);
                 functionOperation();
                 //var inputs = getConfigData(functionInfo.inputDataType, "functionInputConfig", functionInputInfoList, "input");
-                var outputs = getConfigData(functionInfo.outputDataType, "functionOutputConfig", functionOutputInfoList, "output");
-                if (functionInfo.outputDataType === "object") {
+                var outputs = getConfigData(functionInfo.dataType, "functionOutputConfig", functionOutputInfoList, "output");
+                if (functionInfo.dataType === "object") {
                     outputs = functionOutputInfoList[0];
                 }
                 var functionList = {
@@ -392,7 +411,6 @@ importMiniui(function () {
                         "id": functionInfo.id,
                         "name": functionInfo.name,
                         "inputs": functionInputInfoList,
-                        //"inputDataType": functionInfo.inputDataType,
                         "outputs": outputs,
                         "dataType": functionInfo.dataType,
                         "isAsync": functionInfo.isAsync,
@@ -425,6 +443,8 @@ importMiniui(function () {
             var form = new mini.Form("#event-info");
             form.setData({"eventType": "reportData", "level": "warn"});
             $(".event-info-output").html("");
+            if (data)
+                form.getField("dataType").setValue(data.eventDataList.dataType);
             form.getField("dataType").on("valueChanged", function (e) {
                 var selected = e.selected;
                 var html = $(".event-info-output");
@@ -443,15 +463,26 @@ importMiniui(function () {
             });
 
             if (data) {
-                form.getField("id").setReadOnly(true);
-                form.setData(data);
-                if (data.parameters) {
-                    data.parameters.forEach(function (val) {
-                        var parameterId = "i" + new Date().getTime();
-                        eventInfoOutputList.push(val);
-                        addParameterHtml("event-output-object-struct", parameterId, eventInfoOutputList, val);
-                    });
-                }
+                form.getField("dataType").doValueChanged();
+
+                window.setTimeout(function () {
+                    form.getField("id").setReadOnly(true);
+                    form.setData(data);
+                    var val = data.eventDataList;
+                    form.getField("eventType").setValue(val.expands.eventType);
+                    form.getField("level").setValue(val.expands.level);
+                    form.getField("dataType").setValue(val.dataType);
+
+                    var valData;
+                    if (val.dataType === "enum") {
+                        valData = val.valueType.elements;
+                    } else if (val.dataType === "object") {
+                        valData = val.valueType.properties;
+                    } else {
+                        valData = val.valueType;
+                    }
+                    setConfigData(val.dataType, valData, "event", eventInfoOutputList, "eventInfoOutput");
+                }, 100)
             } else {
                 form.getField("id").setReadOnly(false);
             }
@@ -500,6 +531,7 @@ importMiniui(function () {
             if (dataId) {
                 productInfo.id = dataId;
             } else {
+                dataId = productInfo.id;
                 productInfo.state = 0;
                 productInfo.createTime = new Date().getTime();
             }
@@ -591,7 +623,7 @@ importMiniui(function () {
                         mini.parse();
                         return false;
                     } else {
-                        selected.createEditor("", html);
+                        selected.createEditor("parameter", html);
                     }
                 }
                 mini.parse();
@@ -608,9 +640,9 @@ importMiniui(function () {
                     if (data.dataType === "enum") {
                         data.valueType.elements.forEach(function (val, e) {
                             if (e === 0) {
-                                new mini.Form("#enum-0").setData(val);
+                                new mini.Form("#enum-0-parameter").setData(val);
                             } else {
-                                addEnumFrame(val);
+                                addEnumFrame("parameter", val);
                             }
                         })
                     } else {
@@ -641,9 +673,6 @@ importMiniui(function () {
             if (parameterInfo.dataType === "enum") {
                 valueType["elements"] = category.getValue("parameter");
             } else if (parameterInfo.dataType === "object") {
-                /*$(structInfoList).each(function () {
-                    valueType["properties"] = this;
-                });*/
                 message.showTips("暂不支持此数据类型请,重新选择数据类型", "danger");
                 return false;
             } else if (parameterInfo.dataType === "boolean") {
@@ -664,6 +693,7 @@ importMiniui(function () {
             parameter["name"] = parameterInfo.name;
             parameter["dataType"] = parameterInfo.dataType;
             parameter["valueType"] = valueType;
+            parameter["description"] = parameterInfo.description;
             var indexOf = list.some(item => {
                 return item.id == parameterInfo.id;
             });
@@ -768,6 +798,7 @@ importMiniui(function () {
                     "name": conf.name,
                     "inputs": conf.inputs,
                     "outputs": conf.outputs,
+                    "dataType": conf.dataType,
                     "isAsync": conf.isAsync,
                     "description": conf.description
                 }
@@ -780,14 +811,14 @@ importMiniui(function () {
             eventDataList.push({
                 "id": conf.id,
                 "name": conf.name,
-                "level": eventLevel[conf.level],
+                "level": eventLevel[conf.expands.level],
                 "description": conf.description,
                 "eventDataList": {
                     "id": conf.id,
                     "name": conf.name,
-                    "parameters": conf.parameters,
-                    "level": conf.level,
-                    "eventType": conf.eventType,
+                    "valueType": conf.valueType,
+                    "dataType": conf.dataType,
+                    "expands": conf.expands,
                     "description": conf.description
                 }
             });
@@ -811,14 +842,14 @@ importMiniui(function () {
             mini.get("function-list").getColumn("functionList").renderer = function (e) {
                 var html = [];
                 html.push(tools.createActionButton("编辑", "icon-edit", function () {
-                    addFunction(e.record.functionDataList);
+                    addFunction(e.record);
                 }));
                 html.push(tools.createActionButton("删除", "icon-remove", function () {
                     e.sender.removeRow(e.record);
                 }));
                 return html.join("");
             };
-            mini.get("function-list").getColumn("inputs").renderer = function (e) {
+            /*mini.get("function-list").getColumn("inputs").renderer = function (e) {
                 var html = [];
                 if (e.record.functionDataList.inputs.length > 0) {
                     html.push(tools.createActionLink("输入参数", "查看", function () {
@@ -835,14 +866,14 @@ importMiniui(function () {
                     }));
                 }
                 return html.join("");
-            };
+            };*/
         }
 
         function eventOperation() {
             mini.get("event-list").getColumn("eventList").renderer = function (e) {
                 var html = [];
                 html.push(tools.createActionButton("编辑", "icon-edit", function () {
-                    addEvent(e.record.eventDataList);
+                    addEvent(e.record);
                 }));
                 html.push(tools.createActionButton("删除", "icon-remove", function () {
                     e.sender.removeRow(e.record);
@@ -850,16 +881,15 @@ importMiniui(function () {
                 return html.join("");
             };
 
-            mini.get("event-list").getColumn("outputs").renderer = function (e) {
+            /*mini.get("event-list").getColumn("outputs").renderer = function (e) {
                 var html = [];
-                console.log(e.record.eventDataList.valueType);
-                /*if (e.record.eventDataList > 0) {
+                /!*if (e.record.eventDataList > 0) {
                     html.push(tools.createActionLink("输出参数", "查看", function () {
 
                     }));
-                }*/
+                }*!/
                 return html.join("");
-            };
+            };*/
         }
     });
 });
