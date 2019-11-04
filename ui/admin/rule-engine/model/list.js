@@ -12,7 +12,7 @@ importMiniui(function () {
 
         var grid = window.grid = mini.get("datagrid");
         tools.initGrid(grid);
-        grid.setUrl(API_BASE_PATH + "rule-engine/model/");
+        grid.setUrl(API_BASE_PATH + "rule-engine/model/_query");
 
         function search() {
             tools.searchGrid("#search-box", grid);

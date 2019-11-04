@@ -1,0 +1,39 @@
+<script type="text/html" title="定时节点" class="node-template">
+
+    <div class="mini-col-12 form-component">
+        <div class="form-item brick"><label class="form-label">http地址</label>
+            <div class="input-block component-body">
+                <input name="config.url" textName="config.url" required class="mini-textbox"
+                       style="width: 100%">
+            </div>
+        </div>
+    </div>
+
+    <div class="mini-col-12 form-component">
+        <div class="form-item brick"><label class="form-label">请求方式</label>
+            <div class="input-block component-body">
+                <input name="config.method" value="POST" required class="mini-textbox"
+                       style="width: 100%">
+            </div>
+        </div>
+    </div>
+
+    <div class="mini-col-12 form-component">
+        <div class="form-item brick"><label class="form-label">请求头</label>
+            <div class="input-block component-body">
+                <a class="mini-button" iconCls="icon-edit" plain="true">编辑请求头</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="mini-col-12 form-component">
+        <div class="form-item brick form-text"><label class="form-label">参数</label>
+            <div class="input-block component-body">
+                <input name="config.params" emptyText="填写json或者表达式${#data}" required class="mini-textarea"
+                       style="width: 100%">
+            </div>
+        </div>
+    </div>
+
+
+</script>

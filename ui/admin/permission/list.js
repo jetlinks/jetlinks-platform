@@ -6,6 +6,7 @@ importMiniui(function () {
         window.tools = tools;
         var grid = window.grid = mini.get("datagrid");
         tools.initGrid(grid);
+        grid.setAutoLoad(false)
         grid.setUrl(API_BASE_PATH + "permission/_query");
 
         function search() {
