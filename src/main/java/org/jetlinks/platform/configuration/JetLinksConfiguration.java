@@ -127,12 +127,13 @@ public class JetLinksConfiguration {
     @Bean(initMethod = "init", destroyMethod = "shutdown")
     public DefaultDeviceSessionManager deviceSessionManager(JetLinksProperties properties,
                                                             GatewayServerMonitor monitor,
+                                                            DeviceRegistry registry,
                                                             ScheduledExecutorService executorService,
                                                             ApplicationEventPublisher eventPublisher) {
         DefaultDeviceSessionManager sessionManager = new DefaultDeviceSessionManager();
         sessionManager.setExecutorService(executorService);
         sessionManager.setGatewayServerMonitor(monitor);
-
+        sessionManager.setRegistry(registry);
         Optional.ofNullable(properties.getTransportLimit()).ifPresent(sessionManager::setTransportLimits);
 
         sessionManager.onRegister()

@@ -44,15 +44,14 @@ importMiniui(function () {
                 api += "/" + id;
                 func = request.put;
             }
-            if (type&&type==="jar") show();
+            if (type && type === "jar") show();
             $(".save-button").on("click", (function () {
                 require(["message"], function (message) {
                     var data = getDataAndValidate();
                     if (!id) {
-                        data.state = "notActive";
+                        data.state = 0;
                     }
                     if (!data) return;
-                    data.state = 1;
                     var loading = message.loading("提交中");
                     func(api, data, function (response) {
                         loading.close();
@@ -81,28 +80,29 @@ importMiniui(function () {
                 });
             });
 
+            function loadData(id) {
+                require(["message"], function (message) {
+                    var loading = message.loading("加载中...");
+                    request.get("protocol/" + id, function (response) {
+                        loading.hide();
+                        if (response.status === 200) {
+                            var data = response.result;
+                            if (type==="jar"){
+                                data.provider = data.configuration.provider;
+                                data.location = data.configuration.location;
+                            }
+
+                            new mini.Form("#basic-info").setData(response.result);
+                        } else {
+                            message.showTips("加载数据失败", "danger");
+                        }
+                    });
+                });
+            }
+
         });
 });
 
-function loadData(id) {
-    require(["request", "message"], function (request, message) {
-        var loading = message.loading("加载中...");
-        request.get("protocol/" + id, function (response) {
-            loading.hide();
-            if (response.status === 200) {
-                var data = response.result;
-                if (type==="jar"){
-                    data.provider = data.configuration.provider;
-                    data.location = data.configuration.location;
-                }
-
-                new mini.Form("#basic-info").setData(response.result);
-            } else {
-                message.showTips("加载数据失败", "danger");
-            }
-        });
-    });
-}
 
 function getDataAndValidate() {
     var form = new mini.Form("#basic-info");
