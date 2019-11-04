@@ -6,14 +6,14 @@ function createScopeHtml(html) {
     labelValue.append("<div class=\"form-item\">");
     labelValue.append("<label class=\"form-label\">取值范围：</label>");
     labelValue.append("<div class=\"input-block component-body \">\n" +
-        "<input required name=\"min\" emptyText=\"最小值\" style=\"width: 43.5%\" class=\"mini-textbox\">~\n" +
-        "<input required name=\"max\" emptyText=\"最大值\" style=\"width: 43.5%\" class=\"mini-textbox\"></div>");
+        "<input name=\"min\" emptyText=\"最小值\" style=\"width: 43.5%\" class=\"mini-textbox\">~\n" +
+        "<input name=\"max\" emptyText=\"最大值\" style=\"width: 43.5%\" class=\"mini-textbox\"></div>");
 
     var stepValue = $("<div class=\"mini-col-11 form-component breadth\">");
     stepValue.append("<div class=\"form-item\">");
     stepValue.append("<label class=\"form-label\">步长：</label>");
     stepValue.append("<div class=\"input-block component-body \">\n" +
-        "<input required name=\"step\" emptyText=\"请输入步长\" style=\"width: 90%\" class=\"mini-textbox\"></div>");
+        "<input name=\"step\" emptyText=\"请输入步长\" style=\"width: 90%\" class=\"mini-textbox\"></div>");
 
     var unitValue = $("<div class=\"mini-col-11 form-component breadth\">");
     unitValue.append("<div class=\"form-item\">");
@@ -712,8 +712,9 @@ importMiniui(function () {
         }
 
         function addParameterHtml(position, parameterId, list, parameter) {
+            var val = parameter.name + "：" + parameter.id + "(" + parameter.dataType + ")";
             $("." + position).append("<div class=\"parameter-input\" id=\"" + parameterId + "\">\n" +
-                "    <input required id=\"data-" + parameterId + "\" name=\"" + parameterId + "\" readonly=\"true\" style=\"width: 72%\" class=\"mini-textbox\" value=\"参数名称：" + parameter.name + "(" + parameter.id + ")\">\n" +
+                "    <input required id=\"data-" + parameterId + "\" name=\"" + parameterId + "\" readonly=\"true\" style=\"width: 72%\" class=\"mini-textbox\" value=\"" + val + "\">\n" +
                 "    <a class=\"text-button\" id=\"del" + parameterId + "\" href=\"javascript:void(0);\">删除</a>\n" +
                 "    <a class=\"text-button\" id=\"up" + parameterId + "\" href=\"javascript:void(0);\">编辑</a>\n" +
                 "</div>\n");
