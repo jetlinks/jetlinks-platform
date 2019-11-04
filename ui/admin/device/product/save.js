@@ -178,7 +178,6 @@ importMiniui(function () {
                 var messageProtocol = mini.getByName("messageProtocol");
                 var data = [];
                 response.result.forEach(function (val) {
-                    console.log(val);
                     data.push({"id": val.id, "name": val.name + "(" + val.id + ")"})
                 });
                 messageProtocol.setData(data);
@@ -282,7 +281,6 @@ importMiniui(function () {
                     }
                 })
             } else if (dataType === "object") {
-                list = [];
                 val.forEach(function (val) {
                     var parameterId = "i" + new Date().getTime();
                     list.push(val);
@@ -381,7 +379,7 @@ importMiniui(function () {
                                 }
                             })
                         } else if (val.dataType === "object") {
-                            eventInfoOutputList = [];
+                            functionOutputInfoList = [];
                             var parameterId = "i" + new Date().getTime();
                             functionOutputInfoList.push(val.outputs);
                             addParameterHtml("output-object-struct", parameterId, functionOutputInfoList, val.outputs);
@@ -398,7 +396,6 @@ importMiniui(function () {
             $(".function-save-button").unbind("click").on("click", function () {
                 var functionInfo = tools.getFormData("#function-info", true);
                 functionOperation();
-                //var inputs = getConfigData(functionInfo.inputDataType, "functionInputConfig", functionInputInfoList, "input");
                 var outputs = getConfigData(functionInfo.dataType, "functionOutputConfig", functionOutputInfoList, "output");
                 if (functionInfo.dataType === "object") {
                     outputs = functionOutputInfoList[0];
@@ -473,24 +470,15 @@ importMiniui(function () {
                     form.getField("level").setValue(val.expands.level);
                     form.getField("dataType").setValue(val.dataType);
 
-                    if (val.inputs) {
-                        val.inputs.forEach(function (val) {
-                            var parameterId = "i" + new Date().getTime();
-                            functionInputInfoList.push(val);
-                            addParameterHtml("functions-info-input", parameterId, functionInputInfoList, val);
-                        });
+                    var valData;
+                    if (val.dataType === "enum") {
+                        valData = val.valueType.elements;
+                    } else if (val.dataType === "object") {
+                        valData = val.valueType.properties;
+                    } else {
+                        valData = val.valueType;
                     }
-                    if (val.outputs) {
-                        var valData;
-                        if (val.dataType === "enum") {
-                            valData = val.valueType.elements;
-                        } else if (val.dataType === "object") {
-                            valData = val.valueType.properties;
-                        } else {
-                            valData = val.valueType;
-                        }
-                        setConfigData(val.dataType, valData, "event", eventInfoOutputList, "eventInfoOutput");
-                    }
+                    setConfigData(val.dataType, valData, "event", eventInfoOutputList, "eventInfoOutput");
                 }, 100)
             } else {
                 form.getField("id").setReadOnly(false);
