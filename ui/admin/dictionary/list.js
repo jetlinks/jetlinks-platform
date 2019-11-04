@@ -9,13 +9,13 @@ importMiniui(function () {
 
         var grid = window.grid = mini.get("datagrid");
         tools.initGrid(grid);
-        grid.setUrl(API_BASE_PATH + server + "/dictionary");
+        grid.setUrl(API_BASE_PATH + server + "dictionary/_query");
 
         var itemsGrid = mini.get("item-grid");
         tools.initGrid(itemsGrid);
         itemsGrid.setDataField("result");
         itemsGrid.setAutoLoad(false);
-        itemsGrid.setUrl(API_BASE_PATH + server + "/dictionary-item/no-paging");
+        itemsGrid.setUrl(API_BASE_PATH + server + "dictionary-item/_query/no-paging");
 
         itemsGrid.getColumn("status").renderer = function (e) {
             return e.value === 1 ? "是" : "否";
@@ -35,7 +35,7 @@ importMiniui(function () {
                         return;
                     }
                     var loading = message.loading("保存中...");
-                    request.patch(server + "/dictionary", row, function (resp) {
+                    request.patch(server + "dictionary", row, function (resp) {
                         loading.hide();
                         if (resp.status === 200) {
                             e.sender.acceptRecord(row);
@@ -51,7 +51,7 @@ importMiniui(function () {
                 } else {
                     message.confirm("是否删除此数据字典", function () {
                         var loading = message.loading("删除中...");
-                        request['delete'](server + "/dictionary/" + row.id, function (resp) {
+                        request['delete'](server + "dictionary/" + row.id, function (resp) {
                             loading.hide();
                             if (resp.status === 200) {
                                 e.sender.removeRow(row);
@@ -73,7 +73,7 @@ importMiniui(function () {
                     var node = e.record;
                     node.dictId = nowSelectDict.id;
                     var loading = message.loading("保存中...");
-                    request.patch(server + "/dictionary-item/", node, function (resp) {
+                    request.patch(server + "dictionary-item/", node, function (resp) {
                         loading.hide();
                         if (resp.status === 200) {
                             node.id = resp.result;
@@ -92,7 +92,7 @@ importMiniui(function () {
                 } else {
                     message.confirm("是否删除此选项", function () {
                         var loading = message.loading("删除中...");
-                        request['delete'](server + "/dictionary-item/" + node.id, function (resp) {
+                        request['delete'](server + "dictionary-item/" + node.id, function (resp) {
                             loading.hide();
                             if (resp.status === 200) {
                                 e.sender.removeNode(node);
@@ -134,7 +134,7 @@ importMiniui(function () {
             $(itemsGrid.getData()).each(function (idx, item) {
                 item.sortIndex = idx;
             });
-            request.patch(server + "/dictionary-item/batch", itemsGrid.getData(), function (response) {
+            request.patch(server + "dictionary-item/", itemsGrid.getData(), function (response) {
                 loading.hide();
                 if (response.status === 200) {
                     itemsGrid.reload();
@@ -182,14 +182,10 @@ importMiniui(function () {
 });
 
 window.renderStatus = function (e) {
-    return e.value == 1 ? "是" : "否";
+    return e.value === 1 ? "是" : "否";
 }
 
-function edit(id) {
-    tools.openWindow("admin/role/save.html?id=" + id, "编辑角色", "600", "300", function (e) {
-        grid.reload();
-    })
-}
+
 
 window.renderAction = function (e) {
     var row = e.record;
@@ -199,12 +195,6 @@ window.renderAction = function (e) {
             edit(row.id);
         })
     ];
-    html.push(
-        tools.createActionButton("角色赋权", "icon-find", function () {
-            tools.openWindow("admin/autz-settings/setting.html?priority=20&merge=true&type=role&settingFor=" + row.id, "角色赋权-" + row.name, "800", "600", function () {
 
-            });
-        })
-    )
     return html.join("");
 }
