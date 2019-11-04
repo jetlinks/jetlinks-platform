@@ -1,20 +1,18 @@
 package org.jetlinks.platform.manager.service;
 
-import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
-import org.hswebframework.web.crud.generator.Generators;
 import org.hswebframework.web.crud.service.GenericReactiveCrudService;
 import org.hswebframework.web.exception.BusinessException;
 import org.hswebframework.web.exception.NotFoundException;
 import org.hswebframework.web.id.IDGenerator;
 import org.jetlinks.core.device.DeviceConfigKey;
 import org.jetlinks.core.device.DeviceRegistry;
-import org.jetlinks.core.device.ProductInfo;
+import org.jetlinks.core.message.DeviceOfflineMessage;
+import org.jetlinks.core.message.DeviceOnlineMessage;
 import org.jetlinks.core.utils.FluxUtils;
 import org.jetlinks.platform.events.DeviceConnectedEvent;
 import org.jetlinks.platform.events.DeviceDisconnectedEvent;
 import org.jetlinks.platform.manager.entity.DeviceInstanceEntity;
-import org.jetlinks.platform.manager.entity.DeviceProductEntity;
 import org.jetlinks.platform.manager.enums.DeviceState;
 import org.jetlinks.platform.manager.web.response.DeviceInfo;
 import org.jetlinks.platform.manager.web.response.DeviceRunInfo;
@@ -32,7 +30,6 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -132,6 +129,16 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
                 .subscribe((i) -> {
                     log.info("同步设备状态成功:{}", i);
                 });
+    }
+
+    @EventListener
+    public void handleDeviceOnlineEvent(DeviceOnlineMessage message){
+        deviceIdSink.next(message.getDeviceId());
+    }
+
+    @EventListener
+    public void handleDeviceOnlineEvent(DeviceOfflineMessage message){
+        deviceIdSink.next(message.getDeviceId());
     }
 
     @EventListener

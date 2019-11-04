@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetlinks.core.Value;
 import org.jetlinks.core.device.DeviceOperator;
 import org.jetlinks.core.device.DeviceRegistry;
+import org.jetlinks.core.message.*;
 import org.jetlinks.core.message.event.EventMessage;
 import org.jetlinks.core.message.property.ReadPropertyMessageReply;
 import org.jetlinks.core.message.property.WritePropertyMessageReply;
@@ -61,8 +62,26 @@ public class DeviceEventMessageHandler {
     private ApplicationEventPublisher eventPublisher;
 
     @EventListener
+    public void handleChildrenDeviceMessage(DeviceMessageEvent<ChildDeviceMessageReply> event) {
+        ChildDeviceMessageReply reply = event.getMessage();
+        Message message = reply.getChildDeviceMessage();
+        if (message instanceof EventMessage) {
+            handleDeviceEvent(((EventMessage) message));
+        } else if (message instanceof DeviceOnlineMessage || message instanceof DeviceOfflineMessage) {
+            String deviceId = ((CommonDeviceMessage) message).getDeviceId();
+            //子设备上线
+            
+        }
+        // TODO: 2019-11-01 更多消息类型处理
+
+    }
+
+    @EventListener
     public void handleEvent(DeviceMessageEvent<EventMessage> event) {
-        EventMessage message = event.getMessage();
+        handleDeviceEvent(event.getMessage());
+    }
+
+    public void handleDeviceEvent(EventMessage message) {
         //属性上报
         boolean isReportProperty = message.getHeader("report-property")
                 .filter(Boolean.TRUE::equals)
@@ -70,7 +89,6 @@ public class DeviceEventMessageHandler {
                 .orElse(false);
         if (isReportProperty) {
             syncDeviceProperty(message.getDeviceId(), ((Map) message.getData()), new Date(message.getTimestamp()));
-
         } else {
             try {
                 syncEvent(message.getDeviceId(), message);
@@ -85,7 +103,6 @@ public class DeviceEventMessageHandler {
                 .type(isReportProperty ? DeviceLogType.reportProperty : DeviceLogType.event)
                 .build();
         eventPublisher.publishEvent(deviceOperationType);
-
     }
 
     @EventListener

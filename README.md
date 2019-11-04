@@ -63,71 +63,75 @@ JetLinks的核心功能整合,以及实现简单的业务功能.
 ### 设备定义
 ```json
       {
-          "properties":[
+       "id": "test",
+       "name": "测试",
+       "properties": [
+         {
+           "id": "name",
+           "name": "名称",
+           "valueType": {
+             "type": "string"
+           }
+         }
+       ],
+       "functions": [
+         {
+           "id": "playVoice",
+           "name": "播放声音",
+           "inputs": [
+             {
+               "id": "text",
+               "name": "文字内容",
+               "valueType": {
+                 "type": "string"
+               }
+             }
+           ],
+           "output": {
+             "type": "boolean"
+           }
+         }
+       ],
+       "events": [
+         {
+           "id": "temp_sensor",
+           "name": "温度传感器",
+           "valueType": {
+             "type": "double"
+           }
+         },
+         {
+           "id": "fire_alarm",
+           "name": "火警",
+           "valueType": {
+             "type": "object",
+             "properties": [
                {
-                   "id":"currentTemperature",
-                   "name":"当前温度",
-                   "readonly": true,
-                   "valueType":{
-                       "type":"double",
-                       "unit": "celsiusDegrees"
-                   }
+                 "id": "location",
+                 "name": "地点",
+                 "valueType": {
+                   "type": "string"
+                 }
                },
                {
-                  "id":"cpuUsage",
-                  "name":"cpu使用率",
-                  "readonly": true,
-                  "valueType":{
-                      "type":"double",
-                      "unit": "percent"
-                  }
-              }
-          ],
-          "functions":[
+                 "id": "lng",
+                 "name": "经度",
+                 "valueType": {
+                   "type": "double"
+                 }
+               },
                {
-                   "id":"playVoice",
-                   "name":"播放声音",
-                   "async":false, 
-                   "inputs":[
-                       {
-                          "id":"text",
-                          "name":"文字内容",
-                          "valueType":{
-                            "type":"string"
-                          }
-                       }
-                     ],
-                     "output":{
-                          "id":"success",
-                          "name":"是否成功",
-                          "valueType":{
-                            "type":"boolean"
-                          }
-                     }
+                 "id": "lat",
+                 "name": "纬度",
+                 "valueType": {
+                   "type": "double"
+                 }
                }
-          ],
-          "events":[
-               {
-                   "id":"temp_sensor",
-                   "name":"温度传感器",
-                   "parameters":[
-                       {
-                           "id":"temperature",
-                           "name":"温度",
-                           "valueType":{
-                             "type":"double"
-                           }
-                       },{
-                             "id":"get_time",
-                             "name":"采集时间",
-                             "valueType":{
-                               "type":"timestamp"
-                             }
-                         }
-                   ]
-               }
-          ]
-      }
+             ]
+           }
+         }
+       ]
+     }
 
 
 ```
