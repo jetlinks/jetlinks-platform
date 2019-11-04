@@ -473,15 +473,24 @@ importMiniui(function () {
                     form.getField("level").setValue(val.expands.level);
                     form.getField("dataType").setValue(val.dataType);
 
-                    var valData;
-                    if (val.dataType === "enum") {
-                        valData = val.valueType.elements;
-                    } else if (val.dataType === "object") {
-                        valData = val.valueType.properties;
-                    } else {
-                        valData = val.valueType;
+                    if (val.inputs) {
+                        val.inputs.forEach(function (val) {
+                            var parameterId = "i" + new Date().getTime();
+                            functionInputInfoList.push(val);
+                            addParameterHtml("functions-info-input", parameterId, functionInputInfoList, val);
+                        });
                     }
-                    setConfigData(val.dataType, valData, "event", eventInfoOutputList, "eventInfoOutput");
+                    if (val.outputs) {
+                        var valData;
+                        if (val.dataType === "enum") {
+                            valData = val.valueType.elements;
+                        } else if (val.dataType === "object") {
+                            valData = val.valueType.properties;
+                        } else {
+                            valData = val.valueType;
+                        }
+                        setConfigData(val.dataType, valData, "event", eventInfoOutputList, "eventInfoOutput");
+                    }
                 }, 100)
             } else {
                 form.getField("id").setReadOnly(false);
