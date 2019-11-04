@@ -35,10 +35,6 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -150,16 +146,16 @@ public class DeviceEventMessageHandler {
                 .subscribe(tuple2 -> {
                     DeviceMetadata metadata = tuple2.getT2();
                     Object value = message.getData();
-                    List<PropertyMetadata> metadataList = metadata
+                    DataType dataType = metadata
                             .getEvent(message.getEvent())
-                            .map(EventMetadata::getParameters)
-                            .orElseGet(Collections::emptyList);
+                            .map(EventMetadata::getType)
+                            .orElseGet(UnknownType::new);
 
                     Map<String, Object> data = new HashMap<>();
                     data.put("deviceId", device);
                     data.put("productId", tuple2.getT1());
-                    data.put("createTime", PropertyValueTrans.transDateFormat(new Date(message.getTimestamp())));
-                    Object tempValue = PropertyValueTrans.transValueFormat(value, metadataList);
+                    data.put("createTime", ValueTypeTranslator.dateFormatTranslator(new Date(message.getTimestamp())));
+                    Object tempValue = ValueTypeTranslator.translator(value, dataType);
                     if (tempValue instanceof Map) {
                         data.putAll(((Map) tempValue));
                     } else {
