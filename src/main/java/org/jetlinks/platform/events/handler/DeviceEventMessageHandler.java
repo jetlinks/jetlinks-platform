@@ -70,7 +70,7 @@ public class DeviceEventMessageHandler {
         } else if (message instanceof DeviceOnlineMessage || message instanceof DeviceOfflineMessage) {
             String deviceId = ((CommonDeviceMessage) message).getDeviceId();
             //子设备上线
-            
+
         }
         // TODO: 2019-11-01 更多消息类型处理
 
