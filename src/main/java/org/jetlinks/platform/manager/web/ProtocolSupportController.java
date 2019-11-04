@@ -10,6 +10,8 @@ import org.hswebframework.web.authorization.annotation.Resource;
 import org.hswebframework.web.crud.web.reactive.ReactiveServiceCrudController;
 import org.jetlinks.core.ProtocolSupport;
 import org.jetlinks.core.ProtocolSupports;
+import org.jetlinks.core.metadata.unit.ValueUnit;
+import org.jetlinks.core.metadata.unit.ValueUnits;
 import org.jetlinks.platform.manager.entity.DeviceInstanceEntity;
 import org.jetlinks.platform.manager.entity.DevicePropertiesEntity;
 import org.jetlinks.platform.manager.entity.ProtocolSupportEntity;
@@ -53,6 +55,10 @@ public class ProtocolSupportController implements
                 .map(ProtocolInfo::of);
     }
 
+    @GetMapping("/units")
+    public Flux<ValueUnit> allUnits() {
+        return Flux.fromIterable(ValueUnits.getAllUnit());
+    }
 
     @Getter
     @Setter

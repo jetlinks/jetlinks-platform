@@ -2,8 +2,10 @@ define([], function () {
     
     return {
         init: function (panel, model) {
-            
+
         },
-        debugSupport: true
+        debugSupport: true,
+
+        debugStopSupport:true
     }
 });

@@ -55,9 +55,8 @@ hsweb:
       admin:
         username: admin
         password: admin
-        permissions:
-          - id: device-instance
-            actions: ['query','save','delete']
+        name: 超级管理员
+
   authorize:
     auto-parse: true
   cache:

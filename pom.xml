@@ -183,11 +183,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.jetlinks</groupId>
-                <artifactId>rule-engine-cluster</artifactId>
-                <version>${jetlinks.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>io.vavr</groupId>
