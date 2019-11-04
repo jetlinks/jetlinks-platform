@@ -5,17 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.hswebframework.web.event.GenericsPayloadApplicationEvent;
 import org.jetlinks.core.ProtocolSupports;
 import org.jetlinks.core.cluster.ClusterManager;
-import org.jetlinks.core.defaults.CompositeProtocolSupports;
 import org.jetlinks.core.device.DeviceOperationBroker;
 import org.jetlinks.core.device.DeviceRegistry;
-import org.jetlinks.core.message.Message;
 import org.jetlinks.core.message.codec.DefaultTransport;
 import org.jetlinks.core.server.MessageHandler;
 import org.jetlinks.core.server.monitor.GatewayServerMetrics;
 import org.jetlinks.core.server.monitor.GatewayServerMonitor;
 import org.jetlinks.core.server.session.DeviceSessionManager;
 import org.jetlinks.core.spi.ServiceContext;
-import org.jetlinks.gateway.vertx.mqtt.VertxMqttGatewayServerContext;
 import org.jetlinks.platform.events.DeviceConnectedEvent;
 import org.jetlinks.platform.events.DeviceDisconnectedEvent;
 import org.jetlinks.platform.events.DeviceMessageEvent;
@@ -25,11 +22,8 @@ import org.jetlinks.supports.cluster.redis.RedisClusterManager;
 import org.jetlinks.supports.official.JetLinksAuthenticator;
 import org.jetlinks.supports.official.JetLinksDeviceMetadataCodec;
 import org.jetlinks.supports.official.JetLinksMQTTDeviceMessageCodec;
-import org.jetlinks.supports.protocol.CompositeProtocolSupport;
 import org.jetlinks.supports.protocol.ServiceLoaderProtocolSupports;
-import org.jetlinks.supports.protocol.StaticProtocolSupports;
 import org.jetlinks.supports.protocol.management.ClusterProtocolSupportManager;
-import org.jetlinks.supports.protocol.management.ManagementProtocolSupports;
 import org.jetlinks.supports.protocol.management.ProtocolSupportLoader;
 import org.jetlinks.supports.protocol.management.ProtocolSupportManager;
 import org.jetlinks.supports.protocol.management.jar.JarProtocolSupportLoader;
@@ -44,8 +38,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import reactor.core.publisher.Mono;
-import reactor.extra.processor.TopicProcessor;
-import reactor.extra.processor.WaitStrategy;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -77,8 +69,10 @@ public class JetLinksConfiguration {
     }
 
     @Bean(destroyMethod = "shutdown")
-    public DefaultDecodedClientMessageHandler defaultDecodedClientMessageHandler(MessageHandler handler, ApplicationEventPublisher eventPublisher) {
-        DefaultDecodedClientMessageHandler clientMessageHandler = new DefaultDecodedClientMessageHandler(handler);
+    public DefaultDecodedClientMessageHandler defaultDecodedClientMessageHandler(MessageHandler handler,
+                                                                                 DeviceSessionManager deviceSessionManager,
+                                                                                 ApplicationEventPublisher eventPublisher) {
+        DefaultDecodedClientMessageHandler clientMessageHandler = new DefaultDecodedClientMessageHandler(handler,deviceSessionManager);
         clientMessageHandler.subscribe()
                 .onBackpressureBuffer(Duration.ofSeconds(30), 1024, message -> {
                     log.warn("无法处理更多消息:{}", message);
@@ -100,8 +94,9 @@ public class JetLinksConfiguration {
     @Bean(initMethod = "startup")
     public DefaultSendToDeviceMessageHandler defaultSendToDeviceMessageHandler(JetLinksProperties properties,
                                                                                DeviceSessionManager sessionManager,
+                                                                               DeviceRegistry registry,
                                                                                MessageHandler messageHandler) {
-        return new DefaultSendToDeviceMessageHandler(properties.getServerId(), sessionManager, messageHandler);
+        return new DefaultSendToDeviceMessageHandler(properties.getServerId(), sessionManager, messageHandler,registry);
     }
 
     @Bean
@@ -186,23 +181,5 @@ public class JetLinksConfiguration {
         return supports;
     }
 
-
-    @Bean
-    public CompositeProtocolSupport jetLinksProtocolSupport() {
-        CompositeProtocolSupport support = new CompositeProtocolSupport();
-
-        support.setId("jet-links");
-        support.setName("JetLinks V1.0");
-        support.setDescription("JetLinks Protocol Version 1.0");
-
-        support.addAuthenticator(DefaultTransport.MQTT, new JetLinksAuthenticator());
-        support.addAuthenticator(DefaultTransport.MQTTS, new JetLinksAuthenticator());
-        support.setMetadataCodec(new JetLinksDeviceMetadataCodec());
-        JetLinksMQTTDeviceMessageCodec codec = new JetLinksMQTTDeviceMessageCodec();
-
-        support.addMessageCodecSupport(DefaultTransport.MQTT, () -> Mono.just(codec));
-        support.addMessageCodecSupport(DefaultTransport.MQTTS, () -> Mono.just(codec));
-        return support;
-    }
 
 }
