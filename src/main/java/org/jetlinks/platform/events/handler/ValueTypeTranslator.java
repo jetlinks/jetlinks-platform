@@ -20,36 +20,36 @@ import java.util.stream.Collectors;
  * @since 1.0
  **/
 @Slf4j
-public class PropertyValueTrans {
+public class ValueTypeTranslator {
 
-    public static Object transValueFormat(Object value, List<PropertyMetadata> metadataList) {
+    private static Object propertyMetadataTranslator(Object value, List<PropertyMetadata> metadataList) {
         if (value instanceof Map) {
-            return transMap((Map<String, Object>) value, metadataList);
+            return propertyMetadataToMap((Map<String, Object>) value, metadataList);
         } else {
             return value;
         }
     }
 
-    private static Map<String, Object> transMap(Map<String, Object> map, List<PropertyMetadata> metadataList) {
-        Map<String, PropertyMetadata> metadataMap = transMetadataToMapStructure(metadataList);
+    private static Map<String, Object> propertyMetadataToMap(Map<String, Object> map, List<PropertyMetadata> metadataList) {
+        Map<String, PropertyMetadata> metadataMap = toMapStructure(metadataList);
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             PropertyMetadata property = metadataMap.get(entry.getKey());
             if (null != property) {
-                entry.setValue(transValue(entry.getValue(), property.getValueType()));
+                entry.setValue(translator(entry.getValue(), property.getValueType()));
             }
         }
         return map;
     }
 
-    private static Map<String, PropertyMetadata> transMetadataToMapStructure(List<PropertyMetadata> metadata) {
+    private static Map<String, PropertyMetadata> toMapStructure(List<PropertyMetadata> metadata) {
         return metadata.stream()
                 .collect(Collectors.toMap(PropertyMetadata::getId, Function.identity()));
     }
 
-    private static Object transValue(Object value, DataType dataType) {
+    public static Object translator(Object value, DataType dataType) {
         try {
             if (dataType instanceof DateTimeType) {
-                return transDateFormat(((DateTimeType) dataType).convert(value));
+                return dateFormatTranslator(((DateTimeType) dataType).convert(value));
             } else if (dataType instanceof DoubleType) {
                 return ((DoubleType) dataType).convert(value);
             } else if (dataType instanceof FloatType) {
@@ -61,7 +61,7 @@ public class PropertyValueTrans {
             } else if (dataType instanceof IntType) {
                 return ((IntType) dataType).convert(value);
             } else if (dataType instanceof ObjectType) {
-                return transValueFormat(value, ((ObjectType) dataType).getProperties());
+                return propertyMetadataTranslator(value, ((ObjectType) dataType).getProperties());
             } else {
                 return value;
             }
@@ -71,7 +71,7 @@ public class PropertyValueTrans {
         }
     }
 
-    public static String transDateFormat(Date date) {
+    public static String dateFormatTranslator(Date date) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
         Instant instant = date.toInstant();
         ZoneId zone = ZoneId.systemDefault();
