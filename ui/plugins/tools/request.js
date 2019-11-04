@@ -265,6 +265,9 @@ define(["jquery", "storejs"], function ($, storejs) {
 
     return {
         basePath: window.BASE_PATH,
+        getToken:function(){
+            return storejs.get("X-Access-Token");
+        },
         getParameter: function (name) {
             // 获取参数
             var url = window.location.search;

@@ -285,6 +285,11 @@
             <artifactId>micrometer-registry-elastic</artifactId>
             <version>1.3.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.jetlinks</groupId>
+            <artifactId>rule-engine-cluster</artifactId>
+            <version>${jetlinks.version}</version>
+        </dependency>
 
 <!--        <dependency>-->
 <!--            <groupId>dev.miku</groupId>-->

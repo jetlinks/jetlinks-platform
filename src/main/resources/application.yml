@@ -6,29 +6,30 @@ spring:
     active: dev
   application:
     name: jetlinks-demo
-#  datasource:
-#    url: jdbc:h2:file:./db/${spring.application.name}
-#    username: sa
-#    password:
-#    type: com.zaxxer.hikari.HikariDataSource
   elasticsearch:
     jest:
       uris: http://localhost:9200
-  r2dbc:
-    url: r2dbc:postgresql://localhost:5432/jetlinks
-    username: postgres
-    password: jetlinks
-    pool:
-      max-size: 32
+
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: Asia/Shanghai
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: true
     default-property-inclusion: non_null
-
   resources:
     static-locations: file:./ui/,file:./static/,/,classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/, classpath:/public/
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    lettuce:
+      pool:
+        max-active: 32
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/jetlinks
+    username: postgres
+    password: jetlinks
+    pool:
+      max-size: 32
 easyorm:
   default-schema: public # 数据库默认的schema
   dialect: postgres #数据库方言
@@ -36,12 +37,12 @@ hsweb:
   cors:
     enable: true
     configs:
-        - path: /**
-          allowed-headers: "*"
-          allowed-methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
-          allowed-origins: ["*"]
-          allow-credentials: true
-          max-age: 1800
+      - path: /**
+        allowed-headers: "*"
+        allowed-methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+        allowed-origins: ["*"]
+        allow-credentials: true
+        max-age: 1800
   dict:
     enum-packages: org.jetlinks
   file:
@@ -56,7 +57,6 @@ hsweb:
         username: admin
         password: admin
         name: 超级管理员
-
   authorize:
     auto-parse: true
   cache:
@@ -64,11 +64,6 @@ hsweb:
     redis:
       local-cache-type: guava
 jetlinks:
-  redis:
-    hosts: redis://127.0.0.1:6379
-    database: 0
-    #    password:
-    type: standalone
   server-id: ${spring.application.name}:${server.port} #设备服务网关服务ID,不同服务请设置不同的ID
   transport-limit:
     MQTT: 1000000
@@ -76,6 +71,7 @@ jetlinks:
 logging:
   level:
     org.jetlinks: debug
+    rule.engine: debug
     org.hswebframework: debug
     org.springframework.transaction: debug
     org.springframework.data.r2dbc.connectionfactory: debug

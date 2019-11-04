@@ -6,7 +6,7 @@ JetLinks的核心功能整合,以及实现简单的业务功能.
 
 启动项目需要`Redis`,`ElasticSearch`,`Postgresql`
 你可以通过配置文件`application.yml`的配置项
-`jetlinks.redis`以及`spring.elasticsearch.jest.uris`配置相关信息
+`spring.redis`以及`spring.elasticsearch.jest.uris`配置相关信息
 
 也可以使用docker启动相关环境
 ```bash

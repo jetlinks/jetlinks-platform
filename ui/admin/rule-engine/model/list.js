@@ -39,7 +39,7 @@ importMiniui(function () {
                 tools.createActionButton("发布", "icon-ok", function () {
                     message.confirm("确认发布此模型?", function () {
                         grid.loading("发布中...");
-                        request['post']("rule-engine/model/" + row.id + "/deploy", {}, function (response) {
+                        request['post']("rule-engine/model/" + row.id + "/_deploy", {}, function (response) {
                             grid.reload();
                             if (response.status === 200) {
                                 message.showTips("发布成功");
