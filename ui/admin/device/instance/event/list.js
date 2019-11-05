@@ -32,6 +32,7 @@ importMiniui(function () {
 
         var grid = window.grid = mini.get("datagrid");
         tools.initGrid(grid);
+
         grid.setUrl(request.basePath + "device-instance/_query");
 
         function search() {
@@ -46,7 +47,7 @@ importMiniui(function () {
             })
         });
 
-        function deploy(id) {
+        function deviceDeploy(id) {
             var loding = message.loading("发布中...");
             request.post("device-instance/deploy/" + id, {}, function (response) {
                 loding.close();
@@ -58,23 +59,14 @@ importMiniui(function () {
                 grid.reload();
             });
         }
-        function cancelDeploy(id) {
-            var loding = message.loading("取消布中...");
-            request.post("device-instance/cancelDeploy/" + id, {}, function (response) {
-                loding.close();
-                if (response.result === 1) {
-                    message.showTips("取消发布成功");
-                } else {
-                    message.showTips("取消发布失败");
-                }
-                grid.reload();
-            });
-        }
 
         window.renderAction = function (e) {
             var row = e.record;
             var html = [];
 
+            // if (authorize.hasPermission("home-supplier", "update")) {
+            //
+            // }
             html.push(tools.createActionLink("查看", "查看", function () {
                 tools.openWindow("admin/device/instance/detail.html?id=" + row.id + "&productId=" + row.productId, "查看设备", "1300", "850", function () {
                     grid.reload();
@@ -82,11 +74,7 @@ importMiniui(function () {
             }));
             if (row.state.text === '未激活') {
                 html.push(tools.createActionLink("发布", "<sapn>&nbsp;&nbsp;&nbsp;发布</sapn>", function () {
-                    deploy(row.id);
-                }));
-            }else {
-                html.push(tools.createActionLink("取消发布", "<sapn>&nbsp;&nbsp;&nbsp;取消发布</sapn>", function () {
-                    cancelDeploy(row.id);
+                    deviceDeploy(row.id);
                 }));
             }
 

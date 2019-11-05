@@ -93,6 +93,16 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
                 .then(deviceDeployUpdate(id));
     }
 
+    public Mono<Integer> cancelDeploy(String id){
+        return findById(Mono.just(id))
+                .flatMap(product -> registry.unRegistry(id)
+                        .thenReturn(true)
+                        .flatMap(re -> createUpdate()
+                                .set(DeviceInstanceEntity::getState, DeviceState.notActive.getValue())
+                                .where(DeviceInstanceEntity::getId, id)
+                                .execute()));
+    }
+
     private Mono<Integer> deviceDeployUpdate(String deviceId) {
         return createUpdate()
                 .set(DeviceInstanceEntity::getRegistryTime, System.currentTimeMillis())

@@ -236,6 +236,9 @@ importMiniui(function () {
             pre.prop("checked", !pre.prop("checked"));
         });
         $(".close-button").on("click", function () {
+            if(window.onClose){
+                window.onClose()
+            }
             tools.closeWindow()
         });
 
@@ -370,6 +373,7 @@ importMiniui(function () {
                 setting.state = 1;
                 setting.actions = settingDetailMap[i].actions;
                 setting.id = settingDetailMap[i].id;
+                setting.merge = true;
                 settings.push(setting);
 
             }
