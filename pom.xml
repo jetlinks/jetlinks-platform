@@ -291,11 +291,11 @@
             <version>${jetlinks.version}</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>dev.miku</groupId>-->
-<!--            <artifactId>r2dbc-mysql</artifactId>-->
-<!--            <version>0.8.0.BUILD-SNAPSHOT</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>dev.miku</groupId>
+            <artifactId>r2dbc-mysql</artifactId>
+            <version>0.8.0.BUILD-SNAPSHOT</version>
+        </dependency>
 
         <dependency>
             <groupId>org.hswebframework.web</groupId>
