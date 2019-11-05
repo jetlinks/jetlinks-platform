@@ -1,15 +1,13 @@
 server:
   port: 8844
-
 spring:
   profiles:
     active: dev
   application:
-    name: jetlinks-demo
+    name: jetlinks-platform
   elasticsearch:
     jest:
       uris: http://localhost:9200
-
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: Asia/Shanghai
