@@ -20,11 +20,11 @@
                         </tr>
                     </table>
                 </div>
-                <div id="type-grid" class="mini-treegrid" style="width:100%;height:100%;margin: auto;"
+                <div id="type-grid" class="mini-treegrid" style="width:100%;height:94%;margin: auto;"
                      allowCellEdit="true" allowCellSelect="true"
                      idField="id" parentField="parentId" resultAsTree="false" allowDrag="true"
                      allowDrop="true" allowLeafDropIn="false" iconField="icon" pageSize="20"
-                     expandOnLoad="1" treeColumn="index" showPager="true"
+                     expandOnLoad="1" treeColumn="index" showPager="false"
                      editNextOnEnterKey="true" editNextRowCell="true">
                     <div property="columns">
                         <div name="id" field="id" headerAlign="center" align="center" width="80">标识
@@ -40,18 +40,17 @@
                         <div class="mini-toolbar" style="border-bottom:0;">
                             <table id="search-box">
                                 <tr>
-                                    <td>维度名称:<input name="name$LIKE" class="mini-textbox"/></td>
+                                    <td>维度名称:<input name="name" class="mini-textbox"/></td>
                                     <td><a class="mini-button search-button" plain="true" iconCls="icon-search">搜索</a>
                                     </td>
                                     <td autz="hasPermission('dimension','save')">
-                                        <a onclick="mini.get('dimension-grid').addNode({sortIndex:grid.getData().length+1})"
-                                           class="mini-button add-menu-button" iconCls="fa-plus">添加维度</a></td>
+                                        <a class="mini-button add-dimension-button" iconCls="fa-plus">添加维度</a></td>
                                     <!--                <td autz="hasPermission('dimension','add')||hasPermission('organizational','update')">-->
                                     <!--                    <a class="mini-button save-all-button" plain="true" iconCls="fa-check">保存全部</a></td>-->
                                 </tr>
                             </table>
                         </div>
-                        <div id="dimension-grid" class="mini-treegrid" style="width:100%;height:100%;margin: auto;"
+                        <div id="dimension-grid" class="mini-treegrid" style="width:100%;height:94%;margin: auto;"
                              idField="id" parentField="parentId" resultAsTree="false"
                              iconField="icon" allowCellValid="true"
                              allowResize="true" expandOnLoad="true" allowLeafDropIn="true"
@@ -61,12 +60,8 @@
                                 <div type="indexcolumn" name="index" width="30" align="center" headerAlign="center">
                                     拖动可排序
                                 </div>
-                                <div autz="hasFieldAccess('organizational','query','name')" field="name"
-                                     headerAlign="center" align="center" width="50">维度名称
+                                <div  field="name" headerAlign="center" align="center" width="50">维度名称
                                     <input property="editor" required emptyText="维度名称" class="mini-textbox"/>
-                                </div>
-                                <div field="typeId" width="50" headerAlign="center" align="center">维度类型
-                                    <input  emptyText="维度类型" readonly class="mini-textbox"/>
                                 </div>
                                 <div field="sortIndex" width="50" headerAlign="center" align="center">排序序号
                                     <input property="editor" emptyText="排序序号" class="mini-textbox"/>
@@ -83,11 +78,9 @@
                     </div>
                     <div showCollapseButton="true">
                         <div id="bind" class="mini-toolbar">
-
-                            <a class="mini-button bind-user">绑定用户</a>
-
+                            <a class="mini-button bind-user" iconCls="fa-plus">绑定用户</a>
                         </div>
-                        <div id="user-grid" class="mini-treegrid" style="width:100%;height:100%;margin: auto;"
+                        <div id="user-grid" class="mini-treegrid" style="width:100%;height:94%;margin: auto;"
                              allowCellEdit="true" allowCellSelect="true"
                              idField="id" parentField="parentId" resultAsTree="false" allowDrag="true"
                              allowDrop="true" allowLeafDropIn="false" iconField="icon" pageSize="20"
