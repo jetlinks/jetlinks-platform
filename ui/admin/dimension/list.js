@@ -107,7 +107,7 @@ require(["authorize"], function (authorize) {
                     query.where("typeId", window.nowSelectedType.id);
                     if (param) {
                         for (var key in param) {
-                            query.and(key, param[key]);
+                            query.and(key, "%" + param[key] + "%");
                         }
                     }
                     query.exec(function (response) {
@@ -163,7 +163,6 @@ require(["authorize"], function (authorize) {
                                         }), function (res) {
                                             message.loading().hide();
                                             if (res.status === 200) {
-                                                console.log(res.result.length)
                                                 if (res.result.length > 0) {
                                                     message.showTips("该维度已绑定..", "danger");
                                                 } else {
@@ -253,7 +252,6 @@ require(["authorize"], function (authorize) {
 
             function loadUserData() {
                 userGrid.loading();
-                console.log(window.nowSelectedDimension)
                 require(["message"], function (message) {
                     request.createQuery("dimension-user/_query/no-paging")
                         .where("dimensionId", window.nowSelectedDimension.id)
