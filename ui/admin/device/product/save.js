@@ -217,8 +217,6 @@ importMiniui(function () {
                 });
             });
 
-            verificationId(attributeInfoList,form);
-
             if (data !== "") {
                 form.getField("dataType").doValueChanged();
 
@@ -356,8 +354,6 @@ importMiniui(function () {
                 });
             });
 
-            verificationId(functionDataList,form);
-
             if (data) {
                 form.getField("dataType").doValueChanged();
                 window.setTimeout(function () {
@@ -465,8 +461,6 @@ importMiniui(function () {
                 });
             });
 
-            verificationId(eventDataList,form);
-
             if (data) {
                 form.getField("dataType").doValueChanged();
 
@@ -532,6 +526,20 @@ importMiniui(function () {
             var eventData = [];
 
             var productInfo = tools.getFormData("#product-info", true);
+            var security = tools.getFormData("#security-info", true);
+
+            if (!productInfo) {
+                message.showTips("保存失败:请检查型号基本信息", "danger");
+                return false;
+            }
+            if (!security) {
+                message.showTips("保存失败:请检查型号安全配置信息", "danger");
+                return false;
+            }
+            productInfo.security = security;
+
+            if (productInfo.id === "")
+                productInfo.id = null;
 
             if (dataId) {
                 productInfo.id = dataId;
@@ -540,11 +548,6 @@ importMiniui(function () {
                 productInfo.state = 0;
                 productInfo.createTime = new Date().getTime();
             }
-            if (!productInfo) {
-                message.showTips("保存失败:请检查型号基本信息", "danger");
-                return false;
-            }
-            productInfo.security = tools.getFormData("#security-info", true);
 
             $(mini.get("attribute-list").getData()).each(function () {
                 attributeData.push(this.attributeInfoList);
@@ -637,8 +640,6 @@ importMiniui(function () {
                 }
                 addEnum("parameter");
             });
-
-            verificationId(list,form);
 
             if (data !== "") {
                 form.getField("dataType").doValueChanged();
@@ -873,17 +874,6 @@ importMiniui(function () {
                 }*!/
                 return html.join("");
             };*/
-        }
-
-        //验证标识是否重复
-        function verificationId(list,form){
-            form.getField("id").on("valueChanged", function (e) {
-                if (list.some(item => {return item.id == e.value;})) {
-                    message.showTips("标识:" + e.value+"重复,请重新输入", "danger");
-                    form.getField("id").setRequiredErrorText("存在重复数据");
-                    form.reset();
-                }
-            });
         }
     });
 });
