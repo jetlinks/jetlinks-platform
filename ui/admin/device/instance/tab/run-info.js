@@ -220,7 +220,7 @@ importMiniui(function () {
         $(document).on('click', '.event-refresh', function () {
             var eventId = this.title;
             var _this = this;
-            request.get("device-event/" + eventId + "/productId/" + productId, function (response) {
+            request.get("device-event/" + eventId + "/productId/" + productId, request.encodeQueryParam({"deviceId.keyword": id}), function (response) {
                 if (response.status === 200) {
                     $(_this).parents(".row").find(".event-value").html(response.result.total);
                     message.showTips("刷新成功");

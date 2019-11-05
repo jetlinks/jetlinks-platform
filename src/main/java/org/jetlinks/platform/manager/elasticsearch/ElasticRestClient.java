@@ -20,9 +20,7 @@ public class ElasticRestClient {
 
     private int port;
 
-    public RestHighLevelClient getClient(){
-        return new RestHighLevelClient(
-                RestClient.builder(
-                        new HttpHost(host, port, "http")));
+    public RestHighLevelClient getClient() {
+        return new RestHighLevelClient(RestClient.builder(new HttpHost(host, port, "http")));
     }
 }
