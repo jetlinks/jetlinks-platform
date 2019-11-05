@@ -217,6 +217,8 @@ importMiniui(function () {
                 });
             });
 
+            verificationId(attributeInfoList,form);
+
             if (data !== "") {
                 form.getField("dataType").doValueChanged();
 
@@ -354,6 +356,8 @@ importMiniui(function () {
                 });
             });
 
+            verificationId(functionDataList,form);
+
             if (data) {
                 form.getField("dataType").doValueChanged();
                 window.setTimeout(function () {
@@ -460,6 +464,8 @@ importMiniui(function () {
                     addParameter("event-object-struct", eventInfoOutputList, "");
                 });
             });
+
+            verificationId(eventDataList,form);
 
             if (data) {
                 form.getField("dataType").doValueChanged();
@@ -631,6 +637,9 @@ importMiniui(function () {
                 }
                 addEnum("parameter");
             });
+
+            verificationId(list,form);
+
             if (data !== "") {
                 form.getField("dataType").doValueChanged();
                 window.setTimeout(function () {
@@ -864,6 +873,17 @@ importMiniui(function () {
                 }*!/
                 return html.join("");
             };*/
+        }
+
+        //验证标识是否重复
+        function verificationId(list,form){
+            form.getField("id").on("valueChanged", function (e) {
+                if (list.some(item => {return item.id == e.value;})) {
+                    message.showTips("标识:" + e.value+"重复,请重新输入", "danger");
+                    form.getField("id").setRequiredErrorText("存在重复数据");
+                    form.reset();
+                }
+            });
         }
     });
 });
