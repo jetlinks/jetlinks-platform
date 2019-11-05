@@ -1,6 +1,5 @@
 package org.jetlinks.platform.manager.web;
 
-import com.sun.deploy.security.ruleset.DefaultRule;
 import org.hswebframework.web.authorization.annotation.Resource;
 import org.hswebframework.web.authorization.annotation.ResourceAction;
 import org.hswebframework.web.crud.service.ReactiveCrudService;
@@ -10,7 +9,6 @@ import org.hswebframework.web.id.IDGenerator;
 import org.jetlinks.platform.manager.entity.RuleInstanceEntity;
 import org.jetlinks.platform.manager.service.RuleInstanceService;
 import org.jetlinks.rule.engine.api.DefaultRuleData;
-import org.jetlinks.rule.engine.api.RuleData;
 import org.jetlinks.rule.engine.api.RuleDataHelper;
 import org.jetlinks.rule.engine.api.RuleEngine;
 import org.springframework.beans.factory.annotation.Autowired;

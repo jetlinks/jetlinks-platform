@@ -10,11 +10,11 @@
 
         .info-key {
             color: #8e8e8e;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .info-value-big {
-            font-size: 32px;
+            font-size: 30px;
         }
         .refresh-effect{
             cursor:pointer;
@@ -23,17 +23,50 @@
         .refresh-effect:active{
             background: #cccccc;
         }
+        a {
+            font-size: 14px
+        }
+
+        a:link {
+            color: blue;
+            text-decoration: none;
+        }
+
+        a:active {
+            color: red;
+        }
+
+        a:visited {
+            color: blue;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #967189;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
 <div style="width: 100%; background: #F0F2F5">
-    <div class="propertyPlate">
-        <div style="background: #ffffff;margin-right: 2%; width: 23%; height: 30%; padding: 2%; margin-bottom: 2%; display: inline-block">
+    <div class="dataPlate">
+        <div style="background: #ffffff;margin-right: 2%; width: 22%; height: 30%; padding: 2%; margin-bottom: 2%; display: inline-block">
             <div class="row">
                 <div class="mini-col-11" style="margin-bottom: 10%"><span class="info-key">设备状态</span></div>
                 <div class="mini-col-1" style="margin-bottom: 10%"><i class="fa fa-refresh device-info-refresh refresh-effect"></i></div>
                 <div class="mini-col-12" style="margin-bottom: 20%"><span class="info-value-big device-state"></span><span class="mac"></span></div>
                 <div class="mini-col-12"><span class="device-online-time info-key" style="margin-left: 5px"></span></div>
+            </div>
+        </div>
+    </div>
+    <div id="eventDetailWindow" class="mini-window" title="事件详情" style="width:1000px;height:600px;display: none" showModal="true"
+         showCloseButton="true">
+        <div class="mini-fit">
+            <div id="eventGrid" class="mini-datagrid" style="width:100%;height: 100%;margin: auto;" multiSelect="true" hiddenallowResize="true"
+                 showPager="true">
+                <div property="columns">
+
+                </div>
             </div>
         </div>
     </div>

@@ -12,12 +12,12 @@ define(["jquery"], function ($) {
         },
         "_description": function (description) {
             if (!description) description = '说明';
-            return "<div class=\"info-key\">"+ description +"</div>";
+            return "<div class=\"info-key\">" + description + "</div>";
         }
     };
 
     var unifyUnit = {
-        "celsiusDegrees": function(description){
+        "celsiusDegrees": function (description) {
             return {
                 "name": "摄氏度",
                 "symbol": "℃",
@@ -92,16 +92,16 @@ define(["jquery"], function ($) {
                 }
             }
         },
-        "_undefine": function(description){
-           return {
-               "name": "",
-               "symbol": "",
-               "type": "",
-               "description": description,
-               "getCharts": function (value) {
-                   return valueTypeCharts["_description"](description);
-               }
-           }
+        "_undefine": function (description) {
+            return {
+                "name": "",
+                "symbol": "",
+                "type": "",
+                "description": description,
+                "getCharts": function (value) {
+                    return valueTypeCharts["_description"](description);
+                }
+            }
         }
     };
 
@@ -129,7 +129,7 @@ define(["jquery"], function ($) {
             return propertyParser(func.inputs);
         };
         resultMap.getOutput = function () {
-            return normalProperty(func.output);
+            return valueTypeParser(func.output);
         };
         return resultMap;
     }
@@ -138,9 +138,22 @@ define(["jquery"], function ($) {
         var resultMap = {};
         mapDeepCopy(event["expands"], resultMap);
         mapShallowCopy(event, resultMap);
-        resultMap.getParameters = function () {
-            return propertyParser(event.parameters);
+        resultMap.getValueType = function () {
+            return valueTypeParser(event.valueType);
         };
+        return resultMap;
+    }
+
+    function valueTypeParser(valueType) {
+        var resultMap = {};
+        mapShallowCopy(valueType, resultMap);
+        if (!valueType || valueType.type !== 'object') {
+            return resultMap;
+        } else {
+            resultMap.getProperties = function () {
+                return propertyParser(valueType.properties);
+            }
+        }
         return resultMap;
     }
 
@@ -195,10 +208,10 @@ define(["jquery"], function ($) {
             if (funcs) {
                 for (let i = 0; i < funcs.length; i++) {
                     var func = funcs[i];
-                    resultMap[func['name']] = normalFunc(func);
+                    resultMap[func['id']] = normalFunc(func);
                 }
-                resultMap.getFunction = function (name) {
-                    return resultMap[name];
+                resultMap.getFunction = function (id) {
+                    return resultMap[id];
                 }
             }
             return resultMap;
@@ -209,10 +222,10 @@ define(["jquery"], function ($) {
             if (events) {
                 for (let i = 0; i < events.length; i++) {
                     var event = events[i];
-                    resultMap[event['name']] = normalEvent(event);
+                    resultMap[event['id']] = normalEvent(event);
                 }
-                resultMap.getEvent = function (name) {
-                    return resultMap[name];
+                resultMap.getEvent = function (id) {
+                    return resultMap[id];
                 }
             }
             return resultMap;

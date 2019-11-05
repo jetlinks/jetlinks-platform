@@ -169,12 +169,14 @@ public class DeviceEventMessageHandler {
 
                     builder.addAction(new Index.Builder(data).build());
 
-
+// TODO: 2019/11/4 修改为批量存储 
                     jestClient.executeAsync(builder.build(), new JestResultHandler<JestResult>() {
                         @Override
                         public void completed(JestResult result) {
                             if (!result.isSucceeded()) {
                                 log.error("保存设备事件失败:{}", result.getJsonString());
+                            } else {
+                                log.info("保存设备事件成功");
                             }
                         }
 

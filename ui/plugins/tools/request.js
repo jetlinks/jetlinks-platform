@@ -264,7 +264,7 @@ define(["jquery", "storejs"], function ($, storejs) {
     }
 
     return {
-        basePath: window.BASE_PATH,
+        basePath: window.API_BASE_PATH,
         getToken:function(){
             return storejs.get("X-Access-Token");
         },

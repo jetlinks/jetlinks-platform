@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.hswebframework.web.authorization.annotation.Authorize;
 import org.hswebframework.web.authorization.annotation.Resource;
 import org.hswebframework.web.crud.web.reactive.ReactiveServiceCrudController;
+import org.hswebframework.web.exception.BusinessException;
 import org.jetlinks.platform.manager.entity.DeviceInstanceEntity;
 import org.jetlinks.platform.manager.entity.DevicePropertiesEntity;
 import org.jetlinks.platform.manager.service.LocalDeviceInstanceService;
@@ -58,6 +59,11 @@ public class DeviceInstanceController implements
         return service.deploy(deviceId);
     }
 
+    @PostMapping("/cancelDeploy/{deviceId:.+}")
+    public Mono<Integer> cancelDeploy(@PathVariable String deviceId) {
+        return service.cancelDeploy(deviceId);
+    }
+
     /**
      * 重置设备安全参数
      *
@@ -69,4 +75,14 @@ public class DeviceInstanceController implements
         return service.resetSecurityProperties(deviceId);
     }
 
+
+    @PostMapping
+    public Mono<DeviceInstanceEntity> add(@RequestBody Mono<DeviceInstanceEntity> payload) {
+        return payload.flatMap(entity -> service
+                .insert(Mono.just(entity))
+                // TODO: 2019/11/4 错误类型判断
+                .onErrorMap(err-> true, err-> new BusinessException("设备id重复"))
+                .thenReturn(entity));
+
+    }
 }
