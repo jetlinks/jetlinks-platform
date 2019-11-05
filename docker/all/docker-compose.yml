@@ -48,16 +48,23 @@ services:
       POSTGRES_DB: jetlinks
       TZ: Asia/Shanghai
   jetlinks:
-    image: jetlinks/jetlinks-platform
+    image: registry.cn-shenzhen.aliyuncs.com/jetlinks/jetlinks-platform
     container_name: jetlinks-platform
     ports:
-      - "5432:5432"
+      - "8844:8844"
     volumes:
-      - "./data/jetlinks:/data"
+      - "./data/jetlinks:/static"
     environment:
       TZ: Asia/Shanghai
-      spring.profiles.active: docker
+      spring.profiles.active: dev,docker
     links:
       - redis:redis
       - postgres:postgres
       - elasticsearch:elasticsearch
+  jetlinks-ui:
+    image: registry.cn-shenzhen.aliyuncs.com/jetlinks/jetlinks-platform-ui:1.0.0
+    container_name: jetlinks-platform-ui
+    ports:
+      - "80:80"
+    environment:
+      TZ: Asia/Shanghai

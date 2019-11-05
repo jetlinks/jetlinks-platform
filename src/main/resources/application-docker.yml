@@ -3,7 +3,7 @@ spring:
     host: redis
     port: 6379
   r2dbc:
-    url: r2dbc:postgresql://postgresql:5432/jetlinks
+    url: r2dbc:postgresql://postgres:5432/jetlinks
     username: postgres
     password: jetlinks
   elasticsearch:

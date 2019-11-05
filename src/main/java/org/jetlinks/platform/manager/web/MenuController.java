@@ -70,6 +70,7 @@ public class MenuController implements ReactiveServiceCrudController<MenuEntity,
     }
 
     @GetMapping("user-own/tree")
+    @Authorize(ignore = true)
     public Flux<MenuEntity> getUserMenuAsTree() {
         return Authentication
                 .currentReactive()
