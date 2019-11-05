@@ -71,9 +71,15 @@ var dataType = [
             boolValue.append("<div class=\"form-item\">");
             boolValue.append("<label class=\"form-label\">布尔值：</label>");
             boolValue.append("<div class=\"input-block component-body \">\n" +
-                "true-<input required borderStyle=\"border:0\" readOnly=\"true\" value='是' style=\"width: 36%\" class=\"mini-textbox\">~\n" +
-                "false-<input required borderStyle=\"border:0\" readOnly=\"true\" value='否' style=\"width: 36%\" class=\"mini-textbox\"></div>");
-
+                "                <div class=\"parameter-input\">\n" +
+                "                     <input required name=\"trueValue\" emptyText=\"trueValue\" style=\"width: 43.5%\" class=\"mini-textbox\">~\n" +
+                "                     <input required name=\"trueText\" emptyText=\"trueText\" style=\"width: 43.5%\" class=\"mini-textbox\">" +
+                "                </div>" +
+                "                <div class=\"parameter-input\">\n" +
+                "                     <input required name=\"falseValue\" emptyText=\"falseValue\" style=\"width: 43.5%\" class=\"mini-textbox\">~\n" +
+                "                     <input required name=\"falseText\" emptyText=\"falseText\" style=\"width: 43.5%\" class=\"mini-textbox\">" +
+                "                </div>" +
+                "           </div>");
             html.append(boolValue);
         }
     },
@@ -298,11 +304,6 @@ importMiniui(function () {
                 valueType["elements"] = category.getValue(place);
             } else if (dataType === "object") {
                 valueType["properties"] = list;
-            } else if (dataType === "boolean") {
-                valueType["trueText"] = "是";
-                valueType["falseText"] = "否";
-                valueType["trueValue"] = "true";
-                valueType["falseValue"] = "false";
             } else {
                 var formDataInfo = tools.getFormData("#" + obtainId, true);
                 $.each(formDataInfo, function (key, val) {
@@ -403,6 +404,7 @@ importMiniui(function () {
                 var functionList = {
                     "id": functionInfo.id,
                     "name": functionInfo.name,
+                    "isAsync": functionInfo.isAsync === "true" ? "是" : "否",
                     "description": functionInfo.description,
                     "functionDataList": {
                         "id": functionInfo.id,
@@ -672,11 +674,6 @@ importMiniui(function () {
             } else if (parameterInfo.dataType === "object") {
                 message.showTips("暂不支持此数据类型请,重新选择数据类型", "danger");
                 return false;
-            } else if (parameterInfo.dataType === "boolean") {
-                valueType["trueText"] = "是";
-                valueType["falseText"] = "否";
-                valueType["trueValue"] = "true";
-                valueType["falseValue"] = "false";
             } else {
                 var formDataInfo = tools.getFormData("#struct-config", true);
                 $.each(formDataInfo, function (key, val) {
@@ -773,14 +770,7 @@ importMiniui(function () {
                 "dataType": dataValueType[conf.dataType],
                 "readOnly": conf.readOnly === "true" ? "是" : "否",
                 "description": conf.description,
-                "attributeInfoList": {
-                    "id": conf.id,
-                    "name": conf.name,
-                    "valueType": conf.valueType,
-                    "dataType": conf.dataType,
-                    "expands": conf.expands,
-                    "description": conf.description
-                }
+                "attributeInfoList": conf
             });
             mini.get("attribute-list").setData(attributeInfoList);
         }
@@ -790,16 +780,9 @@ importMiniui(function () {
             functionDataList.push({
                 "id": conf.id,
                 "name": conf.name,
+                "isAsync": conf.isAsync === "true" ? "是" : "否",
                 "description": conf.description,
-                "functionDataList": {
-                    "id": conf.id,
-                    "name": conf.name,
-                    "inputs": conf.inputs,
-                    "outputs": conf.outputs,
-                    "dataType": conf.dataType,
-                    "isAsync": conf.isAsync,
-                    "description": conf.description
-                }
+                "functionDataList": conf
             });
             mini.get("function-list").setData(functionDataList);
         }
@@ -811,14 +794,7 @@ importMiniui(function () {
                 "name": conf.name,
                 "level": eventLevel[conf.expands.level],
                 "description": conf.description,
-                "eventDataList": {
-                    "id": conf.id,
-                    "name": conf.name,
-                    "valueType": conf.valueType,
-                    "dataType": conf.dataType,
-                    "expands": conf.expands,
-                    "description": conf.description
-                }
+                "eventDataList": conf
             });
             mini.get("event-list").setData(eventDataList);
         }
