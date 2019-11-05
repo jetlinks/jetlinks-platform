@@ -1,5 +1,6 @@
 
 var _logger = logger;
+var _simulator = simulator;
 
 simulator.bindHandler("/invoke-function", function (message, session) {
     var messageId = message.messageId;
@@ -16,22 +17,49 @@ simulator.bindHandler("/invoke-function", function (message, session) {
 
 simulator.bindHandler("/read-property", function (message, session) {
     var messageId = message.messageId;
+    var properties = message.properties;
+    var initProperties = {"name": "test1","cpuUsage":"55","currentTemperature":"31"};
+    var resultProperties = {};
+    if (properties) {
+        for (var i = 0; i < properties.length; i++) {
+            resultProperties[properties[i]] = initProperties[properties[i]]
+        }
+    }
 
-    session.sendMessage("/read-property-reply", JSON.stringify({
-        messageId: messageId,
-        timestamp: new Date().getTime(),
-        properties: {"name": "1234"},
-        success: true
-    }))
+   //for(var i=0;i<2;i++){
+        session.sendMessage("/read-property-reply", JSON.stringify({
+            messageId: messageId,
+            timestamp: new Date().getTime(),
+            properties: resultProperties,
+          //  headers:{
+              //  frag_msg_id:messageId,
+              //  frg_num:2
+          //  },
+            success: true
+        }))
+   //}
+
+    // _simulator.runDelay(function(){
+    //     session.sendMessage("/read-property-reply", JSON.stringify({
+    //         messageId: messageId,
+    //         timestamp: new Date().getTime(),
+    //         properties: {"name": "1234"},
+    //         success: true
+    //     }))
+    // },200);
+
 });
 
 
 simulator.onEvent(function (index, session) {
     session.sendMessage("/event",JSON.stringify({
         messageId: new Date().getTime() + "" + Math.round((Math.random() * 100000)),
-        event: "temperature",
+        event: "properties",
         timestamp: new Date().getTime(),
-        data: ((Math.random() * 100) + 1).toFixed(2)
+        headers:{"report-property":true},
+        data:{
+            "temperature": ((Math.random() * 20) + 30).toFixed(2)
+        }
     }))
 });
 

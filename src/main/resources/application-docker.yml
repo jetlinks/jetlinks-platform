@@ -1,0 +1,39 @@
+spring:
+  redis:
+    host: redis
+    port: 6379
+  r2dbc:
+    url: r2dbc:postgresql://postgres:5432/jetlinks
+    username: postgres
+    password: jetlinks
+  elasticsearch:
+    jest:
+      uris: http://elasticsearch:9200
+elasticsearch:
+  client:
+    host: elasticsearch
+    port: 9200
+management:
+  metrics:
+    export:
+      elastic:
+        host: http://elasticsearch:9200
+        index: jetlinks-metrics
+hsweb:
+  file:
+    upload:
+      static-file-path: ./static/upload
+      static-location: http://127.0.0.1:8844/upload
+  cache:
+    type: redis
+    redis:
+      local-cache-type: guava
+logging:
+  level:
+    org.jetlinks: info
+    rule.engine: info
+    org.hswebframework: warn
+    org.springframework.transaction: warn
+    org.springframework.data.r2dbc.connectionfactory: warn
+    io.micrometer: warn
+    org.hswebframework.expands: warn

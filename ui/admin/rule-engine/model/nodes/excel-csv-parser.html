@@ -1,0 +1,32 @@
+<script type="text/html" title="excel-csv解析" class="node-template">
+
+    <div class="mini-col-12 form-component">
+        <div class="form-item brick"><label class="form-label">文件地址</label>
+            <div class="input-block component-body">
+                <input name="config.fileUrl" required class="mini-textbox" emptyText="变量说明：${#data}"
+                       style="width: 100%">
+            </div>
+        </div>
+    </div>
+
+    <div class="mini-col-12 form-component">
+        <div class="form-item brick"><label class="form-label">文件类型</label>
+            <div class="input-block component-body">
+                <input name="config.fileType" data="[{id:'EXCEL'},{id:'CSV'}]"
+                       required
+                       textField="id"
+                       emptyText="请选择文件类型"
+                       class="mini-combobox"
+                       style="width: 100%">
+            </div>
+        </div>
+    </div>
+
+    <div class="mini-col-12 form-component csvDelimiter" style="display: none">
+        <div class="form-item brick"><label class="form-label">csv文件分隔符</label>
+            <div class="input-block component-body">
+                <input name="config.csvDelimiter" hidden class="mini-textbox" style="width: 100%">
+            </div>
+        </div>
+    </div>
+</script>

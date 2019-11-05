@@ -1,0 +1,32 @@
+
+<div showToolbar="true" class="mini-window" style="width: 800px;height: 600px" title="编辑转换规则" id="edit-data-mapping">
+
+    <div property="toolbar" style="padding:5px;">
+        <a class="mini-button" onclick="mini.get('mappings-grid').addRow({type:'string'})">添加字段</a>
+        <a class="mini-button save-mappings" >保存</a>
+        <a class="mini-button" plain="true" onclick="mini.get('edit-data-mapping').hide()" >关闭</a>
+    </div>
+
+    <div class="mini-fit">
+        <div id="mappings-grid" class="mini-datagrid" showPager="false" allowCellEdit="true" allowCellSelect="true"
+             style="width:100%;height: 100%">
+            <div property="columns">
+                <div type="indexcolumn"></div>
+                <div field="source" width="120" align="center" headerAlign="center" vtype="required" autoEscape="true">源字段
+                    <input property="editor" class="mini-textarea" allowInput="true"/>
+                </div>
+                <div field="target" width="120" align="center" headerAlign="center" autoEscape="true">目标字段
+                    <input property="editor" class="mini-textarea" allowInput="true" />
+                </div>
+                <div field="type" width="100" align="center" headerAlign="center" autoEscape="true">类型
+                    <input property="editor" data="window._data_mapping_types" textField="id" class="mini-combobox" allowInput="true" style="width:100%;"/>
+                </div>
+                <div field="description" width="80" align="center" headerAlign="center" autoEscape="true">说明
+                    <input property="editor" class="mini-textarea" allowInput="true"/>
+                </div>
+                <div name="action" width="50" align="center" headerAlign="center">操作</div>
+            </div>
+        </div>
+    </div>
+
+</div>

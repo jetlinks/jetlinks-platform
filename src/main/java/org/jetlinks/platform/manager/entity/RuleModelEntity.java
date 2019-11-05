@@ -2,20 +2,30 @@ package org.jetlinks.platform.manager.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hswebframework.ezorm.rdb.mapping.annotation.ColumnType;
+import org.hswebframework.web.api.crud.entity.GenericEntity;
+import org.hswebframework.web.api.crud.entity.RecordCreationEntity;
+import org.hswebframework.web.api.crud.entity.RecordModifierEntity;
 import org.hswebframework.web.authorization.Authentication;
 import org.hswebframework.web.authorization.User;
-import org.hswebframework.web.commons.entity.RecordCreationEntity;
-import org.hswebframework.web.commons.entity.RecordModifierEntity;
-import org.hswebframework.web.commons.entity.SimpleGenericEntity;
 import org.jetlinks.platform.manager.enums.RuleInstanceState;
 
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Table;
+import java.sql.JDBCType;
 
 @Getter
 @Setter
 @Table(name = "rule_model")
-public class RuleModelEntity extends SimpleGenericEntity<String> implements RecordCreationEntity, RecordModifierEntity {
+public class RuleModelEntity extends GenericEntity<String> implements RecordCreationEntity, RecordModifierEntity {
+
+    @Override
+    @GeneratedValue(generator = "snow_flake")
+    public String getId() {
+        return super.getId();
+    }
+
 
     @Column(name = "name")
     private String name;
@@ -26,13 +36,14 @@ public class RuleModelEntity extends SimpleGenericEntity<String> implements Reco
     @Column(name = "description")
     private String description;
 
-    @Column(name = "model_type")
+    @Column(name = "model_type",nullable = false)
     private String modelType;
 
     @Column(name = "model_meta")
+    @ColumnType(jdbcType = JDBCType.CLOB)
     private String modelMeta;
 
-    @Column(name = "version")
+    @Column(name = "version",nullable = false)
     private Integer version;
 
     @Column(name = "creator_id")
@@ -61,10 +72,6 @@ public class RuleModelEntity extends SimpleGenericEntity<String> implements Reco
         instanceEntity.setModelMeta(getModelMeta());
         instanceEntity.setModelType(getModelType());
 
-        Authentication.current()
-                .map(Authentication::getUser)
-                .map(User::getId)
-                .ifPresent(instanceEntity::setCreatorId);
 
         return instanceEntity;
 

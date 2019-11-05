@@ -1,0 +1,51 @@
+.breadth {
+    padding-bottom: 15px;
+}
+
+.add-parameter {
+    height: 26px;
+    margin-top: 5px;
+    color: #1890FF;
+}
+.add-parameter-colour {
+    height: 26px;
+    color: #1890FF;
+}
+
+.parameter-input {
+    padding-bottom: 8px;
+}
+
+.button-primary {
+    background: #1890ff;
+    color: #fff;
+    border-radius: 6px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    display: inline-block;
+    font-size: 16px;
+    padding: 5px 15px 8px 15px;
+    position: relative;
+    vertical-align: baseline;
+    box-shadow: none;
+    text-align: center;
+}
+
+.button-primary:hover {
+    background: #00a2d4;
+}
+
+.button-primary:focus {
+    outline: 0;
+}
+
+.text-button {
+    color: #1890FF;
+    font-size: 10pt;
+    text-decoration: none;
+}
+
+.byte-span {
+    font-size: 14px;
+    margin: 5px 0 0 5px;
+    line-height: 30px;
+}

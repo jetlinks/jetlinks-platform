@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/>
+    <meta name="renderer" content="webkit"/>
+    <title>查看设备</title>
+    <script data-main="device-debug.js" src="../../../boot.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="device-instance.css">
+    <style type="text/css">
+        .mini-col-6 {
+            padding-bottom: 10px;
+        }
+
+        .info-key {
+            color: #8e8e8e;
+            font-size: 16px;
+        }
+
+        .info-key-title {
+            font-size: 16px;
+        }
+
+        a {
+            font-size: 16px
+        }
+
+        a:link {
+            color: blue;
+            text-decoration: none;
+        }
+
+        a:active {
+            color: red;
+        }
+
+        a:visited {
+            color: blue;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: red;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div style="width: 100%; background: #F0F2F5">
+    <div>
+        <div style="float: left; width: 30%; background: #ffffff; height: 580px; margin-right: 1%">
+            <div class="mini-tabs" activeIndex="0" style="width:100%;height:580px;">
+                <div title="设备调试">
+                    <div class="row" style="padding: 0 2% 2% 2%">
+                        <div class="mini-col-3">
+                            <span class="info-key-title" style="line-height: 30px">操作类型：</span>
+                        </div>
+                        <div class="mini-col-9" >
+                            <input style="width: 100%" class="mini-treeselect" multiSelect="false"  valueFromSelect="false"
+                                   textField="text" valueField="id" parentField="pid"  onbeforenodeselect="beforenodeselect" allowInput="false"
+                                   showRadioButton="true" showFolderCheckBox="false" />
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <pre id="js-script" style="width: 100%; height: 380px; top: 10px"></pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="position:fixed; bottom:50px;">
+                            <button class="ljq-button-primary">发送到设备</button>
+                            <button class="ljq-button-default">重置</button>
+                        </div>
+                    </div>
+                </div>
+                <div title="模拟设备" style="position:fixed">
+                    <h3>模拟策略：</h3>
+                    <table width="100%">
+                        <tr>
+                            <td width="40%" align="center"><input width="95%" class="mini-combobox" /></td>
+                            <td width="5%" align="center"><a href="#">编辑</a></td>
+                            <td width="5%" align="center"><a href="#">删除</a></td>
+                        </tr>
+                        <tr>
+                            <td width="40%" align="center"><input width="95%" class="mini-combobox" /></td>
+                            <td width="5%" align="center"><a href="#">编辑</a></td>
+                            <td width="5%" align="center"><a href="#">删除</a></td>
+                        </tr>
+                    </table>
+                    <div style="margin: 3% 0 0 3%"><a class="add-strategy" href="#">+添加策略</a></div>
+                    <div style="position:fixed; bottom:50px;">
+                        <div>
+                            <button class="ljq-button-primary">开始模拟</button>
+                            <button class="ljq-button-default">关闭模拟器</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="float: left; width: 68%; background: #ffffff; height: 580px">
+            <div style="width: 100%; padding: 2% 0 0 1%">
+
+                <div style="width: 100%;height: 60px">
+                    <table width="100%">
+                        <tr>
+                            <td width="60%" align="left"><div class="info-key-title">调试日志</div></td>
+                            <td width="15%" align="center"><label class="info-key-title ljq-label">自动刷新 <input class="mui-switch mui-switch-animbg" type="checkbox"></label></td>
+                            <td width="10%" align="center"><button class="ljq-button-default">刷新</button></td>
+                            <td width="10%" align="center"><button class="ljq-button-default">清空</button></td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="width: 100%;height:520px">
+                    <div class="row" style="border-bottom: 1px solid #cccccc; height: 50px">
+                        <div class="mini-col-3"><h3>类型</h3></div>
+                        <div class="mini-col-3"><h3>事件</h3></div>
+                        <div class="mini-col-6"><h3>内容</h3></div>
+                    </div>
+                    <div class="row" style="border-bottom: 1px solid #cccccc;height: 60px">
+                        <div class="mini-col-3"><span class="info-key" style="line-height: 50px">接收到的设备消息</span></div>
+                        <div class="mini-col-3"><span class="info-key" style="line-height: 50px">2019/08/12 12:12:15</span></div>
+                        <div class="mini-col-6"><div class="info-key ljq-overflow" style="line-height: 50px; width: 380px">{"messageId":12188976213,"properties":{"memory":"78MB"}}</div></div>
+                    </div>
+                    <div class="row" style="border-bottom: 1px solid #cccccc;height: 60px">
+                        <div class="mini-col-3"><span class="info-key" style="line-height: 50px">发送到设备的消息</span></div>
+                        <div class="mini-col-3"><span class="info-key" style="line-height: 50px">2019/08/12 12:12:15</span></div>
+                        <div class="mini-col-6"><div title="{'messageId':12188976213,'properties':{'memory':'78MB'}}" style="line-height: 50px; width: 380px;" class="info-key ljq-overflow">{"messageId":12188976213,"properties":{"memory":"78MB"}}</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

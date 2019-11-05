@@ -3,9 +3,9 @@ package org.jetlinks.platform.configuration;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.spi.VerticleFactory;
 import io.vertx.mqtt.MqttServerOptions;
 import lombok.extern.slf4j.Slf4j;
+import org.jetlinks.gateway.vertx.mqtt.VertxMqttGatewayServerContext;
 import org.jetlinks.platform.gateway.VerticleSupplier;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +22,10 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class DeviceGatewayConfiguration {
 
+    @Bean(destroyMethod = "shutdown")
+    public VertxMqttGatewayServerContext vertxMqttGatewayServerContext(){
+        return new VertxMqttGatewayServerContext();
+    }
     @Bean
     @ConfigurationProperties(prefix = "vertx")
     public VertxOptions vertxOptions() {
@@ -39,7 +43,6 @@ public class DeviceGatewayConfiguration {
         return Vertx.vertx(vertxOptions);
     }
 
-
     @Bean
     public VertxServerInitializer mqttServerInitializer() {
         return new VertxServerInitializer();
@@ -49,9 +52,6 @@ public class DeviceGatewayConfiguration {
     public static class VertxServerInitializer implements CommandLineRunner, DisposableBean, Ordered {
 
         @Autowired
-        private VerticleFactory verticleFactory;
-
-        @Autowired
         private List<VerticleSupplier> verticleList;
 
         @Autowired
@@ -59,7 +59,6 @@ public class DeviceGatewayConfiguration {
 
         @Override
         public void run(String... args) {
-            vertx.registerVerticleFactory(verticleFactory);
             for (VerticleSupplier supplier : verticleList) {
                 DeploymentOptions options = new DeploymentOptions();
                 options.setHa(true);

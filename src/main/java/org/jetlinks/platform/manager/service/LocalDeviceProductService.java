@@ -1,82 +1,58 @@
 package org.jetlinks.platform.manager.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hswebframework.web.id.IDGenerator;
-import org.hswebframework.web.service.GenericEntityService;
-import org.jetlinks.core.device.DeviceProductInfo;
-import org.jetlinks.core.device.DeviceProductOperation;
-import org.jetlinks.core.device.registry.DeviceRegistry;
-import org.jetlinks.platform.manager.dao.DeviceProductDao;
+import org.hswebframework.web.crud.service.GenericReactiveCrudService;
+import org.hswebframework.web.exception.BusinessException;
+import org.jetlinks.core.device.DeviceRegistry;
+import org.jetlinks.core.device.ProductInfo;
 import org.jetlinks.platform.manager.entity.DeviceProductEntity;
+import org.jetlinks.platform.manager.enums.DeviceProductState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import static java.util.Optional.ofNullable;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @Slf4j
-public class LocalDeviceProductService extends GenericEntityService<DeviceProductEntity, String> {
+public class LocalDeviceProductService extends GenericReactiveCrudService<DeviceProductEntity, String> {
 
-    @Autowired
-    private DeviceProductDao deviceProductDao;
 
     @Autowired
     private DeviceRegistry registry;
 
-    @Override
-    protected IDGenerator<String> getIDGenerator() {
-        return IDGenerator.MD5;
+
+//    public Flux<DeviceProductEntity> queryRegisteredDeviceProduct() {
+////        return createQuery()
+////                .where()
+////                .fetch()
+////                .filter(productEntity -> !productEntity.getState().equals(DeviceProductState.registered.getValue()));
+////    }
+
+    public Mono<Integer> deploy(String id) {
+        return findById(Mono.just(id))
+                .flatMap(product -> registry.registry(new ProductInfo(id, product.getMessageProtocol(), product.getMetadata()))
+                        .flatMap(deviceProductOperator -> deviceProductOperator.setConfigs(product.getSecurity()))
+                        .doOnNext(re -> {
+                            if (!re) {
+                                throw new BusinessException("设置设备型号安全配置错误");
+                            }
+                        }).flatMap(re -> createUpdate()
+                                .set(DeviceProductEntity::getState, DeviceProductState.registered.getValue())
+                                .where(DeviceProductEntity::getId, id)
+                                .execute()));
     }
 
-    @Override
-    public DeviceProductDao getDao() {
-        return deviceProductDao;
+    public Mono<Integer> cancelDeploy(String id){
+        return findById(Mono.just(id))
+                .flatMap(product -> registry.unRegistry(id)
+                        .thenReturn(true)
+                        .flatMap(re -> createUpdate()
+                                .set(DeviceProductEntity::getState, DeviceProductState.unregistered.getValue())
+                                .where(DeviceProductEntity::getId, id)
+                                .execute()));
     }
 
-    @Override
-    public String insert(DeviceProductEntity entity) {
-        String id = super.insert(entity);
-        updateRegistry(entity);
-        return id;
-    }
-
-    @Override
-    public int updateByPk(String id, DeviceProductEntity entity) {
-        int len = super.updateByPk(id, entity);
-        updateRegistry(entity);
-        return len;
-    }
-
-    public void updateRegistry(DeviceProductEntity entity) {
-        Runnable runnable = () -> {
-            logger.info("update device product[{}:{}] registry info", entity.getId(), entity.getName());
-            DeviceProductInfo productInfo = new DeviceProductInfo();
-            productInfo.setId(entity.getId());
-            productInfo.setName(entity.getName());
-            productInfo.setProjectId(entity.getProjectId());
-            productInfo.setProjectName(entity.getProjectName());
-            productInfo.setProtocol(entity.getMessageProtocol());
-            DeviceProductOperation operation = registry.getProduct(entity.getId());
-
-            operation.update(productInfo);
-            operation.updateMetadata(entity.getMetadata());
-            ofNullable(entity.getSysConfiguration())
-                    .ifPresent(operation::putAll);
-
-            ofNullable(entity.getSecurity())
-                    .ifPresent(operation::putAll);
-        };
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-                @Override
-                public void afterCommit() {
-                    runnable.run();
-                }
-            });
-        } else {
-            runnable.run();
-        }
-    }
 }
