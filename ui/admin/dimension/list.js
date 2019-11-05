@@ -39,6 +39,18 @@ require(["authorize"], function (authorize) {
                     typeGrid.reload();
                 });
             });
+            $(".add-dimension-button").on("click", function () {
+                require(["message"], function (message) {
+                    if (window.nowSelectedType) {
+                        dimensionGrid.addNode({
+                            sortIndex: grid.getData().length + 1,
+                            typeId: window.nowSelectedType.id
+                        });
+                    } else {
+                        message.showTips("请先选择维度类型！", "danger");
+                    }
+                });
+            });
             //设置维度类型操作列
             typeGrid.getColumn("action").renderer = function (e) {
                 var html = [];
@@ -67,29 +79,46 @@ require(["authorize"], function (authorize) {
             /***********************目标维度相关*****************************/
 
             function search() {
-                if (dimensionType) {
-                    tools.searchGrid("#search-box", dimensionGrid, request.encodeQueryParam({typeId: dimensionType}));
-                } else {
-                    tools.searchGrid("#search-box", dimensionGrid);
+                // if (dimensionType) {
+                //     tools.searchGrid("#search-box", dimensionGrid, request.encodeQueryParam({typeId: dimensionType}));
+                // } else {
+                //     tools.searchGrid("#search-box", dimensionGrid);
+                // }
+                if (window.nowSelectedType) {
+                    var param = {};
+                    var name = mini.getbyName("name");
+                    if (name.getValue()) {
+                        param.name$LIKE = name.getValue();
+                    }
+                    loadDimensionData(param);
                 }
             }
 
             function loadDimension() {
                 if (window.nowSelectedType) {
-                    dimensionGrid.loading();
-                    require(["message"], function (message) {
-                        request.createQuery("dimension/_query/no-paging")
-                            .where("typeId", window.nowSelectedType.id)
-                            .exec(function (response) {
-                                dimensionGrid.unmask();
-                                if (response.status === 200) {
-                                    dimensionGrid.setData(response.result);
-                                } else {
-                                    message.showTips("加载维度数据失败:" + response.message);
-                                }
-                            });
-                    });
+                    loadDimensionData();
                 }
+            }
+
+            function loadDimensionData(param) {
+                dimensionGrid.loading();
+                require(["message"], function (message) {
+                    var query = request.createQuery("dimension/_query/no-paging");
+                    query.where("typeId", window.nowSelectedType.id);
+                    if (param) {
+                        for (var key in param) {
+                            query.and(key, "%" + param[key] + "%");
+                        }
+                    }
+                    query.exec(function (response) {
+                        dimensionGrid.unmask();
+                        if (response.status === 200) {
+                            dimensionGrid.setData(response.result);
+                        } else {
+                            message.showTips("加载维度数据失败:" + response.message);
+                        }
+                    });
+                });
             }
 
             $(".search-button").click(search);
@@ -112,7 +141,6 @@ require(["authorize"], function (authorize) {
             //     })
             // });
             function initDimension() {
-                console.log(dimensionGrid)
                 dimensionGrid.getColumn("action").renderer = function (e) {
                     var html = [];
                     var row = e.record;
@@ -135,7 +163,6 @@ require(["authorize"], function (authorize) {
                                         }), function (res) {
                                             message.loading().hide();
                                             if (res.status === 200) {
-                                                console.log(res.result.length)
                                                 if (res.result.length > 0) {
                                                     message.showTips("该维度已绑定..", "danger");
                                                 } else {
@@ -163,12 +190,15 @@ require(["authorize"], function (authorize) {
                     if (row._state == "added" || row._state == "modified") {
                         html.push(tools.createActionButton("保存", "icon-save", function () {
                             var api = "dimension/";
+                            var func = request.post;
+                            if (row._state === "modified") func = request.patch;
                             require(["request", "message"], function (request, message) {
                                 var loading = message.loading("保存中...");
-                                request.patch(api, row, function (res) {
+                                func(api, row, function (res) {
                                     loading.hide();
                                     if (res.status === 200) {
-                                        request.get(api + res.result, function (data) {
+                                        var id = res.result.id || row.id;
+                                        request.get(api + id, function (data) {
                                             dimensionGrid.updateNode(row, data.result);
                                             dimensionGrid.acceptRecord(row);
                                             message.showTips("保存成功!");
@@ -204,9 +234,9 @@ require(["authorize"], function (authorize) {
                 };
 
                 dimensionGrid.on("nodeclick", function (e) {
-                    window.nowSelectedDimension = e.record;
-
-                    loadUser();
+                    var row = e.record;
+                    window.nowSelectedDimension = row;
+                    if (row._state !== "added") loadUser();
                 });
             }
 
@@ -216,20 +246,24 @@ require(["authorize"], function (authorize) {
             function loadUser() {
                 if (window.nowSelectedDimension) {
                     userSplitter.expandPane(2);
-                    userGrid.loading();
-                    require(["message"], function (message) {
-                        request.createQuery("dimension-user/_query/no-paging")
-                            .where("dimensionId", window.nowSelectedDimension.id)
-                            .exec(function (response) {
-                                userGrid.unmask();
-                                if (response.status === 200) {
-                                    userGrid.setData(response.result);
-                                } else {
-                                    message.showTips("加载维度用户数据失败:" + response.message);
-                                }
-                            });
-                    });
+                    loadUserData()
                 }
+            }
+
+            function loadUserData() {
+                userGrid.loading();
+                require(["message"], function (message) {
+                    request.createQuery("dimension-user/_query/no-paging")
+                        .where("dimensionId", window.nowSelectedDimension.id)
+                        .exec(function (response) {
+                            userGrid.unmask();
+                            if (response.status === 200) {
+                                userGrid.setData(response.result);
+                            } else {
+                                message.showTips("加载维度用户数据失败:" + response.message);
+                            }
+                        });
+                });
             }
 
             function initDimensionUser() {
@@ -245,7 +279,7 @@ require(["authorize"], function (authorize) {
                                     request["delete"]("dimension-user/" + row.id, {}, function (res) {
                                         loading.close();
                                         if (res.status === 200) {
-                                            loadUser();
+                                            loadUserData();
                                             message.showTips("删除成功");
                                         } else {
                                             message.showTips("删除失败:" + res.message);
@@ -280,7 +314,7 @@ require(["authorize"], function (authorize) {
                                 if (data.username) data.userName = data.username;
                             }
 
-                            loadUser();
+                            loadUserData();
                         }
                     });
             })

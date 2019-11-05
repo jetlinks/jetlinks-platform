@@ -23,7 +23,7 @@ importMiniui(function () {
         var api = "device-instance";
         console.log(id)
         if (id) {
-            //loadData(id);
+            loadData(id);
             api += "/" + id;
             func = request.put;
         }
@@ -34,6 +34,9 @@ importMiniui(function () {
                     data.state = "notActive";
                 }
                 if (!data) return;
+                if (data.id === ''){
+                    delete data["id"]
+                }
                 var loading = message.loading("提交中");
                 func(api, data, function (response) {
                     loading.close();
@@ -54,19 +57,12 @@ importMiniui(function () {
 function loadData(id) {
     require(["request", "message"], function (request, message) {
         var loading = message.loading("加载中...");
-        request.get("user/" + id, function (response) {
+        request.get("device-instance/" + id, function (response) {
             loading.hide();
             if (response.status === 200) {
-                response.result.password = defaultPassword;
-                new mini.Form("#basic-info").setData(response.result);
-                var roleGrid = mini.get("datagrid");
-                $(response.result.roles).each(function (i, roleId) {
-                    var rows = [];
-                    roleGrid.findRow(function (row) {
-                        if (row.id === roleId) rows.push(row);
-                    });
-                    roleGrid.selects(rows);
-                });
+                var form = new mini.Form("#basic-info");
+                form.setData(response.result);
+                form.getField("id").setReadOnly(true);
             } else {
                 message.showTips("加载数据失败", "danger");
             }

@@ -152,7 +152,7 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>1.2.0</version>
                 <configuration>
-                    <imageName>jetlinks/${project.artifactId}</imageName>
+                    <imageName>registry.cn-shenzhen.aliyuncs.com/jetlinks/${project.artifactId}</imageName>
                     <imageTags>
                         <imageTag>${project.version}</imageTag>
                     </imageTags>
