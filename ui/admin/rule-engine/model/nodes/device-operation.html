@@ -1,0 +1,36 @@
+<script type="text/html" title="定时节点" class="node-template">
+
+    <div class="mini-col-12 form-component">
+        <div class="form-item brick"><label class="form-label">操作</label>
+            <div class="input-block component-body">
+                <input name="config.operation" data="[{id:'ONLINE',text:'上线'},{id:'OFFLINE',text:'下线'},{id:'ENCODE',text:'编码'},{id:'DECODE',text:'解码'},{id:'SEND_MESSAGE',text:'发送消息'},{id:'HANDLE_MESSAGE',text:'桥接发往设备的消息'}]" required
+                       class="mini-combobox"
+                       style="width: 100%">
+            </div>
+        </div>
+    </div>
+
+    <div class="mini-col-12 form-component">
+        <div class="form-item brick"><label class="form-label">传输协议</label>
+            <div class="input-block component-body">
+                <input name="config.transport" data="[{id:'MQTT',text:'MQTT'}]" required
+                       class="mini-combobox"
+                       style="width: 100%">
+            </div>
+        </div>
+    </div>
+
+    <div class="mini-col-12 form-component">
+        <div class="form-item brick form-text"><label class="form-label">设备ID</label>
+            <div class="input-block component-body">
+                <input name="config.deviceId" emptyText="支持表达式${#deviceId}" required class="mini-textarea"
+                       style="width: 100%">
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+</script>

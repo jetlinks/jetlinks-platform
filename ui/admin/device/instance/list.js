@@ -80,6 +80,11 @@ importMiniui(function () {
                     grid.reload();
                 })
             }));
+            html.push(tools.createActionLink("编辑", "<sapn>&nbsp;&nbsp;&nbsp;编辑</sapn>", function () {
+                tools.openWindow("admin/device/instance/save.html?id=" + row.id, "编辑设备实例：" + row.name, "80%", "80%", function () {
+                    grid.reload();
+                });
+            }));
             if (row.state.text === '未激活') {
                 html.push(tools.createActionLink("发布", "<sapn>&nbsp;&nbsp;&nbsp;发布</sapn>", function () {
                     deploy(row.id);
@@ -87,6 +92,22 @@ importMiniui(function () {
             }else {
                 html.push(tools.createActionLink("取消发布", "<sapn>&nbsp;&nbsp;&nbsp;取消发布</sapn>", function () {
                     cancelDeploy(row.id);
+                }));
+            }
+            if (row.state.text === '未激活') {
+                html.push(tools.createActionLink("删除", "<sapn>&nbsp;&nbsp;&nbsp;删除</sapn>", function () {
+                    message.confirm("确定删除设备型号为：" + row.name + "？删除后将无法恢复", function () {
+                        var box = message.loading("删除中...");
+                        request["delete"]("device-instance/" + row.id, function (response) {
+                            box.hide();
+                            if (response.status === 200) {
+                                message.showTips("删除成功");
+                                grid.reload();
+                            } else {
+                                message.showTips("删除失败:" + response.message, "danger");
+                            }
+                        });
+                    });
                 }));
             }
 

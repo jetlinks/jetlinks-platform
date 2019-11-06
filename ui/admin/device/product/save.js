@@ -526,6 +526,20 @@ importMiniui(function () {
             var eventData = [];
 
             var productInfo = tools.getFormData("#product-info", true);
+            var security = tools.getFormData("#security-info", true);
+
+            if (!productInfo) {
+                message.showTips("保存失败:请检查型号基本信息", "danger");
+                return false;
+            }
+            if (!security) {
+                message.showTips("保存失败:请检查型号安全配置信息", "danger");
+                return false;
+            }
+            productInfo.security = security;
+
+            if (productInfo.id === "")
+                productInfo.id = null;
 
             if (dataId) {
                 productInfo.id = dataId;
@@ -534,11 +548,6 @@ importMiniui(function () {
                 productInfo.state = 0;
                 productInfo.createTime = new Date().getTime();
             }
-            if (!productInfo) {
-                message.showTips("保存失败:请检查型号基本信息", "danger");
-                return false;
-            }
-            productInfo.security = tools.getFormData("#security-info", true);
 
             $(mini.get("attribute-list").getData()).each(function () {
                 attributeData.push(this.attributeInfoList);
@@ -631,6 +640,7 @@ importMiniui(function () {
                 }
                 addEnum("parameter");
             });
+
             if (data !== "") {
                 form.getField("dataType").doValueChanged();
                 window.setTimeout(function () {
