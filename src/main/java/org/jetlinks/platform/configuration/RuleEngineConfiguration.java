@@ -1,6 +1,8 @@
 package org.jetlinks.platform.configuration;
 
 import org.jetlinks.core.cluster.ClusterManager;
+import org.jetlinks.core.device.DeviceRegistry;
+import org.jetlinks.core.server.MessageHandler;
 import org.jetlinks.rule.engine.api.ConditionEvaluator;
 import org.jetlinks.rule.engine.api.RuleEngine;
 import org.jetlinks.rule.engine.api.executor.ExecutableRuleNodeFactory;
@@ -13,6 +15,10 @@ import org.jetlinks.rule.engine.condition.supports.ScriptConditionEvaluatorStrat
 import org.jetlinks.rule.engine.condition.supports.ScriptEvaluator;
 import org.jetlinks.rule.engine.executor.DefaultExecutableRuleNodeFactory;
 import org.jetlinks.rule.engine.executor.ExecutableRuleNodeFactoryStrategy;
+import org.jetlinks.rule.engine.executor.node.device.DeviceOperationNode;
+import org.jetlinks.rule.engine.executor.node.mqtt.MqttClientManager;
+import org.jetlinks.rule.engine.executor.node.mqtt.MqttConsumerNode;
+import org.jetlinks.rule.engine.executor.node.mqtt.MqttProducerNode;
 import org.jetlinks.rule.engine.executor.node.timer.TimerNode;
 import org.jetlinks.rule.engine.model.DefaultRuleModelParser;
 import org.jetlinks.rule.engine.model.RuleModelParserStrategy;
@@ -50,12 +56,12 @@ public class RuleEngineConfiguration {
     }
 
     @Bean
-    public TimerNode timerNode(ClusterManager clusterManager){
+    public TimerNode timerNode(ClusterManager clusterManager) {
         return new TimerNode(clusterManager);
     }
 
     @Bean
-    public AntVG6RuleModelParserStrategy antVG6RuleModelParserStrategy(){
+    public AntVG6RuleModelParserStrategy antVG6RuleModelParserStrategy() {
         return new AntVG6RuleModelParserStrategy();
     }
 
@@ -104,11 +110,27 @@ public class RuleEngineConfiguration {
     public RuleEngine ruleEngine(ExecutableRuleNodeFactory ruleNodeFactory,
                                  ConditionEvaluator conditionEvaluator,
                                  ExecutorService executorService) {
-        StandaloneRuleEngine ruleEngine=new StandaloneRuleEngine();
+        StandaloneRuleEngine ruleEngine = new StandaloneRuleEngine();
         ruleEngine.setNodeFactory(ruleNodeFactory);
         ruleEngine.setExecutor(executorService);
         ruleEngine.setEvaluator(conditionEvaluator);
         return ruleEngine;
     }
+
+    @Bean
+    public MqttConsumerNode mqttConsumerNode(MqttClientManager clientManager) {
+        return new MqttConsumerNode(clientManager);
+    }
+
+    @Bean
+    public MqttProducerNode mqttProducerNode(MqttClientManager clientManager) {
+        return new MqttProducerNode(clientManager);
+    }
+
+    @Bean
+    public DeviceOperationNode deviceOperationNode(MessageHandler messageHandler, ClusterManager clusterManager, DeviceRegistry registry) {
+        return new DeviceOperationNode(messageHandler, clusterManager, registry);
+    }
+
 
 }

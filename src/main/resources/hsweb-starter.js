@@ -264,8 +264,8 @@ var versions = [
 function initialize(context) {
     var database = context.database;
 
-    database.dml().insert("s_menu").values(menus).execute().sync();
-    database.dml().insert("s_autz_setting_info").values(autzSettings).execute().sync();
+    database.dml().upsert("s_menu").values(menus).execute().sync();
+    database.dml().upsert("s_autz_setting_info").values(autzSettings).execute().sync();
 }
 
 function install(context) {

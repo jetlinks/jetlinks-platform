@@ -1,6 +1,7 @@
 package org.jetlinks.platform.manager.web;
 
 import lombok.Getter;
+import org.hswebframework.ezorm.rdb.exception.DuplicateKeyException;
 import org.hswebframework.web.authorization.annotation.Authorize;
 import org.hswebframework.web.authorization.annotation.Resource;
 import org.hswebframework.web.crud.web.reactive.ReactiveServiceCrudController;
@@ -81,7 +82,7 @@ public class DeviceInstanceController implements
         return payload.flatMap(entity -> service
                 .insert(Mono.just(entity))
                 // TODO: 2019/11/4 错误类型判断
-                .onErrorMap(err-> true, err-> new BusinessException("设备id重复"))
+                .onErrorMap(DuplicateKeyException.class, err-> new BusinessException("设备id重复",err))
                 .thenReturn(entity));
 
     }
