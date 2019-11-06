@@ -14,9 +14,10 @@
             <tr>
                 <td>维度名称:<input name="name$LIKE" class="mini-textbox"/></td>
                 <td><a class="mini-button search-button" plain="true" iconCls="icon-search">搜索</a></td>
-                <td autz="hasPermission('dimension','add')">
+                <td autz="hasPermission('dimension','save')">
                     <a onclick="mini.get('data-grid').addNode({sortIndex:grid.getData().length+1})"
-                       class="mini-button add-menu-button" iconCls="fa-plus">添加维度</a></td>
+                       class="mini-button add-menu-button" iconCls="fa-plus">添加维度</a>
+                </td>
                 <!--                <td autz="hasPermission('dimension','add')||hasPermission('organizational','update')">-->
                 <!--                    <a class="mini-button save-all-button" plain="true" iconCls="fa-check">保存全部</a></td>-->
             </tr>
