@@ -81,22 +81,24 @@ importMiniui(function () {
                 });
             }));
 
-            html.push(tools.createActionButton("删除", "icon-remove", function () {
-                require(["message", "request"], function (message, request) {
-                    message.confirm("确定删除设备型号为：" + row.name + "？删除后将无法恢复", function () {
-                        var box = message.loading("删除中...");
-                        request["delete"]("device-product/" + row.id, function (response) {
-                            box.hide();
-                            if (response.status === 200) {
-                                message.showTips("删除成功");
-                                grid.reload();
-                            } else {
-                                message.showTips("删除失败:" + response.message, "danger");
-                            }
+            if (row.state !== 1){
+                html.push(tools.createActionButton("删除", "icon-remove", function () {
+                    require(["message", "request"], function (message, request) {
+                        message.confirm("确定删除设备型号为：" + row.name + "？删除后将无法恢复", function () {
+                            var box = message.loading("删除中...");
+                            request["delete"]("device-product/" + row.id, function (response) {
+                                box.hide();
+                                if (response.status === 200) {
+                                    message.showTips("删除成功");
+                                    grid.reload();
+                                } else {
+                                    message.showTips("删除失败:" + response.message, "danger");
+                                }
+                            });
                         });
                     });
-                });
-            }));
+                }));
+            }
             return html.join("");
         };
     });
