@@ -13,6 +13,7 @@ define(["jquery"], function ($) {
             "name": "读取",
             "uid": "read" + i,
             "id": "read",
+            "childTag": true,
             "parentId": property.id
         });
         if (!property.expands || !property.expands.readonly) {
@@ -20,6 +21,7 @@ define(["jquery"], function ($) {
                 "name": "修改",
                 "uid": "update" + i,
                 "id": "update",
+                "childTag": true,
                 "parentId": property.id
             });
         }
@@ -32,6 +34,7 @@ define(["jquery"], function ($) {
             "name": func.name,
             "uid": func.id,
             "id": func.id,
+            "childTag": true,
             "parentId": parentId
         });
         return result;
@@ -50,14 +53,14 @@ define(["jquery"], function ($) {
             var pts = transObj(metadata).properties;
             var result = [
                 {
-                    "name":"属性",
-                    "uid":"propertyType",
+                    "name": "属性",
+                    "uid": "propertyType",
                     "id": "propertyType",
                     "parentId": -1
                 },
                 {
-                    "name":"功能",
-                    "uid":"functionType",
+                    "name": "功能",
+                    "uid": "functionType",
                     "id": "functionType",
                     "parentId": -1
                 },

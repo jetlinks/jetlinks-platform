@@ -3,7 +3,6 @@ importResource("/admin/css/common.css");
 importMiniui(function () {
     mini.parse();
     require(["request", "miniui-tools", "metadata-parser", "message"], function (request, tools, metadataParser, message) {
-        var _metadata = "";
         var id = request.getParameter("id");
         var productId = request.getParameter("productId");
 
@@ -51,18 +50,18 @@ importMiniui(function () {
         });
 
         function structurePlate(propertyId, name, value, icon, chart) {
-            return "<div style=\"background: #ffffff; margin-right: 2%; width: 22%;height: 30%; padding: 2%; margin-bottom: 2%; display: inline-block\">\n" +
+            return "<div class='plate'>\n" +
                 "            <div class=\"row\">\n" +
                 "                <div class=\"mini-col-11\" style=\"margin-bottom: 10%\"><span class=\"info-key\">" + name + "</span></div>\n" +
                 "                <div class=\"mini-col-1\" style=\"margin-bottom: 10%\"><i class=\"fa fa-refresh refresh-effect property-refresh\" title='" + propertyId + "'></i></div>\n" +
-                "                <div class=\"mini-col-12\" style=\"margin-bottom: 20%\"><span class=\"info-value-big property-value\">" + value + "</span><span class=\"info-value-big property-value\" >" + icon + "</span><span class=\"mac\"></span></div>\n" +
+                "                <div class=\"mini-col-12\" style=\"margin-bottom: 20%\"><span class=\"info-value-big property-value\">" + value + "</span><span class=\"info-value-big\" >" + icon + "</span><span class=\"mac\"></span></div>\n" +
                 "                <div class=\"mini-col-12 property-chart\">" + chart + "</div>\n" +
                 "            </div>\n" +
                 "        </div>";
         }
 
         function eventStructurePlate(eventName, reportCount, eventId, eventLevel) {
-            return "<div style=\"background: #ffffff; margin-right: 2%; width: 22%;height: 30%; padding: 2%; margin-bottom: 2%; display: inline-block\">\n" +
+            return "<div class='plate'>\n" +
                 "            <div class=\"row\">\n" +
                 "                <div class=\"mini-col-11\" style=\"margin-bottom: 10%\"><span class=\"info-key\">" + eventName + "事件</span></div>\n" +
                 "                <div class=\"mini-col-1\" style=\"margin-bottom: 10%\"><i class=\"fa fa-refresh refresh-effect event-refresh\" title='" + eventId + "'></i></div>\n" +
@@ -82,9 +81,10 @@ importMiniui(function () {
         //加载属性板块
         function loadPropertyPlate(property) {
             var unifyUnit = property.getValueType().unifyUnit;
-            request.get("device-instance/" + productId + "/property/" + property.id, function (response) {
+            request.get("device-instance/" + id + "/property/" + property.id, function (response) {
                 if (response.status === 200) {
                     var value = response.result.value;
+                    console.log(response)
                     if (value === '' || value === undefined) {
                         value = '--';
                     }
@@ -207,7 +207,7 @@ importMiniui(function () {
             request.get("device/" + id + "/property/" + propertyId, function (response) {
                 if (!response.status || response.status === 200) {
                     var result = response.result;
-                    var unifyUnit = metadataParser.getProperties(_metadata).getProperty(propertyId).getValueType().unifyUnit;
+                    var unifyUnit = metadataParser.getProperties(metadata).getProperty(propertyId).getValueType().unifyUnit;
                     $(_this).parents(".row").find(".property-value").html(result[0][propertyId]);
                     $(_this).parents(".row").find(".property-chart").html(unifyUnit.getCharts(result[0][propertyId]));
                     message.showTips("刷新成功");

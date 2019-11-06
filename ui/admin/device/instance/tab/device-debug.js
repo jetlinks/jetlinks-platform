@@ -2,7 +2,7 @@ importResource("/admin/css/common.css");
 
 importMiniui(function () {
     mini.parse();
-    require(["request",  "miniui-tools", 'script-editor','metadata-trans-tree'], function (request, tools, editorBuilder,transTree) {
+    require(["request", "miniui-tools", 'script-editor', 'metadata-trans-tree'], function (request, tools, editorBuilder, transTree) {
         var jsEditor;
 
         var testMetadata = "{\n" +
@@ -78,27 +78,48 @@ importMiniui(function () {
             "        }\n" +
             "    ]\n" +
             "}";
-        var  treeGrid = mini.get("metadataTreeGrid");
+        var treeGrid = mini.get("metadataTreeGrid");
         var treeGridData = transTree.getTreeNode(testMetadata);
-        treeGrid.loadList(treeGridData);
+        treeGrid.loadList(treeGridData, "id", "parentId");
 
-        treeGrid.on('nodeclick',function (e) {
-            console.log(treeGrid.getAncestors(treeGrid.getSelectedNode()))
+
+        treeGrid.on('nodeclick', function (e) {
+            var nodes = treeGrid.getCheckedNodes(true);
+            treeGrid.setText(operationStrSplicing(nodes));
+        });
+        treeGrid.on('beforenodeselect', function (e) {
+            if (e.isLeaf === false) e.cancel = true;
         });
 
-        // editorBuilder.createEditor("js-script", function (editor) {
-        //     jsEditor = editor;
-        //     editor.init("html",
-        //         "//{\n//\"type\":\"readProperty\",\n" +
-        //         "//\"properties'\":[\"memory\"]\n//}");
-        //
-        // });
-        //
-        // $(".add-strategy").click(function () {
-        //     tools.openWindow("admin/device/instance/tab/simulator.html?id=" + id, "模拟策略", "600", "700", function () {
-        //         grid.reload();
-        //     })
-        // });
+        editorBuilder.createEditor("js-script", function (editor) {
+            jsEditor = editor;
+            editor.init("html",
+                "//{\n//\"type\":\"readProperty\",\n" +
+                "//\"properties'\":[\"memory\"]\n//}");
+        });
+
+        function operationStrSplicing(nodes){
+            var tempMap = {};
+            var tempText = "";
+            for (let i = 0; i < nodes.length; i++) {
+                tempMap[nodes[i].parentId] = nodes[i];
+            }
+            var tempObj = tempMap["-1"];
+            for (let i = 0; i < nodes.length; i++) {
+                if (i !== 0){
+                    tempText += " / ";
+                }
+                tempText += tempObj.name;
+                tempObj = tempMap[tempObj.id];
+            }
+            return  tempText;
+        }
+
+        $(".add-strategy").click(function () {
+            tools.openWindow("admin/device/instance/tab/simulator.html?id=" + id, "模拟策略", "600", "700", function () {
+                grid.reload();
+            })
+        });
 
     });
 });
