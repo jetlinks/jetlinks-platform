@@ -421,11 +421,11 @@ importMiniui(function () {
                 request['delete']("rule-engine/debug/" + debugSessionId, function (response) {
                     if (response.status === 200) {
                         printLog("info", "关闭会话:", debugSessionId);
-                        storejs.remove('ruleEngineDebugSessionId');
-                        debugSessionId = null;
                     } else {
                         printLog("error", "关闭会话失败:", response.message)
                     }
+                    debugSessionId = null;
+                    storejs.remove('ruleEngineDebugSessionId');
                 });
             }
         }
