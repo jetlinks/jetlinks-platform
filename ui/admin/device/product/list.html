@@ -49,21 +49,32 @@
             </div>
         </div>
         <div class="operate-button">
-            <span autz="hasPermission('device-product','save')">
-                <a class="mini-button add-button"><i class="fa fa-plus"></i>新建</a>
-            </span>
+            <table>
+                <tr>
+                    <td>
+                        <span autz="hasPermission('device-product','save')">
+                            <a class="mini-button add-button"><i class="fa fa-plus"></i>新建</a>
+                        </span>
+                    </td>
+                    <td>
+                        <div id="upload-button">
+                            <span class="mini-button-icon mini-icon mini-iconfont icon-upload"></span>
+                            导入配置
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
     <div class="mini-fit">
-        <div id="datagrid" class="mini-datagrid" style="width:100%;height: 100%;margin: auto;" showPager="true" idField="createTime" sortField="createTime" sortOrder="desc">
+        <div id="datagrid" class="mini-datagrid" style="width:100%;height: 100%;margin: auto;" showPager="true" sortField="createTime" sortOrder="desc">
             <div property="columns">
                 <div field="id" width="100" headerAlign="center" allowSort="true" align="center">ID</div>
                 <div field="name" width="100" headerAlign="center" allowSort="true" align="center">型号名称</div>
                 <div field="deviceType.text" width="100" headerAlign="center" allowSort="true" align="center">类型</div>
                 <div field="createTime" renderer="createTime" width="100" headerAlign="center" align="center">创建时间</div>
                 <div field="state" renderer="stateAction" width="100" headerAlign="center" align="center">发布状态</div>
-                <div field="action" renderer="renderAction" headerAlign="center" align="center">操作
-                </div>
+                <div field="action" renderer="renderAction" headerAlign="center" align="center">操作</div>
             </div>
         </div>
     </div>

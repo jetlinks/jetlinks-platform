@@ -1,8 +1,8 @@
 importResource("/admin/css/common.css");
-
+require(["css!admin/device/product/instance.css"]);
 importMiniui(function () {
     mini.parse();
-    require(["request", "miniui-tools", "message", "search-box"], function (request, tools, message, SearchBox) {
+    require(["request", "miniui-tools", "message", "search-box", "plugin/webuploader/webuploader.min", "storejs"], function (request, tools, message, SearchBox, WebUploader, storejs) {
         new SearchBox({
             container: $("#search-box"),
             onSearch: search,
@@ -29,6 +29,32 @@ importMiniui(function () {
         window.createTime = function (e) {
             return mini.formatDate(new Date(e.value), "yyyy-MM-dd HH:mm:ss");
         };
+
+        initWebUploader(WebUploader, storejs, function (file, response) {
+            if (response.status === 200 && response.result) {
+                var fileUrl = response.result;
+                require(["request", "message"], function (request, message) {
+                    var loading = message.loading("导入中...");
+                    request.get(fileUrl, function (res) {
+
+                        if (res.state) delete res.state;
+                        request.post("device-product", res, function (response) {
+                            loading.close();
+                            if (response.status === 200) {
+                                grid.reload();
+                                message.showTips("导入成功");
+                            } else {
+                                message.showTips("导入失败:" + response.message, "danger");
+                            }
+                        })
+                    });
+                });
+            } else {
+                require(["message"], function (message) {
+                    message.showTips("服务器繁忙..");
+                });
+            }
+        });
 
         function productDeploy(id) {
             var loding = message.loading("发布中...");
@@ -81,25 +107,97 @@ importMiniui(function () {
                 });
             }));
 
-            if (row.state !== 1){
-                html.push(tools.createActionButton("删除", "icon-remove", function () {
-                    require(["message", "request"], function (message, request) {
-                        message.confirm("确定删除设备型号为：" + row.name + "？删除后将无法恢复", function () {
-                            var box = message.loading("删除中...");
-                            request["delete"]("device-product/" + row.id, function (response) {
-                                box.hide();
-                                if (response.status === 200) {
-                                    message.showTips("删除成功");
-                                    grid.reload();
+            html.push(tools.createActionButton("删除", "icon-remove", function () {
+                require(["message", "request"], function (message, request) {
+                    message.confirm("确定删除设备型号为：" + row.name + "？删除后将无法恢复", function () {
+                        var box = message.loading("删除中...");
+                        request.createQuery("device-instance/_query").where("productId", row.id).exec(function (res) {
+                            if (res.status === 200) {
+                                if (res.result.total === 0) {
+                                    request["delete"]("device-product/" + row.id, function (response) {
+                                        box.hide();
+                                        if (response.status === 200) {
+                                            message.showTips("删除成功");
+                                            grid.reload();
+                                        } else {
+                                            message.showTips("删除失败:" + response.message, "danger");
+                                        }
+                                    });
                                 } else {
-                                    message.showTips("删除失败:" + response.message, "danger");
+                                    box.hide();
+                                    message.showTips("删除失败:该型号已绑定示例,无法删除", "danger");
                                 }
-                            });
-                        });
+                            } else {
+                                box.hide();
+                                message.showTips("删除失败:" + res.message, "danger");
+                            }
+                        })
                     });
-                }));
-            }
+                });
+            }));
+
+            html.push(tools.createActionButton("下载配置", "icon-download", function () {
+                download("设备型号-" + row.name + ".json", JSON.stringify(row));
+            }));
             return html.join("");
         };
+
+        function download(name, data) {
+            // 创建隐藏的可下载链接
+            var eleLink = document.createElement('a');
+            eleLink.download = name;
+            eleLink.style.display = 'none';
+            // 字符内容转变成blob地址
+            var blob = new Blob([data]);
+            eleLink.href = URL.createObjectURL(blob);
+            // 触发点击
+            document.body.appendChild(eleLink);
+            eleLink.click();
+            // 然后移除
+            document.body.removeChild(eleLink);
+            // console.log(html[0].outerHTML);
+        }
+
     });
 });
+
+function initWebUploader(WebUploader, storejs, responseCall) {
+    var uploader = WebUploader.create({
+        // swf文件路径
+        swf: '../plugin/webuploader/Uploader.swf',
+
+        // 文件接收服务端。
+        server: API_BASE_PATH + 'file/static',
+
+        // 选择文件的按钮。可选。
+        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+        pick: '#upload-button',
+        multiple: false,
+        auto: true,
+        threads: 1,
+        duplicate: true,
+        extensions: 'xlsx,csv',
+        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+        resize: false
+    });
+
+    uploader.on('fileQueued', function (file) {
+        uploader.upload();
+    });
+    uploader.on("uploadBeforeSend", function (e, param, headers) {
+        let token = storejs.get("X-Access-Token");
+        if (token) {
+            headers['X-Access-Token'] = token;
+        }
+    });
+
+    uploader.on('uploadSuccess', function (file, response) {
+        responseCall(file, response);
+    });
+
+    uploader.on('uploadError', function (file) {
+    });
+
+    uploader.on('uploadComplete', function (file) {
+    });
+}
