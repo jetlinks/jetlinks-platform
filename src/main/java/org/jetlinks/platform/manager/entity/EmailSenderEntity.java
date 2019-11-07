@@ -25,6 +25,9 @@ public class EmailSenderEntity extends GenericEntity<String> {
     private String host;
 
     @Column
+    private String port;
+
+    @Column
     private String sender;
 
     @Column

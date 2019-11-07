@@ -4,6 +4,8 @@ import io.vertx.core.Vertx;
 import io.vertx.mqtt.MqttClientOptions;
 import org.hswebframework.web.crud.events.EntityModifyEvent;
 import org.jetlinks.platform.manager.entity.MqttClientEntity;
+import org.jetlinks.rule.engine.executor.node.mqtt.MqttClient;
+import org.jetlinks.rule.engine.executor.node.mqtt.vertx.VertxMqttClient;
 import org.jetlinks.rule.engine.executor.node.mqtt.vertx.VertxMqttClientManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,13 +28,23 @@ public class LocalMqttClientManager extends VertxMqttClientManager {
     private MqttClientService clientService;
 
     @Override
-    protected Mono<VertxMqttConfig> getConfig(String id) {
+    public Mono<VertxMqttConfig> getConfig(String id) {
         return clientService
                 .findById(Mono.just(id))
                 .map(this::convert);
     }
 
-    protected VertxMqttConfig convert(MqttClientEntity entity) {
+    @Override
+    public void stopClient(String id) {
+        super.stopClient(id);
+    }
+
+    @Override
+    public Mono<VertxMqttClient> createMqttClient(VertxMqttConfig config) {
+        return super.createMqttClient(config);
+    }
+
+    private VertxMqttConfig convert(MqttClientEntity entity) {
 
         Map<String, Object> secure = entity.getSecureConfiguration();
         Map<String, Object> ssl = entity.getSslConfiguration();

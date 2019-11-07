@@ -11,6 +11,7 @@ importMiniui(function () {
         var items = nodes.items;
         var loading = message.loading("加载中");
         var id = request.getParameter("id");
+        var copyTag = request.getParameter("copyTag");
 
         var ruleInfo = {runMode: "CLUSTER", "name": "新建模型"};
 
@@ -50,7 +51,7 @@ importMiniui(function () {
 
                 mini.parse();
 
-                if (id) {
+                if (id && !copyTag) {
                     mini.get('modelId').setEnabled(false)
                 } else {
                     mini.get("modelId").focus();
@@ -97,15 +98,21 @@ importMiniui(function () {
                             modelMeta: JSON.stringify(meta),
                             modelType: "antv.g6"
                         };
-                        request.patch("rule-engine/model", model, function (e) {
+                        var func = request.patch;
+                        var preMessage = "保存";
+                        if (copyTag) {
+                            func = request.post;
+                            preMessage = "复制";
+                        }
+                        func("rule-engine/model", model, function (e) {
                             if (e.status === 200) {
-                                message.showTips("保存成功");
+                                message.showTips(preMessage + "成功");
                                 id = e.result;
                                 mini.get("modelId").setEnabled(false);
                             } else {
-                                message.showTips("保存失败:" + e.message, "danger")
+                                message.showTips(preMessage + "失败:" + e.message, "danger")
                             }
-                        })
+                        });
 
                     })
             })
@@ -147,7 +154,7 @@ importMiniui(function () {
                                     }, function (resp) {
                                         if (resp.status !== 200) {
                                             printLog("error", resp.message)
-                                        }else{
+                                        } else {
                                             printLog("info", "测试通过")
                                         }
                                     })
@@ -390,7 +397,7 @@ importMiniui(function () {
                 return;
             }
             polling = true;
-            var es = new EventSource(window.API_BASE_PATH + "rule-engine/debug/" + debugSessionId + "/logs/?:X_Access_Token="+request.getToken());
+            var es = new EventSource(window.API_BASE_PATH + "rule-engine/debug/" + debugSessionId + "/logs/?:X_Access_Token=" + request.getToken());
             es.onmessage = function (ev) {
                 var log = JSON.parse(ev.data);
                 if (log.type === 'log') {
@@ -402,10 +409,10 @@ importMiniui(function () {
 
             es.onerror = function (ev) {
                 console.error(ev)
-               // printLog("error", "error", "\t:\t", ev.message);
+                // printLog("error", "error", "\t:\t", ev.message);
                 closeSession();
                 es.close();
-                polling=false;
+                polling = false;
             }
         }
 
