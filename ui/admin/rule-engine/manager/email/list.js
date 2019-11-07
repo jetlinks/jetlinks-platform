@@ -34,7 +34,7 @@ importMiniui(function () {
             var html = [];
             if (tag !== 'select'){
                 html.push(tools.createActionButton("编辑", "icon-edit", function () {
-                    tools.openWindow("admin/rule-engine/manager/email/save.html?id=" + row.id, "编辑邮件email：" + row.name, "80%", "80%", function () {
+                    tools.openWindow("admin/rule-engine/manager/email/save.html?id=" + row.id, "编辑邮件email：" + row.name, "700", "700", function () {
                         grid.reload();
                     });
                 }));
