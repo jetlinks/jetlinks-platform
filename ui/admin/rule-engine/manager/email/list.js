@@ -32,29 +32,27 @@ importMiniui(function () {
         window.renderAction = function (e) {
             var row = e.record;
             var html = [];
-            if (tag !== 'select'){
-                html.push(tools.createActionButton("编辑", "icon-edit", function () {
-                    tools.openWindow("admin/rule-engine/manager/email/save.html?id=" + row.id, "编辑邮件email：" + row.name, "80%", "80%", function () {
-                        grid.reload();
-                    });
-                }));
+            html.push(tools.createActionButton("编辑", "icon-edit", function () {
+                tools.openWindow("admin/rule-engine/manager/email/save.html?id=" + row.id, "编辑邮件email：" + row.name, "700", "700", function () {
+                    grid.reload();
+                });
+            }));
 
-                //if (row.state.text === '未激活') {
-                html.push(tools.createActionButton("删除", "icon-remove", function () {
-                    message.confirm("确定删除配置：" + row.name + "？删除后将无法恢复", function () {
-                        var box = message.loading("删除中...");
-                        request["delete"]("email-sender/" + row.id, function (response) {
-                            box.hide();
-                            if (response.status === 200) {
-                                message.showTips("删除成功");
-                                grid.reload();
-                            } else {
-                                message.showTips("删除失败:" + response.message, "danger");
-                            }
-                        });
+            html.push(tools.createActionButton("删除", "icon-remove", function () {
+                message.confirm("确定删除配置：" + row.name + "？删除后将无法恢复", function () {
+                    var box = message.loading("删除中...");
+                    request["delete"]("email-sender/" + row.id, function (response) {
+                        box.hide();
+                        if (response.status === 200) {
+                            message.showTips("删除成功");
+                            grid.reload();
+                        } else {
+                            message.showTips("删除失败:" + response.message, "danger");
+                        }
                     });
-                }));
-            } else {
+                });
+            }));
+            if (tag === 'select'){
                 html.push(tools.createActionButton("选择", "icon-ok", function () {
                     tools.closeWindow(row);
                 }));
