@@ -6,6 +6,7 @@ import io.searchbox.client.JestResultHandler;
 import io.searchbox.core.Bulk;
 import io.searchbox.core.Index;
 import lombok.extern.slf4j.Slf4j;
+import org.hswebframework.web.event.GenericsPayloadApplicationEvent;
 import org.jetlinks.core.Value;
 import org.jetlinks.core.device.DeviceOperator;
 import org.jetlinks.core.device.DeviceRegistry;
@@ -58,6 +59,11 @@ public class DeviceEventMessageHandler {
     private ApplicationEventPublisher eventPublisher;
 
     @EventListener
+    public void dispatchDeviceMessage(Message message) {
+        eventPublisher.publishEvent(new GenericsPayloadApplicationEvent<>(this, new DeviceMessageEvent<>(message), message.getClass()));
+    }
+
+    @EventListener
     public void handleChildrenDeviceMessage(DeviceMessageEvent<ChildDeviceMessageReply> event) {
         ChildDeviceMessageReply reply = event.getMessage();
         Message message = reply.getChildDeviceMessage();
@@ -86,11 +92,7 @@ public class DeviceEventMessageHandler {
         if (isReportProperty) {
             syncDeviceProperty(message.getDeviceId(), ((Map) message.getData()), new Date(message.getTimestamp()));
         } else {
-            try {
-                syncEvent(message.getDeviceId(), message);
-            } catch (Exception e) {
-                log.error("同步事件数据到es错误：{}", e);
-            }
+            syncEvent(message.getDeviceId(), message);
         }
         DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
                 .deviceId(message.getDeviceId())
@@ -169,7 +171,7 @@ public class DeviceEventMessageHandler {
 
                     builder.addAction(new Index.Builder(data).build());
 
-// TODO: 2019/11/4 修改为批量存储 
+                    // TODO: 2019/11/4 修改为批量存储
                     jestClient.executeAsync(builder.build(), new JestResultHandler<JestResult>() {
                         @Override
                         public void completed(JestResult result) {

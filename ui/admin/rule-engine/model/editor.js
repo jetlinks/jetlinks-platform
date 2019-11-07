@@ -145,20 +145,24 @@ importMiniui(function () {
                         .on("click", function () {
                             doSave();
                             doInDebug(function (sessionId) {
+                                mini.get('debug-param-window').show();
+                                $(".confirm-debug")
+                                    .unbind("click")
+                                    .on("click", function () {
+                                        var data = mini.get("debugParam").getValue() || '{}';
+                                        mini.get('debug-param-window').hide();
+                                        request.post("rule-engine/debug/" + sessionId + "/condition", {
+                                            condition: model.condition,
+                                            data: data ? JSON.parse(data) : {}
+                                        }, function (resp) {
+                                            if (resp.status !== 200) {
+                                                printLog("error", resp.message)
+                                            }else{
+                                                printLog("info", "测试通过")
+                                            }
+                                        })
+                                    });
 
-                                message.prompt("测试条件", "输入数据(JSON)", function (data) {
-
-                                    request.post("rule-engine/debug/" + sessionId + "/condition", {
-                                        condition: model.condition,
-                                        data: data ? JSON.parse(data) : {}
-                                    }, function (resp) {
-                                        if (resp.status !== 200) {
-                                            printLog("error", resp.message)
-                                        } else {
-                                            printLog("info", "测试通过")
-                                        }
-                                    })
-                                }, true)
                             })
                         });
 
@@ -226,7 +230,7 @@ importMiniui(function () {
 
             var panel = $("#info-panel");
             panel.html("");
-
+            model.executorName = model.executorName||model.label;
             require(["text!admin/rule-engine/model/nodes/" + model.executor + '.html', "text!./tpl/node-basic.html", "./nodes/" + model.executor + '.js'],
                 function (_html, basic, e) {
                     var nodeTemplate = $(_html);
@@ -397,7 +401,7 @@ importMiniui(function () {
                 return;
             }
             polling = true;
-            var es = new EventSource(window.API_BASE_PATH + "rule-engine/debug/" + debugSessionId + "/logs/?:X_Access_Token=" + request.getToken());
+            var es = new EventSource(window.API_BASE_PATH + "rule-engine/debug/" + debugSessionId + "/logs/?:X_Access_Token="+request.getToken());
             es.onmessage = function (ev) {
                 var log = JSON.parse(ev.data);
                 if (log.type === 'log') {
@@ -409,10 +413,10 @@ importMiniui(function () {
 
             es.onerror = function (ev) {
                 console.error(ev)
-                // printLog("error", "error", "\t:\t", ev.message);
+               // printLog("error", "error", "\t:\t", ev.message);
                 closeSession();
                 es.close();
-                polling = false;
+                polling=false;
             }
         }
 
