@@ -25,15 +25,20 @@ public class TestSmsProvider implements SmsProvider, SmsSender {
 
     @Override
     public Mono<Boolean> sendTemplate(String templateId, Map<String, Object> context, List<String> sendTo) {
-        log.info("按模版{}发送短信到{}. {} ", templateId, sendTo, context);
-        return Mono.just(true);
+
+        return Mono.fromSupplier(() -> {
+            log.info("按模版{}发送短信到{}. {} ", templateId, sendTo, context);
+            return true;
+        });
     }
 
     @Override
     @SneakyThrows
     public Mono<Boolean> send(String text, Map<String, Object> context, List<String> sendTo) {
-        text= ExpressionUtils.analytical(text,context,"spel");
-        log.info("发送短信:{} 到:{}", text, sendTo);
-        return Mono.just(true);
+
+        return Mono.fromSupplier(() -> {
+            log.info("发送短信:{} 到:{}", ExpressionUtils.analytical(text, context, "spel"), sendTo);
+            return true;
+        });
     }
 }

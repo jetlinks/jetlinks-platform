@@ -32,156 +32,224 @@
 </head>
 <body style="display: none">
 <div class="mini-fit">
-
-    <div id="main-splitter" class="mini-splitter" vertical="true" style="width:100%;height:100%;">
+    <div class="mini-splitter" style="width:100%;height:100%;">
         <div size="60%" showCollapseButton="false">
-            <div class="mini-splitter" style="width:100%;height:100%;">
-                <div size="75%" showCollapseButton="false">
-                    <iframe id="designer" style="border:0;width: 100%;height: 100%;position: relative;"
-                            frameborder="0"></iframe>
-                </div>
-                <div>
-                    <div class="mini-fit dynamic-form" id="info-panel" style="padding: 10px;margin: auto">
-                        <div class="mini-col-12 form-component" style="text-align: center">
-                            <span style="font-size: 18px">模型信息</span>
-                        </div>
-                        <div class="mini-col-12 form-component">
-                            <div class="form-item brick"><label class="form-label">ID</label>
-                                <div class="input-block component-body">
-                                    <input name="id" id="modelId" readonly class="mini-textbox" style="width: 100%">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mini-col-12 form-component">
-                            <div class="form-item brick"><label class="form-label">模型名称</label>
-                                <div class="input-block component-body">
-                                    <input name="name" readonly class="mini-textbox" style="width: 100%">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mini-col-12 form-component">
-                            <div class="form-item brick"><label class="form-label">运行方式</label>
-                                <div class="input-block component-body">
-                                    <div name="runMode" enabled="false" class="mini-radiobuttonlist" textField="text"
-                                         valueField="id" value="CLUSTER"
-                                         data="[{'id':'CLUSTER',text:'集群'},{'id':'DISTRIBUTED',text:'分布式'}]">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mini-col-12 form-component">
-                            <div class="form-item form-text">
-                                <label class="form-label">说明</label>
-                                <div class="input-block component-body">
-                                    <input name="description" class="mini-textarea" style="width: 100%;height: 50px">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mini-col-12 form-component" style="margin-top: 15px">
-                            <div class="form-item brick" style="text-align: center">
-                                <a class="mini-button select-execute">执行</a>
-
-                                <a class="mini-button cancel-edit" plain="true">关闭</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+            <iframe id="designer" style="border:0;width: 100%;height: 100%;position: relative;"
+                    frameborder="0"></iframe>
         </div>
-        <div showCollapseButton="true">
-            <div class="mini-splitter" vertical="false" style="width:100%;height:100%;">
-                <div size="50%">
-                    <div class="mini-toolbar" style="border-bottom:0;">
-                        <div id="search-box-log" class="mini-clearfix search-box">
-                            <div class="mini-col-4 form-component">
-                                <div class="form-item">
-                                    <label class="form-label">创建时间从：</label>
+        <div>
+            <div class="mini-fit" >
+                <div  class="mini-tabs" style="width: 100%;height: 100%">
+                    <div title="信息">
+                        <div class="mini-fit dynamic-form" id="info-panel" style="padding: 10px;margin: auto;">
+                            <div class="mini-col-12 form-component" style="text-align: center">
+                                <span style="font-size: 18px">模型信息</span>
+                            </div>
+                            <div class="mini-col-12 form-component">
+                                <div class="form-item brick"><label class="form-label">ID</label>
                                     <div class="input-block component-body">
-                                        <input name="createTime$GTE" class="mini-datepicker" nullValue="null"
-                                               format="yyyy-MM-dd H:mm:ss" timeFormat="H:mm:ss" showTime="true"
-                                               showOkButton="true"
-                                               showClearButton="false" width="100%"/>
+                                        <input name="id" id="modelId" readonly class="mini-textbox" style="width: 100%">
                                     </div>
                                 </div>
                             </div>
-                            <div class="mini-col-4 form-component">
-                                <div class="form-item">
-                                    <label class="form-label">创建时间至：</label>
+                            <div class="mini-col-12 form-component">
+                                <div class="form-item brick"><label class="form-label">模型名称</label>
                                     <div class="input-block component-body">
-                                        <input name="createTime$LTE" class="mini-datepicker" nullValue="null"
-                                               format="yyyy-MM-dd H:mm:ss" timeFormat="H:mm:ss" showTime="true"
-                                               showOkButton="true"
-                                               showClearButton="false" width="100%"/>
+                                        <input name="name" readonly class="mini-textbox" style="width: 100%">
                                     </div>
                                 </div>
                             </div>
-
-                        </div>
-                    </div>
-                    <div class="mini-fit">
-                        <div id="log-grid" class="mini-datagrid" style="width:100%;height:100%;"
-                             showPager="true" pageSize="10" sortField="createTime" sortOrder="desc">
-                            <div property="columns">
-                                <div field="createTime" renderer="eventCreateTimeRenderer" width="100"
-                                     headerAlign="center" allowSort="true">日志时间
-                                </div>
-                                <div field="nodeId" width="100" renderer="logNodeIdRenderer" headerAlign="center">节点</div>
-                                <div field="level" width="80" headerAlign="center">level</div>
-                                <div field="message" width="200" align="center" headerAlign="center">消息</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div size="50%">
-                    <div class="mini-toolbar" style="border-bottom:0;">
-                        <div id="search-box-event" class="mini-clearfix search-box">
-                            <div class="mini-col-4 form-component">
-                                <div class="form-item">
-                                    <label class="form-label">创建时间从：</label>
+                            <div class="mini-col-12 form-component">
+                                <div class="form-item brick"><label class="form-label">运行方式</label>
                                     <div class="input-block component-body">
-                                        <input name="createTime$GTE" class="mini-datepicker" nullValue="null"
-                                               format="yyyy-MM-dd H:mm:ss" timeFormat="H:mm:ss" showTime="true"
-                                               showOkButton="true"
-                                               showClearButton="false" width="100%"/>
+                                        <div name="runMode" enabled="false" class="mini-radiobuttonlist" textField="text"
+                                             valueField="id" value="CLUSTER"
+                                             data="[{'id':'CLUSTER',text:'集群'},{'id':'DISTRIBUTED',text:'分布式'}]">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="mini-col-4 form-component">
-                                <div class="form-item">
-                                    <label class="form-label">创建时间至：</label>
+                            <div class="mini-col-12 form-component">
+                                <div class="form-item form-text">
+                                    <label class="form-label">说明</label>
                                     <div class="input-block component-body">
-                                        <input name="createTime$LTE" class="mini-datepicker" nullValue="null"
-                                               format="yyyy-MM-dd H:mm:ss" timeFormat="H:mm:ss" showTime="true"
-                                               showOkButton="true"
-                                               showClearButton="false" width="100%"/>
+                                        <input name="description" class="mini-textarea" style="width: 100%;height: 50px">
                                     </div>
                                 </div>
                             </div>
 
+                            <div class="mini-col-12 form-component" style="margin-top: 15px">
+                                <div class="form-item brick" style="text-align: center">
+                                    <a class="mini-button select-execute">执行</a>
+                                    <a class="mini-button cancel-edit" plain="true">关闭</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="mini-fit">
-                        <div id="event-grid" class="mini-datagrid" style="width:100%;height:100%;"
-                             showPager="true" pageSize="10" sortField="createTime" sortOrder="desc">
-                            <div property="columns">
-                                <div field="createTime" renderer="eventCreateTimeRenderer" width="100"
-                                     headerAlign="center" allowSort="true">事件时间
+                    <div title="日志">
+                        <div class="mini-toolbar" style="border-bottom:0;">
+                            <div id="search-box-log" class="mini-clearfix search-box">
+                                <div class="mini-col-6 form-component">
+                                    <div class="form-item">
+                                        <label class="form-label">时间从：</label>
+                                        <div class="input-block component-body">
+                                            <input name="createTime$GTE" class="mini-datepicker" nullValue="null"
+                                                   format="yyyy-MM-dd H:mm:ss" timeFormat="H:mm:ss" showTime="true"
+                                                   showOkButton="true"
+                                                   showClearButton="false" width="100%"/>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div field="nodeId" width="100" renderer="eventNodeIdRenderer" headerAlign="center">节点</div>
-                                <div field="event" width="80" headerAlign="center">事件</div>
-                                <div field="ruleData" width="200" align="center" headerAlign="center">数据</div>
-                                <div name="action" renderer="renderAction" headerAlign="center" align="center">操作</div>
+                                <div class="mini-col-6 form-component">
+                                    <div class="form-item">
+                                        <label class="form-label">时间至：</label>
+                                        <div class="input-block component-body">
+                                            <input name="createTime$LTE" class="mini-datepicker" nullValue="null"
+                                                   format="yyyy-MM-dd H:mm:ss" timeFormat="H:mm:ss" showTime="true"
+                                                   showOkButton="true"
+                                                   showClearButton="false" width="100%"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mini-col-6 form-component">
+                                    <div class="form-item">
+                                        <label class="form-label">LEVEL：</label>
+                                        <div class="input-block component-body">
+                                            <input name="event$LIKE" class="mini-textbox"  width="100%"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="mini-fit">
+                            <div id="log-grid" class="mini-datagrid" style="width:100%;height:100%;"
+                                 showPager="true" pageSize="10" sortField="createTime" sortOrder="desc">
+                                <div property="columns">
+                                    <div field="createTime" renderer="eventCreateTimeRenderer" width="100"
+                                         headerAlign="center" allowSort="true">时间
+                                    </div>
+                                    <!--                                <div field="nodeId" width="100" renderer="logNodeIdRenderer" headerAlign="center">节点</div>-->
+                                    <div field="level" width="50" headerAlign="center">LEVEL</div>
+                                    <div field="message" width="200" align="center" headerAlign="center">消息</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div title="事件">
+                        <div class="mini-toolbar" style="border-bottom:0;">
+                            <div id="search-box-event" class="mini-clearfix search-box">
+                                <div class="mini-col-6 form-component">
+                                    <div class="form-item">
+                                        <label class="form-label">时间从：</label>
+                                        <div class="input-block component-body">
+                                            <input name="createTime$GTE" class="mini-datepicker" nullValue="null"
+                                                   format="yyyy-MM-dd H:mm:ss" timeFormat="H:mm:ss" showTime="true"
+                                                   showOkButton="true"
+                                                   showClearButton="false" width="100%"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mini-col-6 form-component">
+                                    <div class="form-item">
+                                        <label class="form-label">时间至：</label>
+                                        <div class="input-block component-body">
+                                            <input name="createTime$LTE" class="mini-datepicker" nullValue="null"
+                                                   format="yyyy-MM-dd H:mm:ss" timeFormat="H:mm:ss" showTime="true"
+                                                   showOkButton="true"
+                                                   showClearButton="false" width="100%"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mini-col-6 form-component">
+                                    <div class="form-item">
+                                        <label class="form-label">事件：</label>
+                                        <div class="input-block component-body">
+                                            <input name="event$LIKE" class="mini-textbox"  width="100%"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="mini-fit">
+                            <div id="event-grid" class="mini-datagrid" style="width:100%;height:100%"
+                                 showPager="true" pageSize="10" sortField="createTime" sortOrder="desc">
+                                <div property="columns">
+                                    <div field="createTime" renderer="eventCreateTimeRenderer" width="100"
+                                         headerAlign="center" allowSort="true">时间
+                                    </div>
+                                    <!--                                <div field="nodeId" width="100" renderer="eventNodeIdRenderer" headerAlign="center">节点</div>-->
+                                    <div field="event" width="80" headerAlign="center">事件</div>
+                                    <div field="ruleData" width="200" align="center" headerAlign="center">数据</div>
+                                    <div name="action" renderer="renderAction" headerAlign="center" align="center">操作</div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
+
+<!--    <div id="main-splitter" class="mini-splitter" vertical="true" style="width:100%;height:100%;">-->
+<!--        <div size="60%" showCollapseButton="false">-->
+<!--          -->
+<!--        </div>-->
+<!--&lt;!&ndash;        <div showCollapseButton="true">&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="mini-splitter" vertical="false" style="width:100%;height:100%;">&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                <div size="50%">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                    <div class="mini-toolbar" style="border-bottom:0;">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                        <div id="search-box-log" class="mini-clearfix search-box">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                            <div class="mini-col-4 form-component">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                <div class="form-item">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                    <label class="form-label">创建时间从：</label>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                    <div class="input-block component-body">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                        <input name="createTime$GTE" class="mini-datepicker" nullValue="null"&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                               format="yyyy-MM-dd H:mm:ss" timeFormat="H:mm:ss" showTime="true"&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                               showOkButton="true"&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                               showClearButton="false" width="100%"/>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                    </div>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                </div>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                            </div>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                            <div class="mini-col-4 form-component">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                <div class="form-item">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                    <label class="form-label">创建时间至：</label>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                    <div class="input-block component-body">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                        <input name="createTime$LTE" class="mini-datepicker" nullValue="null"&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                               format="yyyy-MM-dd H:mm:ss" timeFormat="H:mm:ss" showTime="true"&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                               showOkButton="true"&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                               showClearButton="false" width="100%"/>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                    </div>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                </div>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                            </div>&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;                        </div>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                    </div>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                    <div class="mini-fit">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                        <div id="log-grid" class="mini-datagrid" style="width:100%;height:100%;"&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                             showPager="true" pageSize="10" sortField="createTime" sortOrder="desc">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                            <div property="columns">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                <div field="createTime" renderer="eventCreateTimeRenderer" width="100"&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                     headerAlign="center" allowSort="true">日志时间&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                </div>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;&lt;!&ndash;                                <div field="nodeId" width="100" renderer="logNodeIdRenderer" headerAlign="center">节点</div>&ndash;&gt;&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                <div field="level" width="50" headerAlign="center">level</div>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                                <div field="message" width="200" align="center" headerAlign="center">消息</div>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                            </div>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                        </div>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                    </div>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                </div>&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;                <div size="50%">&ndash;&gt;-->
+
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;        </div>&ndash;&gt;-->
+<!--    </div>-->
 
 </div>
 
@@ -245,7 +313,6 @@
             </div>
         </div>
     </div>
-
 </div>
 </body>
 </html>

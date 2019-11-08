@@ -11,13 +11,13 @@ importMiniui(function () {
         new SearchBox({
             container: $("#search-box-log"),
             onSearch: searchLog,
-            initSize: 2
+            initSize: 4
         }).init();
 
         new SearchBox({
             container: $("#search-box-event"),
             onSearch: searchEvent,
-            initSize: 2
+            initSize: 4
         }).init();
 
         var loading = message.loading("加载中");
