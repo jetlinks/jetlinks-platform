@@ -11,6 +11,7 @@ import org.jetlinks.core.message.codec.DefaultTransport;
 import org.jetlinks.core.server.MessageHandler;
 import org.jetlinks.core.server.monitor.GatewayServerMetrics;
 import org.jetlinks.core.server.monitor.GatewayServerMonitor;
+import org.jetlinks.core.server.session.DeviceSession;
 import org.jetlinks.core.server.session.DeviceSessionManager;
 import org.jetlinks.core.spi.ServiceContext;
 import org.jetlinks.platform.events.DeviceConnectedEvent;
@@ -137,12 +138,14 @@ public class JetLinksConfiguration {
         Optional.ofNullable(properties.getTransportLimit()).ifPresent(sessionManager::setTransportLimits);
 
         sessionManager.onRegister()
+                .map(DeviceSession::getDeviceId)
                 .map(DeviceConnectedEvent::new)
                 .doOnNext(eventPublisher::publishEvent)
                 .onErrorContinue((err,r)-> log.error(err.getMessage(),err))
                 .subscribe();
 
         sessionManager.onUnRegister()
+                .map(DeviceSession::getDeviceId)
                 .map(DeviceDisconnectedEvent::new)
                 .doOnNext(eventPublisher::publishEvent)
                 .onErrorContinue((err,r)-> log.error(err.getMessage(),err))

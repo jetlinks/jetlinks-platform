@@ -1,10 +1,13 @@
 package org.jetlinks.platform.manager.web;
 
 import org.hswebframework.ezorm.rdb.operator.dml.query.SortOrder;
+import org.hswebframework.web.api.crud.entity.QueryParamEntity;
 import org.hswebframework.web.api.crud.entity.TreeSupportEntity;
 import org.hswebframework.web.authorization.Authentication;
 import org.hswebframework.web.authorization.AuthenticationUtils;
 import org.hswebframework.web.authorization.annotation.Authorize;
+import org.hswebframework.web.authorization.annotation.DataAccess;
+import org.hswebframework.web.authorization.annotation.DataAccessType;
 import org.hswebframework.web.authorization.annotation.Resource;
 import org.hswebframework.web.authorization.exception.UnAuthorizedException;
 import org.hswebframework.web.crud.service.ReactiveCrudService;

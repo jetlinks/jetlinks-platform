@@ -154,9 +154,9 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
     @EventListener
     public void handleDeviceConnectEvent(DeviceDisconnectedEvent event) {
         if (deviceIdSink != null) {
-            deviceIdSink.next(event.getSession().getDeviceId());
+            deviceIdSink.next(event.getDeviceId());
         } else {
-            syncState(Flux.just(event.getSession().getDeviceId()), false)
+            syncState(Flux.just(event.getDeviceId()), false)
                     .doOnError(err -> log.error(err.getMessage(), err))
                     .subscribe((i) -> log.info("同步设备状态成功"));
         }
@@ -165,20 +165,9 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
     @EventListener
     public void handleDeviceConnectEvent(DeviceConnectedEvent event) {
         if (deviceIdSink != null) {
-            deviceIdSink.next(event.getSession().getDeviceId());
+            deviceIdSink.next(event.getDeviceId());
         } else {
-            syncState(Flux.just(event.getSession().getDeviceId()), false)
-                    .doOnError(err -> log.error(err.getMessage(), err))
-                    .subscribe((i) -> log.info("同步设备状态成功"));
-        }
-    }
-
-    @EventListener
-    public void handleDeviceDisConnectEvent(DeviceDisconnectedEvent event) {
-        if (deviceIdSink != null) {
-            deviceIdSink.next(event.getSession().getDeviceId());
-        } else {
-            syncState(Flux.just(event.getSession().getDeviceId()), false)
+            syncState(Flux.just(event.getDeviceId()), false)
                     .doOnError(err -> log.error(err.getMessage(), err))
                     .subscribe((i) -> log.info("同步设备状态成功"));
         }

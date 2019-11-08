@@ -30,7 +30,21 @@ define([], function () {
                         "executor": "spring-event"
                     }
                 }
-
+                ,
+                {
+                    "id": "3",
+                    "type": "node",
+                    "size": "120*48",
+                    "shape": "flow-rect",
+                    "src": "data:image/svg+xml;base64," +
+                    "PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjU2IiAKICAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgCiAgICB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8ZGVmcz4KICAgICAgICA8cmVjdCBpZD0iYiIgeD0iMCIgeT0iMCIgd2lkdGg9IjEyMCIgaGVpZ2h0PSI0OCIgcng9IjQiLz4KICAgICAgICA8ZmlsdGVyIHg9Ii04LjglIiB5PSItMTAuNCUiIHdpZHRoPSIxMTcuNSUiIGhlaWdodD0iMTI5LjIlIiBmaWx0ZXJVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giIGlkPSJhIj4KICAgICAgICAgICAgPGZlT2Zmc2V0IGR5PSIyIiBpbj0iU291cmNlQWxwaGEiIHJlc3VsdD0ic2hhZG93T2Zmc2V0T3V0ZXIxIi8+CiAgICAgICAgICAgIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjIiIGluPSJzaGFkb3dPZmZzZXRPdXRlcjEiIHJlc3VsdD0ic2hhZG93Qmx1ck91dGVyMSIvPgogICAgICAgICAgICA8ZmVDb21wb3NpdGUgaW49InNoYWRvd0JsdXJPdXRlcjEiIGluMj0iU291cmNlQWxwaGEiIG9wZXJhdG9yPSJvdXQiIHJlc3VsdD0ic2hhZG93Qmx1ck91dGVyMSIvPgogICAgICAgICAgICA8ZmVDb2xvck1hdHJpeCB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAuMDQgMCIgaW49InNoYWRvd0JsdXJPdXRlcjEiLz4KICAgICAgICA8L2ZpbHRlcj4KICAgIDwvZGVmcz4KICAgIDxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNCAyKSI+CiAgICAgICAgICAgIDx1c2UgZmlsbD0iIzAwMCIgZmlsdGVyPSJ1cmwoI2EpIiB4bGluazpocmVmPSIjYiIvPgogICAgICAgICAgICA8dXNlIGZpbGwtb3BhY2l0eT0iLjkyIiBmaWxsPSIjY2RlZmZmIiB4bGluazpocmVmPSIjYiIvPgogICAgICAgICAgICA8cmVjdCBzdHJva2U9IiMxODkwRkYiIHg9Ii41IiB5PSIuNSIgd2lkdGg9IjExOSIgaGVpZ2h0PSI0NyIgcng9IjQiLz4KICAgICAgICA8L2c+CiAgICAgICAgPHRleHQgZm9udC1mYW1pbHk9IlBpbmdGYW5nU0MtUmVndWxhciwgUGluZ0ZhbmcgU0MiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjY1IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg0IDIpIj4KICAgICAgICAgICAgPHRzcGFuIHg9IjM5IiB5PSIyOSI+6LevICAg55SxPC90c3Bhbj4KICAgICAgICA8L3RleHQ+CiAgICA8L2c+Cjwvc3ZnPg=="
+                    ,
+                    "model": {
+                        "color": "#1890FF",
+                        "label": "路由",
+                        "executor": "route"
+                    }
+                }
             ]
         },
         {

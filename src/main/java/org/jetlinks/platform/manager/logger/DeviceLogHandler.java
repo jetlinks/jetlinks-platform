@@ -43,7 +43,7 @@ public class DeviceLogHandler {
     @EventListener
     public void handleDeviceDisConnectEvent(DeviceDisconnectedEvent event) {
         DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
-                .deviceId(event.getSession().getDeviceId())
+                .deviceId(event.getDeviceId())
                 .type(DeviceLogType.offline)
                 .createTime(new Date())
                 .content("设备下线")
@@ -58,7 +58,7 @@ public class DeviceLogHandler {
     @EventListener
     public void handleDeviceConnectEvent(DeviceConnectedEvent event) {
         DeviceOperationLog deviceOperationType = DeviceOperationLog.builder()
-                .deviceId(event.getSession().getDeviceId())
+                .deviceId(event.getDeviceId())
                 .type(DeviceLogType.online)
                 .createTime(new Date())
                 .content("设备上线")

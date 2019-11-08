@@ -7,6 +7,6 @@ import org.jetlinks.core.server.session.DeviceSession;
 @Getter
 @AllArgsConstructor
 public class DeviceConnectedEvent {
-    private DeviceSession session;
+    private String deviceId;
 
 }

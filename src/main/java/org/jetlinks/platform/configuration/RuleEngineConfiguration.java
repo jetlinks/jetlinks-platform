@@ -3,11 +3,15 @@ package org.jetlinks.platform.configuration;
 import org.jetlinks.core.cluster.ClusterManager;
 import org.jetlinks.core.device.DeviceRegistry;
 import org.jetlinks.core.server.MessageHandler;
+import org.jetlinks.platform.events.DeviceConnectedEvent;
+import org.jetlinks.platform.events.DeviceDisconnectedEvent;
 import org.jetlinks.rule.engine.api.ConditionEvaluator;
 import org.jetlinks.rule.engine.api.RuleEngine;
+import org.jetlinks.rule.engine.api.Slf4jLogger;
 import org.jetlinks.rule.engine.api.executor.ExecutableRuleNodeFactory;
 import org.jetlinks.rule.engine.cluster.DefaultWorkerNodeSelector;
 import org.jetlinks.rule.engine.cluster.WorkerNodeSelectorStrategy;
+import org.jetlinks.rule.engine.cluster.logger.ClusterLogger;
 import org.jetlinks.rule.engine.condition.ConditionEvaluatorStrategy;
 import org.jetlinks.rule.engine.condition.DefaultConditionEvaluator;
 import org.jetlinks.rule.engine.condition.supports.DefaultScriptEvaluator;
@@ -20,6 +24,7 @@ import org.jetlinks.rule.engine.executor.node.mqtt.MqttClientManager;
 import org.jetlinks.rule.engine.executor.node.mqtt.MqttClientNode;
 import org.jetlinks.rule.engine.executor.node.notify.SmsSenderManager;
 import org.jetlinks.rule.engine.executor.node.notify.SmsSenderNode;
+import org.jetlinks.rule.engine.executor.node.route.RouteEventNode;
 import org.jetlinks.rule.engine.executor.node.spring.SpringEventNode;
 import org.jetlinks.rule.engine.executor.node.timer.TimerNode;
 import org.jetlinks.rule.engine.model.DefaultRuleModelParser;
@@ -27,7 +32,9 @@ import org.jetlinks.rule.engine.model.RuleModelParserStrategy;
 import org.jetlinks.rule.engine.model.antv.AntVG6RuleModelParserStrategy;
 import org.jetlinks.rule.engine.standalone.StandaloneRuleEngine;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,7 +42,6 @@ import java.util.concurrent.ExecutorService;
 
 @Configuration
 public class RuleEngineConfiguration {
-
 
     @Bean
     public DefaultRuleModelParser defaultRuleModelParser() {
@@ -107,11 +113,21 @@ public class RuleEngineConfiguration {
     @Bean
     public RuleEngine ruleEngine(ExecutableRuleNodeFactory ruleNodeFactory,
                                  ConditionEvaluator conditionEvaluator,
+                                 ApplicationEventPublisher eventPublisher,
                                  ExecutorService executorService) {
         StandaloneRuleEngine ruleEngine = new StandaloneRuleEngine();
         ruleEngine.setNodeFactory(ruleNodeFactory);
         ruleEngine.setExecutor(executorService);
         ruleEngine.setEvaluator(conditionEvaluator);
+        ruleEngine.setEventListener(eventPublisher::publishEvent);
+        ruleEngine.setLoggerSupplier((ctxId,model)->{
+            ClusterLogger logger=new ClusterLogger();
+            logger.setParent(new Slf4jLogger("rule.engine.logger.".concat(model.getId()).concat(".").concat(model.getName())));
+            logger.setLogInfoConsumer(eventPublisher::publishEvent);
+            logger.setNodeId(model.getId());
+            logger.setInstanceId(ctxId);
+            return logger;
+        });
         return ruleEngine;
     }
 
@@ -128,8 +144,14 @@ public class RuleEngineConfiguration {
     }
 
     @Bean
-    public DeviceOperationNode deviceOperationNode(MessageHandler messageHandler, ClusterManager clusterManager, DeviceRegistry registry) {
-        return new DeviceOperationNode(messageHandler, clusterManager, registry);
+    public DeviceOperationNode deviceOperationNode(MessageHandler messageHandler,
+                                                   ClusterManager clusterManager,
+                                                   DeviceRegistry registry,
+                                                   ApplicationEventPublisher eventPublisher) {
+
+        return new DeviceOperationNode(messageHandler, clusterManager, registry)
+                .onOffline(operator -> eventPublisher.publishEvent(new DeviceDisconnectedEvent(operator.getDeviceId())))
+                .onOnline(operator -> eventPublisher.publishEvent(new DeviceConnectedEvent(operator.getDeviceId())));
     }
 
     @Bean
@@ -142,6 +164,12 @@ public class RuleEngineConfiguration {
     public SmsSenderNode smsSenderNode(SmsSenderManager smsSenderManager) {
         return new SmsSenderNode(smsSenderManager);
     }
+
+    @Bean
+    public RouteEventNode routeEventNode() {
+        return new RouteEventNode();
+    }
+
 
 
 }

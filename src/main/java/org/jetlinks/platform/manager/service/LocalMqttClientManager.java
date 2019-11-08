@@ -62,8 +62,6 @@ public class LocalMqttClientManager extends VertxMqttClientManager {
 
         MqttClientOptions options = new MqttClientOptions();
         options.setClientId(entity.getClientId());
-        options.setReconnectAttempts(100);
-        options.setReconnectInterval(5000);
 
         if (secure != null) {
             options.setUsername((String) secure.get("username"));

@@ -28,9 +28,19 @@
 
 
     <div class="mini-col-12 form-component">
-        <div class="form-item brick form-text"><label class="form-label">订阅主题</label>
+        <div class="form-item brick form-text"><label class="form-label">主题(Topic)</label>
             <div class="input-block component-body">
-                <input name="config.topics" textName="config.topics" emptyText="一行一个topic" required
+                <input name="config.topics" textName="config.topics" required
+                       class="mini-textarea"
+                       style="width: 100%">
+            </div>
+        </div>
+    </div>
+
+    <div class="mini-col-12 form-component">
+        <div class="form-item brick form-text"><label class="form-label">主题变量</label>
+            <div class="input-block component-body">
+                <input name="config.topicVariables"  emptyText="接收消息时有效: 例:/topic/{deviceId}/{key},下游通过vars变量获取占位符对应的变量."
                        class="mini-textarea"
                        style="width: 100%">
             </div>

@@ -35,13 +35,6 @@ public class DataMappingWorkerNode extends CommonExecutableRuleNodeFactoryStrate
     }
 
     @Override
-    protected ExecutableRuleNode doCreate(Config config) {
-
-
-        return super.doCreate(config);
-    }
-
-    @Override
     public Function<RuleData, Publisher<Object>> createExecutor(ExecutionContext context, Config config) {
 
         return ruleData -> Mono.just(config.mapping(convertObject(ruleData.getData())));

@@ -15,6 +15,7 @@ import org.jetlinks.rule.engine.executor.node.RuleNodeConfig;
 import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
@@ -54,16 +55,23 @@ public class ScriptWorkerNode extends CommonExecutableRuleNodeFactoryStrategy<Sc
         engine.execute(id, scriptContext).getIfSuccess();
 
         return ruleData -> {
-            if (handler.onMessage != null) {
-                Object result = handler.onMessage.apply(ruleData);
-                if (result == null || result.getClass().getName().equals("jdk.nashorn.internal.runtime.Undefined")) {
-                    return Mono.empty();
+            return Flux.defer(()->{
+                if (handler.onMessage != null) {
+                    Object result = handler.onMessage.apply(ruleData);
+                    if (result == null || result.getClass().getName().equals("jdk.nashorn.internal.runtime.Undefined")) {
+                        return Flux.empty();
+                    }
+                    if(result instanceof Publisher){
+                        return Flux.from(((Publisher) result));
+                    }
+                    if(result instanceof Map){
+                        result = new HashMap<>((Map<?, ?>) result);
+                    }
+                    return Flux.just(result);
                 }
+                return Flux.empty();
+            });
 
-                return Mono.just(result);
-            }
-            //原路返回
-            return Mono.just(ruleData);
 
         };
     }

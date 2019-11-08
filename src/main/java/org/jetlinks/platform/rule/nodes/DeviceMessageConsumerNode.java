@@ -49,12 +49,11 @@ public class DeviceMessageConsumerNode extends CommonExecutableRuleNodeFactorySt
         if (processor.hasDownstreams()) {
             Map<String, Object> msg = new HashMap<>();
             msg.put("type", "offline");
-            msg.put("deviceId", event.getSession().getDeviceId());
+            msg.put("deviceId", event.getDeviceId());
             msg.put("timestamp",System.currentTimeMillis());
 
-            event.getSession()
-                    .getOperator()
-                    .getConfig(DeviceConfigKey.productId)
+            registry.getDevice(event.getDeviceId())
+                    .flatMap(operator -> operator.getConfig(DeviceConfigKey.productId))
                     .map(r -> {
                         msg.put("productId", r);
                         return msg;
@@ -69,11 +68,10 @@ public class DeviceMessageConsumerNode extends CommonExecutableRuleNodeFactorySt
         if (processor.hasDownstreams()) {
             Map<String, Object> msg = new HashMap<>();
             msg.put("type", "online");
-            msg.put("deviceId", event.getSession().getDeviceId());
+            msg.put("deviceId", event.getDeviceId());
             msg.put("timestamp",System.currentTimeMillis());
-            event.getSession()
-                    .getOperator()
-                    .getConfig(DeviceConfigKey.productId)
+            registry.getDevice(event.getDeviceId())
+                    .flatMap(operator -> operator.getConfig(DeviceConfigKey.productId))
                     .map(r -> {
                         msg.put("productId", r);
                         return msg;
