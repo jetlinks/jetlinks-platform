@@ -25,7 +25,7 @@ public class ExecuteLogInfo {
 
     private long timestamp;
 
-    private List<Object> args;
+    //private List<Object> args;
 
     private String context;
 }

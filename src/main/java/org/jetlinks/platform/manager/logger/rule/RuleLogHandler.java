@@ -8,6 +8,7 @@ import org.jetlinks.platform.manager.logger.rule.info.ExecuteEventInfo;
 import org.jetlinks.platform.manager.logger.rule.info.ExecuteLogInfo;
 import org.jetlinks.rule.engine.api.events.NodeExecuteEvent;
 import org.jetlinks.rule.engine.api.events.RuleEvent;
+import org.jetlinks.rule.engine.cluster.logger.LogInfo;
 import org.jetlinks.rule.engine.cluster.worker.NodeExecuteLogEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -33,11 +34,11 @@ public class RuleLogHandler {
     }
 
     @EventListener
-    public void handleRuleLog(NodeExecuteLogEvent event) {
-        ExecuteLogInfo logInfo = FastBeanCopier.copy(event.getLogInfo(), new ExecuteLogInfo());
+    public void handleRuleLog(LogInfo event) {
+        ExecuteLogInfo logInfo = FastBeanCopier.copy(event, new ExecuteLogInfo());
         if (logInfoFluxSink != null) {
             logInfoFluxSink.next(logInfo);
-        }else {
+        } else {
             collectLogInfo(Flux.just(logInfo));
         }
     }
@@ -49,7 +50,7 @@ public class RuleLogHandler {
             ExecuteEventInfo eventInfo = FastBeanCopier.copy(event, new ExecuteEventInfo());
             if (eventInfoFluxSink != null) {
                 eventInfoFluxSink.next(eventInfo);
-            }else {
+            } else {
                 collectEventInfo(Flux.just(eventInfo));
             }
         }
