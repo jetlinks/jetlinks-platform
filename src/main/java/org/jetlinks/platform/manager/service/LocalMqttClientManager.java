@@ -2,9 +2,7 @@ package org.jetlinks.platform.manager.service;
 
 import io.vertx.core.Vertx;
 import io.vertx.mqtt.MqttClientOptions;
-import org.hswebframework.web.crud.events.EntityModifyEvent;
 import org.jetlinks.platform.manager.entity.MqttClientEntity;
-import org.jetlinks.rule.engine.executor.node.mqtt.MqttClient;
 import org.jetlinks.rule.engine.executor.node.mqtt.vertx.VertxMqttClient;
 import org.jetlinks.rule.engine.executor.node.mqtt.vertx.VertxMqttClientManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +53,7 @@ public class LocalMqttClientManager extends VertxMqttClientManager {
     public Mono<VertxMqttClient> createMqttClient(VertxMqttConfig config) {
         return super.createMqttClient(config);
     }
+
 
     private VertxMqttConfig convert(MqttClientEntity entity) {
 

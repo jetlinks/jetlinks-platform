@@ -29,6 +29,12 @@ importMiniui(function () {
             })
         });
 
+        window.renderConfig = function (e) {
+            if (e.value){
+                return JSON.stringify(e.value);
+            }
+        }
+
         window.renderAction = function (e) {
             var row = e.record;
             var html = [];

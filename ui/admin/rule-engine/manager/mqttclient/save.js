@@ -3,7 +3,7 @@ importResource("/admin/css/common.css");
 
 importMiniui(function () {
     mini.parse();
-    require(["request", "miniui-tools"], function (request, tools) {
+    require(["request", "miniui-tools","search-box"], function (request, tools, searchBox) {
 
         var func = request.post;
         var id = request.getParameter("id");

@@ -53,7 +53,7 @@ importMiniui(function () {
                 if (response.result === 1) {
                     message.showTips("发布成功");
                 } else {
-                    message.showTips("发布失败");
+                    message.showTips("发布失败："+ response.message, "danger");
                 }
                 grid.reload();
             });
@@ -65,7 +65,7 @@ importMiniui(function () {
                 if (response.result === 1) {
                     message.showTips("取消发布成功");
                 } else {
-                    message.showTips("取消发布失败");
+                    message.showTips("取消发布失败："+ response.message, "danger");
                 }
                 grid.reload();
             });
