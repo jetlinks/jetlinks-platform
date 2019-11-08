@@ -38,7 +38,7 @@ importMiniui(function () {
         });
         //断开客户端连接
         $(".stop-button").on("click", function () {
-            request.post("mqtt-client/stop/" + id, function (response) {
+            request.post("mqtt-client/disable/" + id, function (response) {
                 if (response.status === 200) {
                     message.showTips("客户端已断开");
                     $(".clientAlive").text("停止");
@@ -53,22 +53,28 @@ importMiniui(function () {
         //消息订阅
         function subscribe() {
             var data = getDataAndValidate("sub-basic-info");
-            request.get("mqtt-client/subscribe/" + id + "/" + data.type, {"topics": data.topics}, function (response) {
-                if (response.status === 200) {
-                    console.log(response);
-                    receiveMessage.setValue(response.result)
-                } else {
-                    message.showTips("消息订阅失败");
-                }
-            });
+            var stream =new EventSource(API_BASE_PATH+"mqtt-client/subscribe/" + id + "/" + data.type+"?topics="+(encodeURIComponent(data.topics))+"&:X_Access_Token="+request.getToken());
+            printLog("开始订阅:"+data.topics)
+            stream.onmessage=function (ev) {
+                printLog(ev.data);
+            };
+            stream.onerror=function (ev) {
+                receiveMessage.setValue("");
+                printLog("error");
+                stream.close()
+            }
         }
+        function printLog(data){
+            var old = receiveMessage.getValue()||"";
+            receiveMessage.setValue(data+"\n"+old)
+        }
+
 
         $(".sub-commit-button").on("click", function () {
             subscribe();
         });
         $(".sub-reset-button").on("click", function () {
-            var form = new mini.Form("#sub-basic-info");
-            form.setData({"type": "", "topics": ""})
+            receiveMessage.setValue("")
         });
 
 
@@ -77,8 +83,6 @@ importMiniui(function () {
             var data = getDataAndValidate("push-basic-info");
             request.post("mqtt-client/publish/" + id + "/" + data.type, data, function (response) {
                 if (response.status === 200) {
-                    console.log(response);
-                    receiveMessage.setValue(response.result);
                     if (response.result === true) {
                         message.showTips("消息推送成功");
                     }else {
@@ -94,10 +98,8 @@ importMiniui(function () {
             publish();
         });
         $(".push-reset-button").on("click", function () {
-            var form = new mini.Form("#push-basic-info");
-            form.setData({"type": "", "topic": "", "deviceId": "", "qosLevel": "", "data": ""})
+            mini.get("push_data").setValue("")
         });
-
 
         //获取最后一次错误信息
         function loadLastErr() {

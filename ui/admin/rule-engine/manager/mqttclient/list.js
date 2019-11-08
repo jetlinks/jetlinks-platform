@@ -50,14 +50,21 @@ importMiniui(function () {
             var row = e.record;
             var html = [];
 
-            if (row.status != 1) {
+            if (row.status !== 1) {
                 html.push(tools.createActionButton("编辑", "icon-edit", function () {
                     tools.openWindow("admin/rule-engine/manager/mqttclient/save.html?id=" + row.id, "编辑mqtt客户端：" + row.name, "600", "500", function () {
                         grid.reload();
                     });
                 }));
                 html.push(tools.createActionButton("启用", "icon-key-start", function () {
-                    changeStatus(row.id, 1, "启用");
+                    request.post("mqtt-client/start/" + row.id, {}, function (response) {
+                        if (response.status === 200) {
+                            message.showTips("操作成功");
+                            grid.reload();
+                        } else {
+                            message.showTips("操作失败:" + response.message, "danger");
+                        }
+                    });
                 }));
                 html.push(tools.createActionButton("删除", "icon-remove", function () {
                     message.confirm("确定删除客户端：" + row.name + "？删除后将无法恢复", function () {
@@ -75,7 +82,14 @@ importMiniui(function () {
                 }));
             } else {
                 html.push(tools.createActionButton("禁用", "icon-stop", function () {
-                    changeStatus(row.id, 0, "禁用");
+                    request.post("mqtt-client/disable/" + row.id, {}, function (response) {
+                        if (response.status === 200) {
+                            message.showTips("操作成功");
+                            grid.reload();
+                        } else {
+                            message.showTips("操作失败:" + response.message, "danger");
+                        }
+                    });
                 }));
                 html.push(tools.createActionButton("调试", "icon-bug-go", function () {
                     tools.openWindow("admin/rule-engine/manager/mqttclient/debug.html?id=" + row.id + "&name=" + row.name, "调试", "1000", "600", function () {

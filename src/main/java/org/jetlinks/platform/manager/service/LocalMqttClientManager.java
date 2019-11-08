@@ -33,7 +33,6 @@ public class LocalMqttClientManager extends VertxMqttClientManager {
     public Mono<VertxMqttConfig> getConfig(String id) {
         return clientService
                 .findById(Mono.just(id))
-                .filter(MqttClientEntity::clientIsEnabled)
                 .map(this::convert);
     }
 
@@ -78,6 +77,7 @@ public class LocalMqttClientManager extends VertxMqttClientManager {
                 .id(entity.getId())
                 .host(entity.getHost())
                 .port(entity.getPort())
+                .enabled(entity.clientIsEnabled())
                 .options(options)
                 .build();
 

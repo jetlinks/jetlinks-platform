@@ -45,8 +45,8 @@ public class RuleLogHandler {
 
     @EventListener
     public void handleRuleExecuteEvent(NodeExecuteEvent event) {
-        //只记录fail的事件
-        if (!RuleEvent.NODE_EXECUTE_BEFORE.equals(event.getEvent())) {
+        //不记录BEFORE和RESULT事件
+        if (!RuleEvent.NODE_EXECUTE_BEFORE.equals(event.getEvent())&&!RuleEvent.NODE_EXECUTE_RESULT.equals(event.getEvent())) {
             ExecuteEventInfo eventInfo = FastBeanCopier.copy(event, new ExecuteEventInfo());
             if (eventInfoFluxSink != null) {
                 eventInfoFluxSink.next(eventInfo);
