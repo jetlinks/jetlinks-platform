@@ -36,13 +36,14 @@ public class PagingQueryService {
     }
 
     public <T> Mono<PagerResult<T>> query(Class<T> clazz, QueryParam queryParam, String index, String type) {
-        if (indexIsExists(index)) {
-            SearchRequest request = QueryParamTranslator.translate(queryParam, index, type);
-            return search(request, clazz);
-        } else {
-            log.warn("es查询索引 index:{} 不存在", index);
-            return Mono.just(PagerResult.empty());
-        }
+//        if (indexIsExists(index)) {
+//            SearchRequest request = QueryParamTranslator.translate(queryParam, index, type);
+//            return search(request, clazz);
+//        } else {
+//            log.warn("es查询索引 index:{} 不存在", index);
+//            return Mono.just(PagerResult.empty());
+//        }
+        return search(QueryParamTranslator.translate(queryParam, index, type), clazz);
     }
 
     private <T> Mono<PagerResult<T>> search(SearchRequest request, Class<T> clazz) {
@@ -50,6 +51,7 @@ public class PagingQueryService {
             SearchResponse response = restClient.getClient().search(request, RequestOptions.DEFAULT);
             return SearchResponseTranslator.translate(clazz, response);
         } catch (Exception e) {
+            // TODO: 2019/11/8 判断异常类型 
             log.error("分页查询失败:{}", e);
             return Mono.just(PagerResult.empty());
         }
