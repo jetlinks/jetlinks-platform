@@ -68,7 +68,7 @@ function initClp(desinger) {
 
             }, function (editor) {
 
-            },"自动复制失败,请手动复制.");
+            }, "自动复制失败,请手动复制.");
         });
     });
     $(".preview-button").on("click", function () {
@@ -194,8 +194,8 @@ importMiniui(function () {
         window.tools = tools;
         window.message = message;
     });
-    window.editScript = function (lang, script, call, onSubmit,title) {
-        mini.get("script-editor-window").setTitle(title||"脚本编辑");
+    window.editScript = function (lang, script, call, onSubmit, title) {
+        mini.get("script-editor-window").setTitle(title || "脚本编辑");
         require(['script-editor'], function (editorBuilder) {
             editorBuilder.createEditor("script-editor", function (editor) {
                 editor.init(lang, script);

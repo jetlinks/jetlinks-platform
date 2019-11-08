@@ -162,7 +162,7 @@ importMiniui(function () {
         actionGrid.on("cellbeginedit", function (e) {
 
             if (e.column.name === 'supportDataAccess') {
-                var selected = mini.getbyName('supportDataAccessTypes').getSelecteds();
+                var selected = mini.getbyName('properties.supportDataAccessTypes').getSelecteds();
                 e.editor.setData(mini.clone(selected))
             }
         });
@@ -220,9 +220,10 @@ function loadData(id) {
         request.get("permission/" + id, function (response) {
             loding.close();
             if (response.status === 200) {
-                if (response.result.supportDataAccessTypes)
-                    response.result.supportDataAccessTypes = response.result.supportDataAccessTypes + "";
-
+                if (response.result.properties) {
+                    if (response.result.properties.supportDataAccessTypes)
+                        response.result.properties.supportDataAccessTypes = response.result.properties.supportDataAccessTypes + "";
+                }
                 new mini.Form("#basic-info").setData(response.result);
 
                 $(response.result.parents).each(function () {
@@ -251,7 +252,7 @@ function loadData(id) {
 
                 defaultActionData.forEach(function (data) {
                     if ("delete" !== data.action) {
-                        data.properties={supportDataAccess: "DENY_FIELDS"};
+                        data.properties = {supportDataAccess: "DENY_FIELDS"};
                     }
                 });
 
@@ -265,7 +266,7 @@ function loadData(id) {
 
 function loadAccessTypesAndType() {
     var type = mini.getbyName("type");
-    var supportDataAccessTypes = mini.getbyName("supportDataAccessTypes");
+    var supportDataAccessTypes = mini.getbyName("properties.supportDataAccessTypes");
     if (!type.getValue()) {
         type.setValue("api");
     }
@@ -301,14 +302,17 @@ function getDataAndValidate() {
         return;
     }
     var data = form.getData();
+    console.log(data)
     data.actions = mini.get('action-grid').getData();
     data.optionalFields = mini.clone(mini.get('field-accesses-grid').getData());
-    data.supportDataAccessTypes = data.supportDataAccessTypes.split(",");
+    if (data.properties.supportDataAccessTypes) {
+        data.properties.supportDataAccessTypes = data.properties.supportDataAccessTypes.split(",");
+    }
     data.parents = mini.clone(mini.get('parent-grid').getData());
 
     $(data.parents).each(function () {
-        this.actions=this.actions.split(",");
-        this.preActions=this.preActions.split(",");
+        this.actions = this.actions.split(",");
+        this.preActions = this.preActions.split(",");
 
     });
 

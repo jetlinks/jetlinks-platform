@@ -13,9 +13,11 @@
         <table id="search-box">
             <tr>
                 <td>职位名称:<input name="name" class="mini-textbox"/></td>
-                <td>所属部门:<input id="position-grid" class="mini-treeselect" style="min-width: 200px;" multiSelect="false"  valueFromSelect="false"
-                              name="departmentId" textField="name" valueField="id" parentField="parentId"  allowInput="false"
-                              showRadioButton="true" showFolderCheckBox="false"/></td>
+                <td>所属部门:<input id="position-grid" class="mini-treeselect" style="min-width: 200px;" multiSelect="false"
+                                valueFromSelect="false"
+                                name="departmentId" textField="name" valueField="id" parentField="parentId"
+                                allowInput="false"
+                                showRadioButton="true" showFolderCheckBox="false"/></td>
                 <td><a class="mini-button search-button" plain="true" iconCls="icon-search">搜索</a></td>
                 <td><a class="mini-button add-button" plain="true" iconCls="icon-add">新建职位</a></td>
             </tr>
@@ -31,12 +33,12 @@
             <div property="columns">
                 <div type="indexcolumn" name="index" width="80" align="center" headerAlign="center">拖动可排序</div>
                 <div field="departmentId" renderer="departmentName" headerAlign="center" align="center" width="50">所属部门
-                    <input property="editor"  emptyText="所属部门" class="mini-textbox"/>
+                    <input property="editor" emptyText="所属部门" class="mini-textbox"/>
                 </div>
                 <div field="name" headerAlign="center" align="center" width="150">职位名称
                     <input property="editor" emptyText="职位名称" class="mini-textbox"/>
                 </div>
-                <div  renderer="renderAction" width="80" headerAlign="center" align="center">
+                <div renderer="renderAction" width="80" headerAlign="center" align="center">
                     操作
                 </div>
             </div>

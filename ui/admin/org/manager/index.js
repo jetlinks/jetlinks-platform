@@ -22,6 +22,7 @@ importMiniui(function () {
         initDepartment();
         initPosition();
         initPerson();
+
         /**************************部门相关*******************************/
         /**
          * 加载部门数据
@@ -80,6 +81,7 @@ importMiniui(function () {
             goSaveDepartmentPage();
 
         });
+
         //初始化部门表格,绑定事件等操作
         function initDepartment() {
             //操作栏的按钮
@@ -169,12 +171,13 @@ importMiniui(function () {
             }
             goSavePositionPage();
         });
+
         //初始化岗位表格,绑定事件等操作
         function initPosition() {
             //操作栏的按钮
             position_grid.getColumn("action").renderer = function (e) {
                 var html = [];
-                var row =e.record;
+                var row = e.record;
                 html.push(tools.createActionButton("添加子级岗位", "icon-add", function () {
                     goSavePositionPage(null, e.record);
                 }));
@@ -239,7 +242,8 @@ importMiniui(function () {
                 require(["message"], function (message) {
                     if (!window.nowSelectedOrg) {
                         message.showTips("请先选择机构", "danger");
-                        return;o
+                        return;
+                        o
                     }
                     if (!window.nowSelectedDepartment) {
                         message.showTips("请先选择部门", "danger");

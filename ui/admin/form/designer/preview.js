@@ -1,5 +1,6 @@
 (function () {
     require(["css!plugin/ueditor/themes/default/dialogbase"])
+
     function load() {
         window.init = function (theme, html) {
             if (theme === "miniui") {

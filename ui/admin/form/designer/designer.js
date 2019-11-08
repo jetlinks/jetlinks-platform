@@ -259,14 +259,14 @@ function initWidgetProperties() {
     }
 }
 
-var lstChangeConfig="";
+var lstChangeConfig = "";
 
 function doConfigChange() {
     var config = getConfig();
     var configJSON = JSON.stringify(config);
 
     if (configJSON != lstChangeConfig) {
-        lstChangeConfig=configJSON;
+        lstChangeConfig = configJSON;
         $(changedEvents).each(function () {
             this(config);
         });

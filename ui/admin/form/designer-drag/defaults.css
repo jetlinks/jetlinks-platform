@@ -41,6 +41,7 @@
     /*border-right: 0px;*/
     font-size: 13px;
 }
+
 .dynamic-form .simple-form-label {
     display: block;
     padding: 0 6px;
@@ -120,7 +121,7 @@
 }
 
 
-.dynamic-form .table .grid-container{
+.dynamic-form .table .grid-container {
     margin-top: 0;
 }
 
@@ -209,125 +210,133 @@
     border: 0;
 }
 
-.dynamic-form .table .mini-grid-border{
+.dynamic-form .table .mini-grid-border {
     border: 0;
 }
 
-.dynamic-form .table .mini-grid-table tr:first-child{
+.dynamic-form .table .mini-grid-table tr:first-child {
     border: 0;
     padding: 0;
 }
 
-.dynamic-form .table .mini-grid-headerCell{
+.dynamic-form .table .mini-grid-headerCell {
     background-color: white;
     border-right: black 1px solid;
     border-bottom: black 1px solid;
     border-left: 0;
 }
 
-.dynamic-form .table .mini-grid-cell{
+.dynamic-form .table .mini-grid-cell {
     background-color: white;
     border-right: black 1px solid;
     border-bottom: black 1px solid;
     border-left: 0;
 }
 
-.dynamic-form .table .mini-grid-rightCell{
+.dynamic-form .table .mini-grid-rightCell {
     border-right: 0;
     border-bottom: black 1px solid;
     padding: 0;
 }
 
 
-.dynamic-form .table .mini-grid-cell-inner
-{
-    padding-top:3px;
-    padding-bottom:3px;
-    font-size:13px;
+.dynamic-form .table .mini-grid-cell-inner {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    font-size: 13px;
 }
-.dynamic-form .table .mini-grid-headerCell-inner
-{
-    padding-top:5px;
-    padding-bottom:5px;
-    font-size:13px;
+
+.dynamic-form .table .mini-grid-headerCell-inner {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 13px;
 }
-.dynamic-form .table .mini-grid-headerCell-outer
-{
-    padding-left:4px;
-    padding-right:2px;
+
+.dynamic-form .table .mini-grid-headerCell-outer {
+    padding-left: 4px;
+    padding-right: 2px;
 }
-.dynamic-form .table .mini-grid-columnproxy
-{
-    padding-top:2px;
-    padding-bottom:4px;
+
+.dynamic-form .table .mini-grid-columnproxy {
+    padding-top: 2px;
+    padding-bottom: 4px;
 }
+
 .dynamic-form .table .mini-grid-allowsort,
-.mini-grid-sortIcon
-{
-    margin-left:4px;
+.mini-grid-sortIcon {
+    margin-left: 4px;
 }
 
 
-.dynamic-form .table .mini-grid-headerCell-outer{
+.dynamic-form .table .mini-grid-headerCell-outer {
     padding: 0;
 }
 
-.dynamic-form .table .mini-grid-rightCell .mini-grid-column-splitter{
+.dynamic-form .table .mini-grid-rightCell .mini-grid-column-splitter {
     padding: 0;
     right: 0;
 }
-.dynamic-form .table .mini-grid-rows tr:nth-last-child(1) td{
+
+.dynamic-form .table .mini-grid-rows tr:nth-last-child(1) td {
     border-bottom: 0;
 }
-.dynamic-form .table .mini-panel-border{
+
+.dynamic-form .table .mini-panel-border {
     border-bottom: 0;
 
 }
-.dynamic-form .table .mini-grid-columns-view{
+
+.dynamic-form .table .mini-grid-columns-view {
     padding: 0;
 }
-
-
 
 
 /*tabs*/
 
-.dynamic-form .table div[tabs-component]{
+.dynamic-form .table div[tabs-component] {
     border-right: 0;
     border-bottom: 0;
 }
-.dynamic-form .table .mini-tabs-header{
+
+.dynamic-form .table .mini-tabs-header {
     border-right: 1px black solid;
 }
 
-.dynamic-form .table .mini-tab{
+.dynamic-form .table .mini-tab {
     border-color: black;
     border-radius: 0;
     border-top: 0;
-    border-left:0;
+    border-left: 0;
     background-color: white;
 }
-.dynamic-form .table .mini-tabs-space2,.mini-tabs-firstSpace{
+
+.dynamic-form .table .mini-tabs-space2, .mini-tabs-firstSpace {
     width: 0;
     border: 0;
 }
-.dynamic-form .table .mini-tabs-firstSpace div{
+
+.dynamic-form .table .mini-tabs-firstSpace div {
     width: 0;
 }
-.dynamic-form .table .mini-tabs-space2 div{
+
+.dynamic-form .table .mini-tabs-space2 div {
     width: 0;
 }
-.dynamic-form .table .mini-tabs-space{
+
+.dynamic-form .table .mini-tabs-space {
     border-color: black;
 }
-.dynamic-form .table .mini-tabs-bodys{
+
+.dynamic-form .table .mini-tabs-bodys {
     padding: 0;
     border-right: 0;
 }
-.dynamic-form .table .tab-container{
+
+.dynamic-form .table .tab-container {
     margin-top: 0;
 }
-.dynamic-form .table .mini-tabs-buttons{
+
+.dynamic-form .table .mini-tabs-buttons {
     padding: 0;
 }
 
@@ -452,9 +461,11 @@
 .dynamic-form .file-info .error {
     background: red;
 }
-.dynamic-form .file-operation{
+
+.dynamic-form .file-operation {
     display: none;
 }
+
 .dynamic-form .multiple .file-operation {
     position: absolute;
     /*height: 10p;*/
@@ -466,9 +477,10 @@
     overflow: hidden;
     z-index: 9999;
     text-align: right;
-    display:block;
+    display: block;
 }
-.dynamic-form .table .table{
+
+.dynamic-form .table .table {
     padding: 0;
     margin: 0;
     border-left: 0;
@@ -476,21 +488,24 @@
     width: 100%;
 }
 
-.dynamic-form .table .child-form{
+.dynamic-form .table .child-form {
     padding: 0;
     margin: 0;
     border-left: 0;
     width: 100%;
 }
-.dynamic-form .table .child-form .child-form-title{
+
+.dynamic-form .table .child-form .child-form-title {
     border-right: 1px black solid;
 
 }
-.dynamic-form .table .child-form-component{
+
+.dynamic-form .table .child-form-component {
     border-right: 0;
     border-bottom: 0;
 }
-.dynamic-form .file-upload-container .tips{
+
+.dynamic-form .file-upload-container .tips {
     width: 100%;
     height: 100%;
     top: 40px;

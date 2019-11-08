@@ -176,7 +176,7 @@ importMiniui(function () {
                 .each(function () {
                     var action = this.action;
                     if (this.type === 'DENY_FIELDS') {
-                        var fields = JSON.parse(this.config).fields;
+                        var fields = this.config.fields;
                         $(fields).each(function () {
                             var box = mini.get("field-access-" + this);
                             box.deselect(action);
@@ -221,7 +221,7 @@ importMiniui(function () {
                     });
                     for (var i in groups) {
                         var conf = groups[i];
-                        conf.config = JSON.stringify(conf.config);
+                        //conf.config = JSON.stringify(conf.config);
                         notDenyFields.push(conf);
                     }
                     detail.dataAccesses = notDenyFields;
@@ -261,7 +261,7 @@ importMiniui(function () {
                 }
             });
 
-            $(permission.supportDataAccessTypes).each(function () {
+            $(permission.properties.supportDataAccessTypes).each(function () {
                 $("." + this).show();
                 var id = this + "";
                 var box = mini.get(id);
@@ -278,7 +278,7 @@ importMiniui(function () {
                 .each(function () {
                     var action = this.action;
                     if (this.type === 'SCOPE_BY_USER') {
-                        var box = mini.get(JSON.parse(this.config).scopeType);
+                        var box = mini.get(this.config.scopeType);
                         if (box) {
                             box.select(action);
                         }
@@ -291,7 +291,7 @@ importMiniui(function () {
                 .unbind("click")
                 .on("click", function () {
 
-                    $(permission.supportDataAccessTypes).each(function () {
+                    $(permission.properties.supportDataAccessTypes).each(function () {
                         var id = this + "";
                         var box = mini.get(id);
                         if (box) {
@@ -305,10 +305,10 @@ importMiniui(function () {
                                 notDenyFields.push({
                                     type: "SCOPE_BY_USER",
                                     action: this + '',
-                                    config: JSON.stringify({
+                                    config: {
                                         scopeType: id,
                                         children: true
-                                    })
+                                    }
                                 })
                             })
                         }
@@ -359,6 +359,7 @@ importMiniui(function () {
             // setting.type = type;
             // setting.details = [];
 
+            console.log(settingDetailMap)
             for (var i in settingDetailMap) {
                 var setting = {};
                 if (permission) {
@@ -374,6 +375,9 @@ importMiniui(function () {
                 setting.actions = settingDetailMap[i].actions;
                 setting.id = settingDetailMap[i].id;
                 setting.merge = true;
+                if (settingDetailMap[i].dataAccesses && settingDetailMap[i].dataAccesses.length > 0) {
+                    setting.dataAccesses = settingDetailMap[i].dataAccesses;
+                }
                 settings.push(setting);
 
             }
@@ -394,17 +398,24 @@ importMiniui(function () {
         function initDataAccessEditor(permission) {
             var panel = mini.get('panel-' + permission.id);
             var buttons = [];
+            var actions = permission.actions;
             if (panel) {
                 var field = false;
-                if (!permission.supportDataAccessTypes) {
+                if (!actions&&actions.length === 0) {
                     return;
                 }
-                if (permission.supportDataAccessTypes.indexOf('DENY_FIELDS') !== -1) {
+                if (!permission.properties) {
+                    return;
+                }
+                if (!permission.properties.supportDataAccessTypes) {
+                    return;
+                }
+                if (permission.properties.supportDataAccessTypes.indexOf('DENY_FIELDS') !== -1) {
                     buttons.push({html: '<a class="panel-button field-access" permission="' + permission.id + '" href="javascript:void(0)" style="position:relative;top:-4px;">字段权限</a>'});
                     field = true;
                 }
-                if (permission.supportDataAccessTypes.length > 0 && !(
-                    permission.supportDataAccessTypes.length === 1 && field
+                if (permission.properties.supportDataAccessTypes.length > 0 && !(
+                    permission.properties.supportDataAccessTypes.length === 1 && field
                 )) {
                     buttons.push({html: '<a class="panel-button data-access" permission="' + permission.id + '"  href="javascript:void(0)" style="position:relative;top:-4px;">数据权限</a>'})
                 }

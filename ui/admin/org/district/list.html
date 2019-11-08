@@ -17,7 +17,8 @@
                 <td autz="hasPermission('district','add')">
                     <a onclick="mini.get('data-grid').addNode({sortIndex:grid.getData().length+1})"
                        class="mini-button add-menu-button" iconCls="fa fa-plus">添加行政区划</a></td>
-                <td autz="hasPermission('district','add')||hasPermission('district','update')"><a class="mini-button save-all-button" plain="true" iconCls="icon-save">保存全部</a></td>
+                <td autz="hasPermission('district','add')||hasPermission('district','update')"><a
+                        class="mini-button save-all-button" plain="true" iconCls="icon-save">保存全部</a></td>
             </tr>
         </table>
     </div>
@@ -39,7 +40,8 @@
                 <div field="code" width="50" headerAlign="center" align="center">行政区划代码
                     <input property="editor" emptyText="行政区划代码" class="mini-textbox"/>
                 </div>
-                <div autz="hasPermission('district','add')||hasPermission('district','update')" renderer="renderAction" width="80" headerAlign="center" align="center">
+                <div autz="hasPermission('district','add')||hasPermission('district','update')" renderer="renderAction"
+                     width="80" headerAlign="center" align="center">
                     操作
                 </div>
             </div>

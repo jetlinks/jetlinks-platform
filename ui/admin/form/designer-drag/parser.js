@@ -169,30 +169,30 @@
                 var id = this.id;
                 var Component = componentRepo.supportComponents[this.type];
                 if (Component) {
-                 //   window.setTimeout(function () {
-                        var componentHtml = html.find("[hs-id='" + id + "'],.hs-id-" + id);
-                        var component = new Component(id);
-                        this.target = component;
-                        component.container = componentHtml;
-                        component.parser = me;
-                        component.render();
-                        var reload = component.reload ? function () {
-                            return component.reload(false);
-                        } : undefined;
-                        $(this.properties).each(function () {
-                                var property = this;
-                                var value = property.value;
-                                if (reload) {
-                                    component.getProperty(property.id).value = value;
-                                } else {
-                                    component.setProperty(property.id, value, true);
-                                }
+                    //   window.setTimeout(function () {
+                    var componentHtml = html.find("[hs-id='" + id + "'],.hs-id-" + id);
+                    var component = new Component(id);
+                    this.target = component;
+                    component.container = componentHtml;
+                    component.parser = me;
+                    component.render();
+                    var reload = component.reload ? function () {
+                        return component.reload(false);
+                    } : undefined;
+                    $(this.properties).each(function () {
+                            var property = this;
+                            var value = property.value;
+                            if (reload) {
+                                component.getProperty(property.id).value = value;
+                            } else {
+                                component.setProperty(property.id, value, true);
                             }
-                        );
-                        if (reload) {
-                            reload();
                         }
-                 //   }, 1)
+                    );
+                    if (reload) {
+                        reload();
+                    }
+                    //   }, 1)
                 } else {
                     console.warn("不支持的控件类型", JSON.stringify(this))
                 }

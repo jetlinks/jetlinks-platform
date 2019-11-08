@@ -2,7 +2,7 @@ importResource("/admin/css/common.css");
 
 importMiniui(function () {
     mini.parse();
-    $(".get-department-tree").on("click",function () {
+    $(".get-department-tree").on("click", function () {
         var btnEdit = mini.getbyName("departmentId");
         mini.open({
             url: "org/position/departmentTree.html",
@@ -32,7 +32,7 @@ importMiniui(function () {
     var exp = {};
     exp.setParent = function () {
         var parentIdEl = mini.getbyName("parentId");
-        var  dep = {id: "-1", name: "/"};
+        var dep = {id: "-1", name: "/"};
 
         parentIdEl.setValue(dep.id);
         parentIdEl.setText(dep.name);

@@ -1,6 +1,7 @@
 (function () {
     var maxFileSize = 100 * 1024 * 1024;
-    var BASE_PATH=window.BASE_PATH||'/';
+    var BASE_PATH = window.BASE_PATH || '/';
+
     function bytesToSize(bytes) {
         if (bytes === 0) return '0 B';
         if (bytes < 1024) return bytes + 'b';

@@ -8,12 +8,12 @@
             extensions: 'gif,jpg,bmp,png',
             mimeTypes: 'image/gif,image/jpg,image/bmp,image/png'
         },
-        excel:{
+        excel: {
             title: 'Excel',
             extensions: 'xls,xlsx',
             mimeTypes: 'application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         },
-        word:{
+        word: {
             title: 'Word',
             extensions: 'doc,docx',
             mimeTypes: 'application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'

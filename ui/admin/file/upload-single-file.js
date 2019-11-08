@@ -4,7 +4,7 @@ define(["plugin/webuploader/webuploader.min", "message", "request"], function (W
 
     function bytesToSize(bytes) {
         if (bytes === 0) return '0 B';
-        if (bytes < 1024)return bytes + 'b';
+        if (bytes < 1024) return bytes + 'b';
         var k = 1024, // or 1024
             sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
             i = Math.floor(Math.log(bytes) / Math.log(k));
