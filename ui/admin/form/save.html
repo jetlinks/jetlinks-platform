@@ -36,7 +36,8 @@
                     </td>
                     <td class="label">绑定数据源:</td>
                     <td>
-                        <input style="width: 100%" showNullItem="true" emptyText="默认数据源" nullItemText="默认数据源" name="dataSourceId" class="mini-combobox"/>
+                        <input style="width: 100%" showNullItem="true" emptyText="默认数据源" nullItemText="默认数据源"
+                               name="dataSourceId" class="mini-combobox"/>
                     </td>
                 </tr>
                 <tr>
@@ -53,7 +54,8 @@
                 <tr>
                     <td class="label">物理表名:</td>
                     <td>
-                        <input required emptyText="e.g. f_custom_form" style="width: 100%" name="databaseTableName" class="mini-textbox"/>
+                        <input required emptyText="e.g. f_custom_form" style="width: 100%" name="databaseTableName"
+                               class="mini-textbox"/>
                     </td>
                     <td class="label">别名:</td>
                     <td>
@@ -68,7 +70,8 @@
                 </tr>
             </table>
             <div class="mini-fit">
-                <div id="properties-grid" allowCellEdit="true" allowCellSelect="true" class="mini-datagrid" style="width:100%;height:100%;margin: auto;"
+                <div id="properties-grid" allowCellEdit="true" allowCellSelect="true" class="mini-datagrid"
+                     style="width:100%;height:100%;margin: auto;"
                      showPager="false">
                     <div property="columns">
                         <div field="property" headerAlign="center" align="center" width="80">配置
@@ -89,7 +92,8 @@
         </div>
 
         <div title="字段设置">
-            <div id="column-grid" class="mini-datagrid" allowCellEdit="true" allowCellSelect="true" style="width:100%;height:100%;margin: auto;" showPager="false">
+            <div id="column-grid" class="mini-datagrid" allowCellEdit="true" allowCellSelect="true"
+                 style="width:100%;height:100%;margin: auto;" showPager="false">
                 <div property="columns">
                     <div header="基本信息" headerAlign="center">
                         <div property="columns">
@@ -109,13 +113,18 @@
                     </div>
                     <div header="数据类型" headerAlign="center">
                         <div property="columns">
-                            <div field="jdbcType" renderer="renderJdbcType" headerAlign="center" align="center" width="80">JDBCType
-                                <input property="editor" allowInput="true" data="jdbcTypeData" name="jdbcType" class="mini-combobox"/>
+                            <div field="jdbcType" renderer="renderJdbcType" headerAlign="center" align="center"
+                                 width="80">JDBCType
+                                <input property="editor" allowInput="true" data="jdbcTypeData" name="jdbcType"
+                                       class="mini-combobox"/>
                             </div>
-                            <div field="javaType" renderer="renderJavaType" headerAlign="center" align="center" width="80">JavaType
-                                <input property="editor" allowInput="true" data="javaTypeData" name="javaType" class="mini-combobox"/>
+                            <div field="javaType" renderer="renderJavaType" headerAlign="center" align="center"
+                                 width="80">JavaType
+                                <input property="editor" allowInput="true" data="javaTypeData" name="javaType"
+                                       class="mini-combobox"/>
                             </div>
-                            <div field="lengthString" renderer="renderLength" headerAlign="center" align="center" width="80">长度/精度
+                            <div field="lengthString" renderer="renderLength" headerAlign="center" align="center"
+                                 width="80">长度/精度
                                 <input property="editor" class="mini-textbox"/>
                             </div>
                         </div>
@@ -132,14 +141,16 @@
                            <span class="title-button" style="width: 30px">
                                 操作
                             </span>
-                        <span class="title-button icon-add" onclick="mini.get('column-grid').addRow({sortIndex:mini.get('column-grid').getData().length})"></span>
+                        <span class="title-button icon-add"
+                              onclick="mini.get('column-grid').addRow({sortIndex:mini.get('column-grid').getData().length})"></span>
                     </div>
                 </div>
             </div>
         </div>
 
         <div title="表关联设置">
-            <div id="correlations-grid" class="mini-datagrid" allowCellEdit="true" allowCellSelect="true" style="width:100%;height:100%;margin: auto;" showPager="false">
+            <div id="correlations-grid" class="mini-datagrid" allowCellEdit="true" allowCellSelect="true"
+                 style="width:100%;height:100%;margin: auto;" showPager="false">
                 <div property="columns">
                     <div field="target" headerAlign="center" align="center" width="80">目标表名
                         <input property="editor" class="mini-textbox"/>
@@ -148,7 +159,8 @@
                         <input property="editor" class="mini-textbox"/>
                     </div>
                     <div field="join" headerAlign="center" align="center" width="80">关联方式
-                        <input property="editor" data="[{id:'LEFT'},{id:'RIGHT'},{id:'INNER'}]" textField="id" class="mini-combobox"/>
+                        <input property="editor" data="[{id:'LEFT'},{id:'RIGHT'},{id:'INNER'}]" textField="id"
+                               class="mini-combobox"/>
                     </div>
                     <div field="condition" headerAlign="center" align="center" width="80">关联条件
                         <input property="editor" class="mini-textarea"/>
@@ -166,13 +178,16 @@
         </div>
 
         <div title="触发器设置">
-            <div id="triggers-grid" class="mini-datagrid" allowCellEdit="true" allowCellSelect="true" style="width:100%;height:100%;margin: auto;" showPager="false">
+            <div id="triggers-grid" class="mini-datagrid" allowCellEdit="true" allowCellSelect="true"
+                 style="width:100%;height:100%;margin: auto;" showPager="false">
                 <div property="columns">
                     <div field="trigger" headerAlign="center" align="center" width="80">触发器条件
-                        <input property="editor" data="triggerData" textField="id" name="triggerData" class="mini-combobox"/>
+                        <input property="editor" data="triggerData" textField="id" name="triggerData"
+                               class="mini-combobox"/>
                     </div>
                     <div field="language" name="language" headerAlign="center" align="center" width="80">触发器脚本语言
-                        <input property="editor" data="scriptLanguages" textField="id" name="triggerLangData" class="mini-combobox"/>
+                        <input property="editor" data="scriptLanguages" textField="id" name="triggerLangData"
+                               class="mini-combobox"/>
                     </div>
                     <div field="script" name="script" headerAlign="center" align="center" width="80">脚本内容
 
@@ -218,10 +233,13 @@
                 类型: <input name="type" style="width: 80%" id="dictType" class="mini-combobox" data="dictType"/>
                 <br><br>
                 字段: <input name="toField" emptyText="查询时,会将枚举设置的字段添加到查询结果中." style="width: 40%" class="mini-textbox"/>
-                对象: <input name="config.writeObject" value="true" data="[{id:'true',text:'是'},{id:'false',text:'否'}]" style="width:80px" class="mini-combobox"/>
+                对象: <input name="config.writeObject" value="true" data="[{id:'true',text:'是'},{id:'false',text:'否'}]"
+                           style="width:80px" class="mini-combobox"/>
                 <br><br>
-                多选: <input name="config.multi" value="true" data="[{id:'true',text:'是'},{id:'false',text:'否'}]" style="width:80px" class="mini-combobox"/>
-                快速: <input name="config.fast" value="true" data="[{id:'true',text:'是'},{id:'false',text:'否'}]" style="width:80px" class="mini-combobox"/>
+                多选: <input name="config.multi" value="true" data="[{id:'true',text:'是'},{id:'false',text:'否'}]"
+                           style="width:80px" class="mini-combobox"/>
+                快速: <input name="config.fast" value="true" data="[{id:'true',text:'是'},{id:'false',text:'否'}]"
+                           style="width:80px" class="mini-combobox"/>
 
             </div>
             <div id="dictConfigDiv" class="mini-col-12 mini-clearfix">

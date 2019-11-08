@@ -43,8 +43,9 @@ require(["authorize"], function (authorize) {
                 }
                 grid.load(query.getParams());
             }
-            grid.on("load",function () {
-                if(window.onGridLoad){
+
+            grid.on("load", function () {
+                if (window.onGridLoad) {
                     window.onGridLoad(grid);
                 }
             })
@@ -92,7 +93,7 @@ require(["authorize"], function (authorize) {
                 search()
             });
             search();
-            $(".ok-button").on("click",function () {
+            $(".ok-button").on("click", function () {
                 tools.closeWindow()
             })
             grid.on("select", function (e) {
@@ -108,6 +109,7 @@ require(["authorize"], function (authorize) {
                     window.onDeSelect(row);
                 }
             });
+
             /**
              * 加载人员数据
              */

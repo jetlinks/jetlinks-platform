@@ -10,11 +10,13 @@
             border: 0;
             width: 100%;
             height: 90%;
-        }.upload-photo {
-             width: 100%;
-             height: 120px;
-             border: 2px dashed #2196f3;
-         }
+        }
+
+        .upload-photo {
+            width: 100%;
+            height: 120px;
+            border: 2px dashed #2196f3;
+        }
 
         .webuploader-container {
             position: relative;
@@ -70,9 +72,10 @@
             <td valign="middle" width="450" style="border-color: rgb(221, 221, 221); word-break: break-all;">
                 <input class="mini-textbox" required name="name" style="width:100%">
             </td>
-            <td valign="middle" style="border-color: rgb(221, 221, 221);width: 2.8cm; word-break: break-all;" rowspan="4" colspan="2">
+            <td valign="middle" style="border-color: rgb(221, 221, 221);width: 2.8cm; word-break: break-all;"
+                rowspan="4" colspan="2">
                 <div class="upload-photo">
-                    <img id="photo" style="width: 100%;height: 100%" />
+                    <img id="photo" style="width: 100%;height: 100%"/>
                 </div>
                 <div id="choose-photo" style="margin: auto">选择图片</div>
             </td>
@@ -85,15 +88,18 @@
 				</span>
             </td>
             <td valign="middle" style="border-color: rgb(221, 221, 221); word-break: break-all;">
-                <input type="radio" checked="checked" id="sex_1" name="sex" value="1">男 <input id="sex_0" type="radio" name="sex" value="0">女
+                <input type="radio" checked="checked" id="sex_1" name="sex" value="1">男 <input id="sex_0" type="radio"
+                                                                                               name="sex" value="0">女
             </td>
         </tr>
         <tr>
-            <td valign="middle" colspan="1" rowspan="1" style="border-left-color: rgb(221, 221, 221); border-top-color: rgb(221, 221, 221); word-break: break-all;"
+            <td valign="middle" colspan="1" rowspan="1"
+                style="border-left-color: rgb(221, 221, 221); border-top-color: rgb(221, 221, 221); word-break: break-all;"
                 align="right">
                 电子邮箱
             </td>
-            <td valign="middle" colspan="1" rowspan="1" style="border-left-color: rgb(221, 221, 221); border-top-color: rgb(221, 221, 221);">
+            <td valign="middle" colspan="1" rowspan="1"
+                style="border-left-color: rgb(221, 221, 221); border-top-color: rgb(221, 221, 221);">
                 <input class="mini-textbox" vtype="email" name="email" style="width:100%">
             </td>
         </tr>
@@ -118,20 +124,25 @@
             </td>
         </tr>
         <tr>
-            <td valign="middle" rowspan="1" colspan="1" style="border-left-color: rgb(221, 221, 221); border-top-color: rgb(221, 221, 221); word-break: break-all;"
+            <td valign="middle" rowspan="1" colspan="1"
+                style="border-left-color: rgb(221, 221, 221); border-top-color: rgb(221, 221, 221); word-break: break-all;"
                 align="right">
                 关联用户
             </td>
-            <td valign="middle" rowspan="1" colspan="3" style="border-left-color: rgb(221, 221, 221); border-top-color: rgb(221, 221, 221);">
-                用户名:<input autocomplete="off" readonly="true" enabled="false" autocorrect="off" autocapitalize="off" spellcheck="false"
+            <td valign="middle" rowspan="1" colspan="3"
+                style="border-left-color: rgb(221, 221, 221); border-top-color: rgb(221, 221, 221);">
+                用户名:<input autocomplete="off" readonly="true" enabled="false" autocorrect="off" autocapitalize="off"
+                           spellcheck="false"
                            class="mini-textbox" name="personUser.username">
-                密码:<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="mini-password" name="personUser.password">
+                密码:<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                          class="mini-password" name="personUser.password">
             </td>
         </tr>
         </tbody>
     </table>
 </div>
-<div id="position-grid" class="mini-datagrid" style="width: 90%;height: 200px; margin: auto;max-width: 700px" showTreeIcon="true"
+<div id="position-grid" class="mini-datagrid" style="width: 90%;height: 200px; margin: auto;max-width: 700px"
+     showTreeIcon="true"
      showPager="false" idField="positionId" sortField="sortIndex">
     <div property="columns">
         <div type="indexcolumn" width="20" align="center" headerAlign="center">#</div>

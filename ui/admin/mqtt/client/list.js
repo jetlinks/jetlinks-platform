@@ -38,7 +38,7 @@ importMiniui(function () {
         window.renderAction = function (e) {
             var row = e.record;
             var html = [];
-            if (tag !== 'select'){
+            if (tag !== 'select') {
                 html.push(tools.createActionButton("编辑", "icon-edit", function () {
                     tools.openWindow("admin/mqtt/client/save.html?id=" + row.id, "编辑mqtt客户端：" + row.name, "80%", "80%", function () {
                         grid.reload();

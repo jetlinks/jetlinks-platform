@@ -12,15 +12,15 @@ require(["authorize"], function (authorize) {
             tools.initGrid(grid);
             //加载查询部门选择项
             require(["request"], function (request) {
-               request.get("department?paging=false",function (response) {
-                   department_grid.loadList(response.result.data,"id","parentId");
-               });
+                request.get("department?paging=false", function (response) {
+                    department_grid.loadList(response.result.data, "id", "parentId");
+                });
             });
             $(".search-button").on("click", function () {
                 tools.searchGrid("#search-box", grid, null);
             });
             $(".add-button").on("click", function () {
-                tools.openWindow("admin/org/position/addPosition.html" , "新建职位", 800, 400, loadPosition, function () {
+                tools.openWindow("admin/org/position/addPosition.html", "新建职位", 800, 400, loadPosition, function () {
                     var iframe = this.getIFrameEl();
                     var win = iframe.contentWindow;
 
@@ -31,6 +31,7 @@ require(["authorize"], function (authorize) {
                             e.setParent();
                         }
                     }
+
                     init();
                     $(iframe).on("load", init);
                 });
@@ -39,9 +40,9 @@ require(["authorize"], function (authorize) {
         //加载部门列表
         require(["request", "message"], function (request, message) {
             var departmentNameMap = {};
-            request.get("department?paging=false",function (response) {
-                if(response.status == 200){
-                    for(var i = 0; i<response.result.data.length; i++){
+            request.get("department?paging=false", function (response) {
+                if (response.status == 200) {
+                    for (var i = 0; i < response.result.data.length; i++) {
                         departmentNameMap[response.result.data[i].departmentId] = response.result.data[i].name;
                     }
                     grid.setUrl(API_BASE_PATH + "position?paging=false");
@@ -49,13 +50,14 @@ require(["authorize"], function (authorize) {
                         var name = departmentNameMap[e.value];
                         return name;
                     }
-                }else {
+                } else {
                     message.showTips("数据加载失败:" + response.message);
                 }
             });
         });
     });
 });
+
 /**
  * 弹出新建职位页面
  * @param parent 父级职位
@@ -72,10 +74,10 @@ function goSaveDepartmentPage(old, parent, title) {
             win.onInit = function (e) {
                 e.setParent(parent);
                 old = mini.clone(old);
-                if (old){
+                if (old) {
                     e.setOld(old);
                     findDepartmentById(old.departmentId, e);
-                }else {
+                } else {
                     findDepartmentById(parent.departmentId, e);
                 }
             }
@@ -85,24 +87,27 @@ function goSaveDepartmentPage(old, parent, title) {
         $(iframe).on("load", init);
     });
 }
+
 function findDepartmentById(id, e) {
     require(["request", "message"], function (request, message) {
-        request.get("department/"+id,function (response) {
-            if(response.status == 200){
+        request.get("department/" + id, function (response) {
+            if (response.status == 200) {
                 window.nowSelectedOrg = response.result;
                 e.setDepartment(mini.clone(response.result));
-            }else {
+            } else {
                 message.showTips("数据加载失败:" + response.message);
             }
         });
     });
 }
+
 /**
  * 加载职位数据
  */
 function loadPosition() {
     grid.reload();
 }
+
 window.renderAction = function (e) {
     var html = [];
     var row = e.record;
@@ -112,10 +117,10 @@ window.renderAction = function (e) {
     html.push(tools.createActionButton("编辑", "icon-edit", function () {
         goSaveDepartmentPage(e.record, e.sender.getParentNode(e.record), "编辑职位");
     }));
-    html.push(tools.createActionButton("删除职位", "icon-remove", function (){
+    html.push(tools.createActionButton("删除职位", "icon-remove", function () {
         if (row._state == "added" || row._state == "modified") {
             e.sender.removeNode(row);
-        }else {
+        } else {
             require(["request", "message"], function (request, message) {
                 message.confirm("确定删除该职位?", function () {
                     var loading = message.loading("删除中...");

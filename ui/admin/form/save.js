@@ -85,7 +85,7 @@ var scriptLanguages = [
     , {id: "groovy"}
 ]
 var dictType = [
-    {id:"disable",text:"无"},
+    {id: "disable", text: "无"},
     {
         id: "dict", text: "数据字典",
         createEditor: function (html) {
@@ -94,9 +94,9 @@ var dictType = [
             appendType.append("<input onbuttonclick='selectDict' name='config.dictId' textName='config.dictId' style='width: 80%' allowInput='true' class='mini-buttonedit'/>");
 
             window.selectDict = function (e) {
-                require(['miniui-tools'],function (tools) {
-                    tools.openWindow("admin/dictionary/list.html?server=&selector=1","选择数据字典","900","650",function (dic) {
-                        if(dic!=='close'||dic!=='cancel'){
+                require(['miniui-tools'], function (tools) {
+                    tools.openWindow("admin/dictionary/list.html?server=&selector=1", "选择数据字典", "900", "650", function (dic) {
+                        if (dic !== 'close' || dic !== 'cancel') {
                             e.sender.setValue(dic);
                             e.sender.setText(dic);
                         }
@@ -400,7 +400,7 @@ function initColumnGrid() {
                 $(result).each(function (i, e) {
                     result[i] = JSON.stringify(e);
                 });
-                e.sender.updateRow(e.record, {validator:validator,t:new Date()})
+                e.sender.updateRow(e.record, {validator: validator, t: new Date()})
             });
             mini.get("validatorEditor").show();
         });
@@ -418,13 +418,11 @@ function initColumnGrid() {
                 if (e.value.indexOf("日期") != -1 || e.value.indexOf("有效期") != -1) {
                     row.jdbcType = "DATE";
                     row.javaType = "Date";
-                }
-                else if (e.value.indexOf("是否") != -1) {
+                } else if (e.value.indexOf("是否") != -1) {
                     row.jdbcType = "NUMERIC";
                     row.javaType = "Boolean";
                     row.lengthString = "1,0";
-                }
-                else if (e.value.indexOf("金额") != -1) {
+                } else if (e.value.indexOf("金额") != -1) {
                     row.jdbcType = "NUMERIC";
                     row.javaType = "BigDecimal";
                     row.lengthString = "38,4";
@@ -438,8 +436,7 @@ function initColumnGrid() {
         } else if (column.field === "columnName") {
             row.alias = transformStr(e.value);
             e.sender.updateRow(row);
-        }
-        else if (column.field === "jdbcType") {
+        } else if (column.field === "jdbcType") {
             if (!row.javaType && e.value) {
                 row.javaType = jdbcJavaMapping[e.value];
                 if (!e.lengthString) {

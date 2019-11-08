@@ -12,15 +12,15 @@ require(["authorize"], function (authorize) {
             tools.initGrid(grid);
             //加载查询机构选择项
             require(["request"], function (request) {
-               request.get("organizational?paging=false",function (response) {
-                   org_grid.loadList(response.result.data,"id","parentId");
-               });
+                request.get("organizational?paging=false", function (response) {
+                    org_grid.loadList(response.result.data, "id", "parentId");
+                });
             });
             $(".search-button").on("click", function () {
                 tools.searchGrid("#search-box", grid, null);
             });
             $(".add-button").on("click", function () {
-                tools.openWindow("admin/org/department/addDepartment.html" , "新建部门", 800, 400, loadDepartment, function () {
+                tools.openWindow("admin/org/department/addDepartment.html", "新建部门", 800, 400, loadDepartment, function () {
                     var iframe = this.getIFrameEl();
                     var win = iframe.contentWindow;
 
@@ -40,9 +40,9 @@ require(["authorize"], function (authorize) {
         //加载机构列表
         require(["request", "message"], function (request, message) {
             var orgNameMap = {};
-            request.get("organizational?paging=false",function (response) {
-                if(response.status == 200){
-                    for(var i = 0; i<response.result.data.length; i++){
+            request.get("organizational?paging=false", function (response) {
+                if (response.status == 200) {
+                    for (var i = 0; i < response.result.data.length; i++) {
                         orgNameMap[response.result.data[i].orgId] = response.result.data[i].fullName;
                     }
                     grid.setUrl(API_BASE_PATH + "department?paging=false");
@@ -50,13 +50,14 @@ require(["authorize"], function (authorize) {
                         var name = orgNameMap[e.value];
                         return name;
                     }
-                }else {
+                } else {
                     message.showTips("数据加载失败:" + response.message);
                 }
             });
         });
     });
 });
+
 /**
  * 弹出新建部门页面
  * @param parent 父级部门
@@ -73,10 +74,10 @@ function goSaveDepartmentPage(old, parent, title) {
             win.onInit = function (e) {
                 e.setParent(parent);
                 old = mini.clone(old);
-                if (old){
+                if (old) {
                     e.setOld(old);
                     findOrgByOrgId(old.orgId, e);
-                }else {
+                } else {
                     findOrgByOrgId(parent.orgId, e);
                 }
             }
@@ -86,24 +87,27 @@ function goSaveDepartmentPage(old, parent, title) {
         $(iframe).on("load", init);
     });
 }
+
 function findOrgByOrgId(id, e) {
     require(["request", "message"], function (request, message) {
-        request.get("organizational/"+id,function (response) {
-            if(response.status == 200){
+        request.get("organizational/" + id, function (response) {
+            if (response.status == 200) {
                 window.nowSelectedOrg = response.result;
                 e.setOrg(mini.clone(response.result));
-            }else {
+            } else {
                 message.showTips("数据加载失败:" + response.message);
             }
         });
     });
 }
+
 /**
  * 加载部门数据
  */
 function loadDepartment() {
     grid.reload();
 }
+
 window.renderAction = function (e) {
     var html = [];
     var row = e.record;
@@ -113,10 +117,10 @@ window.renderAction = function (e) {
     html.push(tools.createActionButton("编辑", "icon-edit", function () {
         goSaveDepartmentPage(e.record, e.sender.getParentNode(e.record), "编辑部门");
     }));
-    html.push(tools.createActionButton("删除部门", "icon-remove", function (){
+    html.push(tools.createActionButton("删除部门", "icon-remove", function () {
         if (row._state == "added" || row._state == "modified") {
             e.sender.removeNode(row);
-        }else {
+        } else {
             require(["request", "message"], function (request, message) {
                 message.confirm("确定删除该部门?", function () {
                     var loading = message.loading("删除中...");

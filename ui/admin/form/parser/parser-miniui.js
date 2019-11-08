@@ -48,8 +48,7 @@ define(["jquery"], function ($) {
         $(properties).each(function () {
             if (this.value === '是') {
                 this.value = true;
-            }
-            else if (this.value === '否') {
+            } else if (this.value === '否') {
                 this.value = false;
             }
             if (this.id === "data" && this.value) {

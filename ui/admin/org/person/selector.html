@@ -28,7 +28,8 @@
                                textfield="name" valuefromselect="true" clearonload="true"
                                allowinput="true" expandOnLoad="1" resultastree="false" parentfield="parentId"
                                virtualscroll="true" style="width: 32.33%">
-                        <input class="mini-treeselect" showNullItem="true" parentfield="parentId" clearOnLoad="true" showNullItem="true"
+                        <input class="mini-treeselect" showNullItem="true" parentfield="parentId" clearOnLoad="true"
+                               showNullItem="true"
                                emptyText="部门" textField="name" name="id$person-in-department" style="width: 32.33%">
                         <input class="mini-treeselect" showNullItem="true" parentfield="parentId" clearOnLoad="true"
                                emptyText="岗位" textField="name" showNullItem="true" id="positionId"
@@ -39,7 +40,7 @@
         </div>
         <div class="operate-button">
             <span autz="autz.hasPermission('person','add')">
-                <a class="mini-button ok-button" ><i class="fa fa-check"></i> 完成</a>
+                <a class="mini-button ok-button"><i class="fa fa-check"></i> 完成</a>
             </span>
         </div>
     </div>
@@ -48,7 +49,7 @@
              idField="id" pageSize="20" parentField="parentId" resultAsTree="false"
              multiSelect="true">
             <div property="columns">
-                <div type="checkcolumn" ></div>
+                <div type="checkcolumn"></div>
                 <div field="name" headerAlign="center" align="center" width="150">姓名
                 </div>
                 <div field="sex" renderer="renderSex" headerAlign="center" align="center" width="50">性别
@@ -58,7 +59,7 @@
                 <div field="status" renderer="renderStatus" headerAlign="center" align="center" width="50">状态
                 </div>
                 <!--<div autz="autz.hasPermission('person', 'update','delete')" renderer="renderAction" width="80" headerAlign="center" align="center">-->
-                    <!--操作-->
+                <!--操作-->
                 <!--</div>-->
             </div>
         </div>

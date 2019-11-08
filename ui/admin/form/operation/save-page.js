@@ -43,7 +43,7 @@ define(["pages/template/parser", "message"], function (parser, message) {
             var undo = $("<a class='mini-button reset-form' plain='true' iconCls='icon-undo'>").text("重新填写");
             var close = $("<a class='mini-button close-form' plain='true' iconCls='icon-remove'>").text("关闭");
             toolbar.append(submit).append(undo).append(close);
-            var body =$("<div class='mini-fit'>");
+            var body = $("<div class='mini-fit'>");
             div.append(body);
             div.attr("id", windowId);
             if (!config.el) {
