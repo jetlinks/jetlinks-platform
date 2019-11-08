@@ -152,8 +152,6 @@ importMiniui(function () {
         var api = "device-product";
         if (dataId) {
             loadData(dataId);
-            api += "/" + dataId;
-            func = request.put;
         }
 
         var attributeInfoList = [];
@@ -543,6 +541,8 @@ importMiniui(function () {
 
             if (dataId) {
                 productInfo.id = dataId;
+                func = request.put;
+                api = "device-product/" + dataId;
             } else {
                 dataId = productInfo.id;
                 productInfo.state = 0;
