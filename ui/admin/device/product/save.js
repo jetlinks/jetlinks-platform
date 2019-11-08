@@ -544,7 +544,7 @@ importMiniui(function () {
                 func = request.put;
                 api = "device-product/" + dataId;
             } else {
-                dataId = productInfo.id;
+                //dataId = productInfo.id;
                 productInfo.state = 0;
                 productInfo.createTime = new Date().getTime();
             }
@@ -565,7 +565,7 @@ importMiniui(function () {
                 loading.close();
                 if (response.status === 200) {
                     message.showTips("保存成功");
-                    if (!id) id = response.result.id;
+                    if (!dataId) dataId = response.result.id;
                 } else {
                     message.showTips("保存失败:" + response.message, "danger");
                     if (response.result)
