@@ -532,10 +532,10 @@ importMiniui(function () {
                 message.showTips("保存失败:请检查型号基本信息", "danger");
                 return false;
             }
-            if (!security) {
-                message.showTips("保存失败:请检查型号安全配置信息", "danger");
-                return false;
-            }
+            // if (!security) {
+            //     message.showTips("保存失败:请检查型号安全配置信息", "danger");
+            //     return false;
+            // }
             productInfo.security = security;
 
             if (productInfo.id === "")

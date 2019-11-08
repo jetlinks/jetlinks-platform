@@ -3,6 +3,7 @@ package org.jetlinks.platform.manager.entity;
 import lombok.Getter;
 import lombok.Setter;
 import org.hswebframework.ezorm.rdb.mapping.annotation.ColumnType;
+import org.hswebframework.ezorm.rdb.mapping.annotation.JsonCodec;
 import org.hswebframework.web.api.crud.entity.GenericEntity;
 
 import javax.persistence.Column;
@@ -25,6 +26,9 @@ public class EmailSenderEntity extends GenericEntity<String> {
     private String host;
 
     @Column
+    private String port;
+
+    @Column
     private String sender;
 
     @Column
@@ -34,6 +38,7 @@ public class EmailSenderEntity extends GenericEntity<String> {
     private String password;
 
     @Column
+    @JsonCodec
     @ColumnType(jdbcType = JDBCType.CLOB)
     private Map<String, Object> configuration;
 }

@@ -34,33 +34,33 @@ importMiniui(function () {
             ];
             row.state = row.state || {value: 'stopped'};
             if (row.state.value === 'stopped') {
-            html.push(tools.createActionButton("点击启动规则", "icon-ok", function () {
-                message.confirm("确认启动此规则?", function () {
-                    grid.loading("启动中...");
-                    request.post("rule-engine/instance/" + row.id + "/_start", {}, function (response) {
-                        grid.reload();
-                        if (response.status === 200) {
-                            message.showTips("启动成功.")
-                        } else {
-                            message.showTips("启动失败:" + response.message, "danger")
-                        }
+                html.push(tools.createActionButton("点击启动规则", "icon-ok", function () {
+                    message.confirm("确认启动此规则?", function () {
+                        grid.loading("启动中...");
+                        request.post("rule-engine/instance/" + row.id + "/_start", {}, function (response) {
+                            grid.reload();
+                            if (response.status === 200) {
+                                message.showTips("启动成功.")
+                            } else {
+                                message.showTips("启动失败:" + response.message, "danger")
+                            }
+                        })
                     })
-                })
-            }));
-             } else if (row.state.value === 'started') {
-            html.push(tools.createActionButton("点击停止规则", "icon-remove", function () {
-                message.confirm("确认停止此规则?", function () {
-                    grid.loading("启动中");
-                    request.post("rule-engine/instance/" + row.id + "/_stop", {}, function (response) {
-                        grid.reload();
-                        if (response.status === 200) {
-                            message.showTips("停止成功.")
-                        } else {
-                            message.showTips("停止失败:", response.message)
-                        }
+                }));
+            } else if (row.state.value === 'started') {
+                html.push(tools.createActionButton("点击停止规则", "icon-remove", function () {
+                    message.confirm("确认停止此规则?", function () {
+                        grid.loading("启动中");
+                        request.post("rule-engine/instance/" + row.id + "/_stop", {}, function (response) {
+                            grid.reload();
+                            if (response.status === 200) {
+                                message.showTips("停止成功.")
+                            } else {
+                                message.showTips("停止失败:", response.message)
+                            }
+                        })
                     })
-                })
-            }));
+                }));
             }
             if (row.state.value !== 'started') {
                 html.push(
@@ -78,6 +78,17 @@ importMiniui(function () {
                     })
                 )
             }
+            html.push(
+                tools.createActionButton("生成规则模型", "icon-arrow-undo", function () {
+                    request.post("rule-engine/model", JSON.stringify(row), function (response) {
+                        if (response.status === 200) {
+                            message.showTips("生成成功");
+                        } else {
+                            message.showTips("生成失败:" + response.message, "danger");
+                        }
+                    })
+                })
+            )
             return html.join("");
         };
 

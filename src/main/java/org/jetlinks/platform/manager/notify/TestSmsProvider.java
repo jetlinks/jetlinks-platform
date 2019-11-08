@@ -1,6 +1,8 @@
 package org.jetlinks.platform.manager.notify;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.hswebframework.web.utils.ExpressionUtils;
 import org.jetlinks.rule.engine.executor.node.notify.SmsSender;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -28,7 +30,9 @@ public class TestSmsProvider implements SmsProvider, SmsSender {
     }
 
     @Override
+    @SneakyThrows
     public Mono<Boolean> send(String text, Map<String, Object> context, List<String> sendTo) {
+        text= ExpressionUtils.analytical(text,context,"spel");
         log.info("发送短信:{} 到:{}", text, sendTo);
         return Mono.just(true);
     }

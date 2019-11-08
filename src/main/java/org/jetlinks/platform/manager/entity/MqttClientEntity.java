@@ -37,11 +37,15 @@ public class MqttClientEntity extends GenericEntity<String> {
     @Column
     @JsonCodec
     @ColumnType(jdbcType = JDBCType.CLOB)
-    private Map<String,Object> secureConfiguration;
+    private Map<String, Object> secureConfiguration;
 
     @Column
     @JsonCodec
     @ColumnType(jdbcType = JDBCType.CLOB)
-    private Map<String,Object> sslConfiguration;
+    private Map<String, Object> sslConfiguration;
 
+    public boolean clientIsEnabled() {
+        return Byte.valueOf((byte) 1)
+                .equals(status);
+    }
 }

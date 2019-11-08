@@ -96,7 +96,7 @@ importMiniui(function () {
             }
             if (row.state.text === '未激活') {
                 html.push(tools.createActionLink("删除", "<sapn>&nbsp;&nbsp;&nbsp;删除</sapn>", function () {
-                    message.confirm("确定删除设备型号为：" + row.name + "？删除后将无法恢复", function () {
+                    message.confirm("确定删除设备实例为：" + row.name + "？删除后将无法恢复", function () {
                         var box = message.loading("删除中...");
                         request["delete"]("device-instance/" + row.id, function (response) {
                             box.hide();

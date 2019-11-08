@@ -11,6 +11,7 @@ importMiniui(function () {
         var items = nodes.items;
         var loading = message.loading("加载中");
         var id = request.getParameter("id");
+        var copyTag = request.getParameter("copyTag");
 
         var ruleInfo = {runMode: "CLUSTER", "name": "新建模型"};
 
@@ -50,7 +51,7 @@ importMiniui(function () {
 
                 mini.parse();
 
-                if (id) {
+                if (id && !copyTag) {
                     mini.get('modelId').setEnabled(false)
                 } else {
                     mini.get("modelId").focus();
@@ -97,15 +98,21 @@ importMiniui(function () {
                             modelMeta: JSON.stringify(meta),
                             modelType: "antv.g6"
                         };
-                        request.patch("rule-engine/model", model, function (e) {
+                        var func = request.patch;
+                        var preMessage = "保存";
+                        if (copyTag) {
+                            func = request.post;
+                            preMessage = "复制";
+                        }
+                        func("rule-engine/model", model, function (e) {
                             if (e.status === 200) {
-                                message.showTips("保存成功");
+                                message.showTips(preMessage + "成功");
                                 id = e.result;
                                 mini.get("modelId").setEnabled(false);
                             } else {
-                                message.showTips("保存失败:" + e.message, "danger")
+                                message.showTips(preMessage + "失败:" + e.message, "danger")
                             }
-                        })
+                        });
 
                     })
             })
@@ -138,20 +145,24 @@ importMiniui(function () {
                         .on("click", function () {
                             doSave();
                             doInDebug(function (sessionId) {
+                                mini.get('debug-param-window').show();
+                                $(".confirm-debug")
+                                    .unbind("click")
+                                    .on("click", function () {
+                                        var data = mini.get("debugParam").getValue() || '{}';
+                                        mini.get('debug-param-window').hide();
+                                        request.post("rule-engine/debug/" + sessionId + "/condition", {
+                                            condition: model.condition,
+                                            data: data ? JSON.parse(data) : {}
+                                        }, function (resp) {
+                                            if (resp.status !== 200) {
+                                                printLog("error", resp.message)
+                                            }else{
+                                                printLog("info", "测试通过")
+                                            }
+                                        })
+                                    });
 
-                                message.prompt("测试条件", "输入数据(JSON)", function (data) {
-
-                                    request.post("rule-engine/debug/" + sessionId + "/condition", {
-                                        condition: model.condition,
-                                        data: data ? JSON.parse(data) : {}
-                                    }, function (resp) {
-                                        if (resp.status !== 200) {
-                                            printLog("error", resp.message)
-                                        }else{
-                                            printLog("info", "测试通过")
-                                        }
-                                    })
-                                }, true)
                             })
                         });
 
@@ -219,7 +230,7 @@ importMiniui(function () {
 
             var panel = $("#info-panel");
             panel.html("");
-
+            model.executorName = model.executorName||model.label;
             require(["text!admin/rule-engine/model/nodes/" + model.executor + '.html', "text!./tpl/node-basic.html", "./nodes/" + model.executor + '.js'],
                 function (_html, basic, e) {
                     var nodeTemplate = $(_html);

@@ -1,15 +1,20 @@
 package org.jetlinks.platform.manager.service;
 
+import org.hswebframework.ezorm.rdb.exception.DuplicateKeyException;
 import org.hswebframework.ezorm.rdb.mapping.defaults.SaveResult;
 import org.hswebframework.ezorm.rdb.operator.builder.fragments.NativeSql;
 import org.hswebframework.web.crud.service.GenericReactiveCrudService;
+import org.hswebframework.web.exception.BusinessException;
 import org.jetlinks.platform.manager.entity.RuleModelEntity;
 import org.jetlinks.rule.engine.api.model.RuleEngineModelParser;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.function.Function;
 
 @Service
 public class RuleModelService extends GenericReactiveCrudService<RuleModelEntity, String> {
@@ -24,7 +29,7 @@ public class RuleModelService extends GenericReactiveCrudService<RuleModelEntity
     public Mono<Boolean> deploy(String id) {
         return findById(Mono.just(id))
                 .map(RuleModelEntity::toInstance)
-                .doOnNext(instance-> modelParser.parse(instance.getModelType(),instance.getModelMeta()))
+                .doOnNext(instance -> modelParser.parse(instance.getModelType(), instance.getModelMeta()))
                 .flatMap(rule -> instanceService.save(Mono.just(rule)))
                 .thenReturn(true);
     }
@@ -55,12 +60,22 @@ public class RuleModelService extends GenericReactiveCrudService<RuleModelEntity
                             .execute()
                             .filter(i -> i > 0)
                             .map(i -> SaveResult.of(0, i))
-                            .switchIfEmpty(Mono.defer(() -> {
-                                rule.setVersion(1);
-                                return insert(Mono.just(rule))
-                                        .map(i -> SaveResult.of(1, 0));
-                            }));
+                            .switchIfEmpty(Mono.defer(() -> insert(Mono.just(rule))
+                                    .map(i -> SaveResult.of(1, 0))));
 
                 }).reduce(SaveResult.of(0, 0), SaveResult::merge);
+    }
+
+
+    @Override
+    public Mono<Integer> insert(Publisher<RuleModelEntity> entityPublisher) {
+        return Flux.from(entityPublisher)
+                .map(rule -> {
+                    if (rule.getVersion() == null) {
+                        rule.setVersion(1);
+                    }
+                    return rule;
+                }).as(super::insert)
+                .onErrorMap(DuplicateKeyException.class, err -> new BusinessException("模型ID重复", err));
     }
 }
