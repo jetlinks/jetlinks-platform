@@ -12,8 +12,6 @@ importMiniui(function () {
         var api = "email-sender";
         if (id) {
             loadData(id);
-            api += "/" + id;
-            func = request.put;
         }
         $(".save-button").on("click", (function () {
             require(["message"], function (message) {
@@ -26,6 +24,9 @@ importMiniui(function () {
                 data.configuration = configurationMap;
                 if (!id) {
                     data.status = "0";
+                } else {
+                    api = "email-sender/" + id;
+                    func = request.put;
                 }
                 if (!data) return;
                 var loading = message.loading("提交中");
@@ -33,7 +34,7 @@ importMiniui(function () {
                     loading.close();
                     if (response.status === 200) {
                         message.showTips("保存成功");
-                        if (!id) id = response.result;
+                        if (!id) id = response.result.id;
                     } else {
                         message.showTips("保存失败:" + response.message, "danger");
                         if (response.result)
@@ -60,8 +61,8 @@ function loadData(id) {
                 form.setData(response.result);
                 var configuration = response.result.configuration;
                 var configurationList = [];
-                Object.keys(configuration).forEach(function(index) {
-                    configurationList.push({"sortIndex":index,"describe":configuration[index]})
+                Object.keys(configuration).forEach(function (index) {
+                    configurationList.push({"sortIndex": index, "describe": configuration[index]})
                 });
                 mini.get("otherGrid").setData(configurationList)
             } else {
