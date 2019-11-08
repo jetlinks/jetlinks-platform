@@ -7,21 +7,24 @@ importMiniui(function () {
     mini.parse();
     require(["request", "miniui-tools"], function (request, tools) {
 
-        var api = "dimension-type";
-        var func = request.patch;
         var id = request.getParameter("id");
 
         $(".save-button").on("click", (function () {
             require(["message"], function (message) {
                 var data = getDataAndValidate();
-                console.log(data)
                 if (!data) return;
+                var api = "dimension-type";
+                var func = request.post;
+                if (id) {
+                    func = request.put;
+                    api+= "/" + id;
+                }
                 var loading = message.loading("提交中");
                 func(api, data, function (response) {
                     loading.close();
                     if (response.status === 200) {
                         message.showTips("保存成功");
-                        if (!id) id = response.result;
+                        if (!id) id = response.result.id;
 
                     } else {
                         message.showTips("保存失败:" + response.message, "danger");
