@@ -1,16 +1,18 @@
 importResource("/admin/css/common.css");
+
 function test() {
     console.log("test");
 }
+
 importMiniui(function () {
-    require(["miniui-tools","request"], function (tools, request) {
+    require(["miniui-tools", "request"], function (tools, request) {
         //初始化
         mini.parse();
         var grid = mini.get("org-grid");
         window.onKeyEnter = function () {
             window.search();
         };
-        window.search=function () {
+        window.search = function () {
             var key = mini.get("key").getValue();
             var param = {};
             if (key && key.length > 0) {
@@ -52,10 +54,12 @@ importMiniui(function () {
             }
             closeWindow("ok");
         });
+
         function closeWindow(action) {
             if (window.CloseOwnerWindow) return window.CloseOwnerWindow(action);
             else window.close();
         }
+
         window.onInit = function () {
             return grid.getSelectedNode();
         };

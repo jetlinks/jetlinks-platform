@@ -27,6 +27,19 @@ importMiniui(function () {
                 grid.reload();
             })
         });
+
+        function changeStatus(id, status, mssagePre) {
+            request.put("mqtt-client/" + id, {"status": status}, function (response) {
+                console.log(response)
+                if (response.status === 200) {
+                    message.showTips(mssagePre + "成功");
+                    grid.reload();
+                } else {
+                    message.showTips(mssagePre + "失败:" + response.message, "danger");
+                }
+            });
+        }
+
         window.renderStatus = function (e) {
             if (e.value == 1) {
                 return "启用";
@@ -36,35 +49,44 @@ importMiniui(function () {
         window.renderAction = function (e) {
             var row = e.record;
             var html = [];
-            html.push(tools.createActionButton("编辑", "icon-edit", function () {
-                tools.openWindow("admin/rule-engine/manager/mqttclient/save.html?id=" + row.id, "编辑mqtt客户端：" + row.name, "600", "500", function () {
-                    grid.reload();
-                });
-            }));
 
-            html.push(tools.createActionButton("删除", "icon-remove", function () {
-                message.confirm("确定删除客户端：" + row.name + "？删除后将无法恢复", function () {
-                    var box = message.loading("删除中...");
-                    request["delete"]("mqtt-client/" + row.id, function (response) {
-                        box.hide();
-                        if (response.status === 200) {
-                            message.showTips("删除成功");
-                            grid.reload();
-                        } else {
-                            message.showTips("删除失败:" + response.message, "danger");
-                        }
+            if (row.status != 1) {
+                html.push(tools.createActionButton("编辑", "icon-edit", function () {
+                    tools.openWindow("admin/rule-engine/manager/mqttclient/save.html?id=" + row.id, "编辑mqtt客户端：" + row.name, "600", "500", function () {
+                        grid.reload();
                     });
-                });
-            }));
-            html.push(tools.createActionButton("调试", "icon-bug-go", function () {
-                tools.openWindow("admin/rule-engine/manager/mqttclient/debug.html?id=" + row.id + "&name=" + row.name, "调试mqtt客户端：" + row.name, "1000", "600", function () {
-                    grid.reload();
-                });
-            }));
-            if (tag === 'select') {
-                html.push(tools.createActionButton("选择", "icon-ok", function () {
-                    tools.closeWindow(row);
                 }));
+                html.push(tools.createActionButton("启用", "icon-key-start", function () {
+                    changeStatus(row.id, 1, "启用");
+                }));
+                html.push(tools.createActionButton("删除", "icon-remove", function () {
+                    message.confirm("确定删除客户端：" + row.name + "？删除后将无法恢复", function () {
+                        var box = message.loading("删除中...");
+                        request["delete"]("mqtt-client/" + row.id, function (response) {
+                            box.hide();
+                            if (response.status === 200) {
+                                message.showTips("删除成功");
+                                grid.reload();
+                            } else {
+                                message.showTips("删除失败:" + response.message, "danger");
+                            }
+                        });
+                    });
+                }));
+            } else {
+                html.push(tools.createActionButton("禁用", "icon-stop", function () {
+                    changeStatus(row.id, 0, "禁用");
+                }));
+                html.push(tools.createActionButton("调试", "icon-bug-go", function () {
+                    tools.openWindow("admin/rule-engine/manager/mqttclient/debug.html?id=" + row.id + "&name=" + row.name, "调试", "1000", "600", function () {
+                        grid.reload();
+                    });
+                }));
+                if (tag === 'select') {
+                    html.push(tools.createActionButton("选择", "icon-ok", function () {
+                        tools.closeWindow(row);
+                    }));
+                }
             }
             return html.join("");
         }

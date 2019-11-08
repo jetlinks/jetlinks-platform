@@ -26,7 +26,7 @@ importMiniui(function () {
             }
             var old = mini.get("position-grid").getRowById(pos.id);
             if (old) {
-              //  message.showTips("岗位已存在", "danger");
+                //  message.showTips("岗位已存在", "danger");
                 return;
             }
             var row = {

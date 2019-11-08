@@ -2,7 +2,7 @@ importResource("/admin/css/common.css");
 
 importMiniui(function () {
     mini.parse();
-    $(".get-org-tree").on("click",function () {
+    $(".get-org-tree").on("click", function () {
         var btnEdit = mini.getbyName("orgId");
         mini.open({
             url: "org/department/orgTree.html",
@@ -39,7 +39,7 @@ importMiniui(function () {
     };
     exp.setParent = function () {
         var parentIdEl = mini.getbyName("parentId");
-        var  dep = {id: "-1", name: "/"};
+        var dep = {id: "-1", name: "/"};
 
         parentIdEl.setValue(dep.id);
         parentIdEl.setText(dep.name);

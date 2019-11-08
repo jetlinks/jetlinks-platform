@@ -51,7 +51,7 @@ importMiniui(function () {
 
         function getRow(id) {
             return grid.findRow(function (row) {
-                if (row.id == id)return true;
+                if (row.id == id) return true;
             });
         }
 
@@ -68,7 +68,7 @@ importMiniui(function () {
                 md5File
                 // 及时显示进度
                     .progress(function (percentage) {
-                        var range = ( percentage * 100).toFixed(1);
+                        var range = (percentage * 100).toFixed(1);
                         row.status = range >= 100 ? "等待服务器响应..." : "检测文件中" + range + "%";
 
                         grid.updateRow(row);
@@ -90,9 +90,10 @@ importMiniui(function () {
                         });
                     });
         });
+
         function bytesToSize(bytes) {
             if (bytes === 0) return '0 B';
-            if (bytes < 1024)return bytes + 'b';
+            if (bytes < 1024) return bytes + 'b';
             var k = 1024, // or 1024
                 sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
                 i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -100,7 +101,7 @@ importMiniui(function () {
         }
 
         uploader.on('uploadProgress', function (file, percentage) {
-            var range = ( percentage * 100).toFixed(1);
+            var range = (percentage * 100).toFixed(1);
             var row = getRow(file.id);
             if (percentage < 1) {
                 row.status = "上传中" + range + "%";
@@ -170,6 +171,7 @@ importMiniui(function () {
                 e.sender.removeRow(e.record);
             });
         };
+
         function removeFile(id) {
             var row = getRow(id);
             try {

@@ -8,17 +8,21 @@ html, body {
 }
 
 .text-default {
-    color: rgba(0,0,0,0.65) !important;
+    color: rgba(0, 0, 0, 0.65) !important;
 }
+
 .text-primary {
     color: #1890ff !important;
 }
+
 .text-danger {
     color: #d9534f !important;
 }
+
 .text-success {
     color: #5cb85c !important;
 }
+
 .text-warning {
     color: #f0ad4e !important;
 }
@@ -57,7 +61,8 @@ html, body {
 .label {
     text-align: right;
 }
-.search-container{
+
+.search-container {
     margin: auto;
 }
 

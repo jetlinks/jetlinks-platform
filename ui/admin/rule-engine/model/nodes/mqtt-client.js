@@ -4,7 +4,7 @@ define(["miniui-tools"], function (tools) {
         init: function (panel, model) {
             var mqttConnect = mini.getByName("config.clientId");
             mqttConnect.on("buttonclick", function (e) {
-                tools.openWindow("admin/rule-engine/manager/mqttclient/list.html?tag=select", "mqtt客户端", "700", "400", function (data) {
+                tools.openWindow("admin/rule-engine/manager/mqttclient/list.html?tag=select", "mqtt客户端", "1000", "500", function (data) {
                     if (data !== 'close') {
                         mqttConnect.setText(data.name);
                         mqttConnect.setValue(data.clientId);

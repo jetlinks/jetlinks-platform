@@ -2,10 +2,12 @@ package org.jetlinks.platform.manager.web;
 
 import org.hswebframework.web.authorization.annotation.Resource;
 import org.hswebframework.web.crud.web.reactive.ReactiveServiceCrudController;
+import org.hswebframework.web.exception.BusinessException;
 import org.hswebframework.web.id.IDGenerator;
 import org.jetlinks.core.message.codec.MqttMessage;
 import org.jetlinks.core.message.codec.SimpleMqttMessage;
 import org.jetlinks.platform.manager.entity.MqttClientEntity;
+import org.jetlinks.platform.manager.enums.MqttClientState;
 import org.jetlinks.platform.manager.service.LocalMqttClientManager;
 import org.jetlinks.platform.manager.service.MqttClientService;
 import org.jetlinks.platform.manager.web.request.MqttMessageRequest;
@@ -21,6 +23,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 @RestController
 @RequestMapping("/mqtt-client")
@@ -101,5 +105,28 @@ public class MqttClientController implements ReactiveServiceCrudController<MqttC
     public Mono<Boolean> publish(@PathVariable String id, @PathVariable PayloadType type, @RequestBody MqttMessageRequest mqttMessage) {
         return clientManager.getMqttClient(id)
                 .flatMap(c -> c.publish(MqttMessageRequest.of(mqttMessage, type)));
+    }
+
+    @PostMapping("/disable/{id}")
+    public Mono<Boolean> disable(@PathVariable String id) {
+        clientManager.stopClient(id);
+        return mqttClientService.createUpdate()
+                .set(MqttClientEntity::getStatus, MqttClientState.registered.getValue())
+                .where(MqttClientEntity::getId, id)
+                .execute()
+                .map(i -> i > 0);
+    }
+
+    @PostMapping("/start/{id}")
+    public Mono<Boolean> start(@PathVariable String id) {
+        return clientManager.getMqttClient(id)
+                .filter(MqttClient::isAlive)
+                .flatMap(s-> mqttClientService.createUpdate()
+                        .set(MqttClientEntity::getStatus, MqttClientState.registered.getValue())
+                        .where(MqttClientEntity::getId, id)
+                        .execute()
+                        .map(i -> i > 0))
+                .switchIfEmpty(Mono.just(false));
+
     }
 }

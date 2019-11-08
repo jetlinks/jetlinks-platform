@@ -54,7 +54,7 @@ importMiniui(function () {
             load();
         });
         load();
-        $(".reload-file").on('click',function () {
+        $(".reload-file").on('click', function () {
             load();
         });
 
@@ -98,8 +98,8 @@ importMiniui(function () {
             request.post("dev/tools/file/write", [{file: file, type: "file", template: body}], function (response) {
                 if (response.status === 200) {
                     message.showTips("保存成功")
-                }else{
-                    message.showTips(response.message,'danger');
+                } else {
+                    message.showTips(response.message, 'danger');
                 }
             });
         }
