@@ -23,12 +23,12 @@ importMiniui(function () {
         search();
 
         $(".add-button").click(function () {
-            tools.openWindow("admin/rule-engine/manager/mqttclient/save.html", "新建mqtt客户端", "700", "400", function () {
+            tools.openWindow("admin/rule-engine/manager/mqttclient/save.html", "新建mqtt客户端", "600", "500", function () {
                 grid.reload();
             })
         });
-        window.renderStatus = function(e){
-            if (e.value == 1){
+        window.renderStatus = function (e) {
+            if (e.value == 1) {
                 return "启用";
             }
             return "禁用";
@@ -37,7 +37,7 @@ importMiniui(function () {
             var row = e.record;
             var html = [];
             html.push(tools.createActionButton("编辑", "icon-edit", function () {
-                tools.openWindow("admin/rule-engine/manager/mqttclient/save.html?id=" + row.id, "编辑mqtt客户端：" + row.name, "80%", "80%", function () {
+                tools.openWindow("admin/rule-engine/manager/mqttclient/save.html?id=" + row.id, "编辑mqtt客户端：" + row.name, "600", "500", function () {
                     grid.reload();
                 });
             }));
@@ -56,7 +56,12 @@ importMiniui(function () {
                     });
                 });
             }));
-            if (tag === 'select'){
+            html.push(tools.createActionButton("调试", "icon-bug-go", function () {
+                tools.openWindow("admin/rule-engine/manager/mqttclient/debug.html?id=" + row.id + "&name=" + row.name, "调试mqtt客户端：" + row.name, "1000", "600", function () {
+                    grid.reload();
+                });
+            }));
+            if (tag === 'select') {
                 html.push(tools.createActionButton("选择", "icon-ok", function () {
                     tools.closeWindow(row);
                 }));
