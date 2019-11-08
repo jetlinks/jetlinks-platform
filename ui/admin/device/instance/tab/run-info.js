@@ -96,7 +96,7 @@ importMiniui(function () {
 
         //加载事件板块
         function loadEventPlate(event) {
-            request.get("device-event/" + event.id + "/productId/" + productId, request.encodeQueryParam({"deviceId.keyword": id}), function (response) {
+            request.get("log/device-event/" + event.id + "/productId/" + productId, request.encodeQueryParam({"deviceId.keyword": id}), function (response) {
                 if (response.status === 200) {
                     var eventLevel = event.level;
                     if (!eventLevel) {
@@ -139,7 +139,7 @@ importMiniui(function () {
                     }
                 }
             };
-            request.get("device-event/" + eventId + "/productId/" + productId, request.encodeQueryParam({"deviceId.keyword": id}), function (response) {
+            request.get("log/device-event/" + eventId + "/productId/" + productId, request.encodeQueryParam({"deviceId.keyword": id}), function (response) {
                 if (response.status === 200) {
                     var result = response.result;
                     var data = result.data;
@@ -163,7 +163,7 @@ importMiniui(function () {
                             });
                         }
                         grid.setColumns(columns);
-                        grid.setUrl(request.basePath + "device-event/" + eventId + "/productId/" + productId);
+                        grid.setUrl(request.basePath + "log/device-event/" + eventId + "/productId/" + productId);
                         grid.load(request.encodeQueryParam({"deviceId.keyword": id}));
                         window.searchGrid = function (e) {
                             var names = mini.getsByName("searchCondition");
@@ -220,7 +220,7 @@ importMiniui(function () {
         $(document).on('click', '.event-refresh', function () {
             var eventId = this.title;
             var _this = this;
-            request.get("device-event/" + eventId + "/productId/" + productId, request.encodeQueryParam({"deviceId.keyword": id}), function (response) {
+            request.get("log/device-event/" + eventId + "/productId/" + productId, request.encodeQueryParam({"deviceId.keyword": id}), function (response) {
                 if (response.status === 200) {
                     $(_this).parents(".row").find(".event-value").html(response.result.total);
                     message.showTips("刷新成功");

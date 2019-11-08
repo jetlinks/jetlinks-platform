@@ -48,8 +48,8 @@ importMiniui(function () {
         var eventGrid = window.grid = mini.get("event-grid");
         tools.initGrid(logGrid);
         tools.initGrid(eventGrid);
-        logGrid.setUrl(API_BASE_PATH + "logger-execute/");
-        eventGrid.setUrl(API_BASE_PATH + "logger-execute-event/");
+        logGrid.setUrl(API_BASE_PATH + "log/rule/exec/");
+        eventGrid.setUrl(API_BASE_PATH + "log/rule/exec-event/");
         eventGrid.hideColumn(3);
 
         window.logCreateTimeRenderer = function (e) {
@@ -69,13 +69,13 @@ importMiniui(function () {
         var nodeId;
         function searchLog() {
             if (!nodeId)  nodeId = "";
-            searchGrid("#search-box-log", logGrid, {"instanceId": id,"nodeId": nodeId});
+            searchGrid("#search-box-log", logGrid, {"instanceId.keyword": id,"nodeId.keyword": nodeId});
         }
         function searchEvent() {
             if (!nodeId)  {
                 nodeId = "";
             };
-            searchGrid("#search-box-event", eventGrid, {"instanceId": id,"nodeId": nodeId});
+            searchGrid("#search-box-event", eventGrid, {"instanceId.keyword": id,"nodeId.keyword": nodeId});
         }
 
 

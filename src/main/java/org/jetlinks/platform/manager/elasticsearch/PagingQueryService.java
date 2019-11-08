@@ -51,8 +51,7 @@ public class PagingQueryService {
             SearchResponse response = restClient.getClient().search(request, RequestOptions.DEFAULT);
             return SearchResponseTranslator.translate(clazz, response);
         } catch (Exception e) {
-            // TODO: 2019/11/8 判断异常类型 
-            log.error("分页查询失败:{}", e);
+            log.error("分页查询失败:{}", e.getMessage());
             return Mono.just(PagerResult.empty());
         }
     }
