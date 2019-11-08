@@ -51,11 +51,10 @@ public class ElasticsearchSaveService implements SaveService {
 
 
     private <T> boolean save(List<T> data, ElasticSearchIndexEntity entity) {
-        Bulk.Builder bulk = new Bulk.Builder();
-        for (T o : data) {
-            Index indices = new Index.Builder(o).index(entity.getIndex()).type(entity.getType()).build();
-            bulk.addAction(indices);
-        }
+        Bulk.Builder bulk = new Bulk.Builder()
+                .defaultIndex(entity.getIndex())
+                .defaultType(entity.getType());
+        data.forEach(d -> bulk.addAction(new Index.Builder(d).build()));
         try {
             BulkResult result = jestClient.execute(bulk.build());
             if (result != null && result.isSucceeded()) {
@@ -72,7 +71,7 @@ public class ElasticsearchSaveService implements SaveService {
         Bulk.Builder builder = new Bulk.Builder()
                 .defaultIndex(entity.getIndex())
                 .defaultType(entity.getType());
-        builder.addAction(new Index.Builder(data).build());
+        data.forEach(d -> builder.addAction(new Index.Builder(d).build()));
         jestClient.executeAsync(builder.build(), new JestResultHandler<JestResult>() {
             @Override
             public void completed(JestResult result) {

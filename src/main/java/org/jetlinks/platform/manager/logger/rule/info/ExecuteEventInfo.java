@@ -11,8 +11,6 @@ import lombok.Setter;
 @Setter
 public class ExecuteEventInfo {
 
-    private String id;
-
     private String event;
 
     private long createTime = System.currentTimeMillis();
