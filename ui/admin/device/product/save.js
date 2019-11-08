@@ -6,20 +6,20 @@ function createScopeHtml(html) {
     labelValue.append("<div class=\"form-item\">");
     labelValue.append("<label class=\"form-label\">取值范围：</label>");
     labelValue.append("<div class=\"input-block component-body \">\n" +
-        "<input name=\"min\" emptyText=\"最小值\" style=\"width: 43.5%\" class=\"mini-textbox\">~\n" +
-        "<input name=\"max\" emptyText=\"最大值\" style=\"width: 43.5%\" class=\"mini-textbox\"></div>");
+        "<input name=\"min\" emptyText=\"最小值\" style=\"width: 41%\" class=\"mini-textbox\">~\n" +
+        "<input name=\"max\" emptyText=\"最大值\" style=\"width: 41%\" class=\"mini-textbox\"></div>");
 
     var stepValue = $("<div class=\"mini-col-11 form-component breadth\">");
     stepValue.append("<div class=\"form-item\">");
     stepValue.append("<label class=\"form-label\">步长：</label>");
     stepValue.append("<div class=\"input-block component-body \">\n" +
-        "<input name=\"step\" emptyText=\"请输入步长\" style=\"width: 90%\" class=\"mini-textbox\"></div>");
+        "<input name=\"step\" emptyText=\"请输入步长\" style=\"width: 85%\" class=\"mini-textbox\"></div>");
 
     var unitValue = $("<div class=\"mini-col-11 form-component breadth\">");
     unitValue.append("<div class=\"form-item\">");
     unitValue.append("<label class=\"form-label\">单位：</label>");
     unitValue.append("<div class=\"input-block component-body \">\n" +
-        "<input name=\"unit\" id=\"unifyUnit\" showNullItem='true' emptyText=\"请选择单位\" style=\"width: 90%\" valueField=\"id\" allowInput=\"true\" textField=\"text\" class=\"mini-combobox\"></div>");
+        "<input name=\"unit\" id=\"unifyUnit\" showNullItem='true' emptyText=\"请选择单位\" style=\"width: 85%\" valueField=\"id\" allowInput=\"true\" textField=\"text\" class=\"mini-combobox\"></div>");
     return html.append(labelValue).append(stepValue).append(unitValue);
 }
 
@@ -55,8 +55,8 @@ var dataType = [
             boolValue.append("<label class=\"form-label\">枚举项：</label>");
             boolValue.append("<div class=\"input-block component-body\">\n" +
                 "                <div class=\"parameter-input " + module + "\" id=\"enum-0-" + module + "\">\n" +
-                "                     <input required name=\"value\" emptyText=\"编号如：0\" style=\"width: 43.5%\" class=\"mini-textbox\">~\n" +
-                "                     <input required name=\"key\" emptyText=\"对该枚举项的描述\" style=\"width: 43.5%\" class=\"mini-textbox\">\n" +
+                "                     <input required name=\"value\" emptyText=\"编号如：0\" style=\"width: 41%\" class=\"mini-textbox\">~\n" +
+                "                     <input required name=\"key\" emptyText=\"对该枚举项的描述\" style=\"width: 41%\" class=\"mini-textbox\">\n" +
                 "                 </div>" +
                 "                 <div class=\"enum-" + module + "\"></div>\n" +
                 "             <div class=\"add-parameter\"><a class=\"text-button add-enum-config-" + module + "\" href=\"javascript:void(0);\">+添加枚举项</a></div>\n" +
@@ -72,12 +72,12 @@ var dataType = [
             boolValue.append("<label class=\"form-label\">布尔值：</label>");
             boolValue.append("<div class=\"input-block component-body \">\n" +
                 "                <div class=\"parameter-input\">\n" +
-                "                     <input required name=\"trueValue\" emptyText=\"trueValue\" style=\"width: 43.5%\" class=\"mini-textbox\">~\n" +
-                "                     <input required name=\"trueText\" emptyText=\"trueText\" style=\"width: 43.5%\" class=\"mini-textbox\">" +
+                "                     <input required name=\"trueValue\" emptyText=\"trueValue\" style=\"width: 41%\" class=\"mini-textbox\">~\n" +
+                "                     <input required name=\"trueText\" emptyText=\"trueText\" style=\"width: 41%\" class=\"mini-textbox\">" +
                 "                </div>" +
                 "                <div class=\"parameter-input\">\n" +
-                "                     <input required name=\"falseValue\" emptyText=\"falseValue\" style=\"width: 43.5%\" class=\"mini-textbox\">~\n" +
-                "                     <input required name=\"falseText\" emptyText=\"falseText\" style=\"width: 43.5%\" class=\"mini-textbox\">" +
+                "                     <input required name=\"falseValue\" emptyText=\"falseValue\" style=\"width: 41%\" class=\"mini-textbox\">~\n" +
+                "                     <input required name=\"falseText\" emptyText=\"falseText\" style=\"width: 41%\" class=\"mini-textbox\">" +
                 "                </div>" +
                 "           </div>");
             html.append(boolValue);
@@ -90,7 +90,7 @@ var dataType = [
             textValue.append("<div class=\"form-item\">");
             textValue.append("<label class=\"form-label\">数据长度：</label>");
             textValue.append("<div class=\"input-block component-body \">\n" +
-                "<input required name=\"length\" value='2048' style=\"width: 90%\" class=\"mini-textbox\"><span class=\"byte-span\">字节</span></div>");
+                "<input required name=\"length\" value='2048' style=\"width: 85%\" class=\"mini-textbox\"><span class=\"byte-span\">字节</span></div>");
             html.append(textValue);
         }
     },
@@ -101,7 +101,7 @@ var dataType = [
             textValue.append("<div class=\"form-item\">");
             textValue.append("<label class=\"form-label\">时间格式：</label>");
             textValue.append("<div class=\"input-block component-body \">\n" +
-                "<input style=\"width: 90%;\" name=\"dateFormat\" class=\"mini-textbox\" emptyText=\"不输入默认为:String类型的UTC时间戳 (毫秒)\"/></div>");
+                "<input style=\"width: 85%;\" name=\"dateFormat\" class=\"mini-textbox\" emptyText=\"不输入默认为:String类型的UTC时间戳 (毫秒)\"/></div>");
             html.append(textValue);
         }
     },
@@ -125,7 +125,7 @@ var dataType = [
             textValue.append("<div class=\"form-item\">");
             textValue.append("<label class=\"form-label\">元素类型：</label>");
             textValue.append("<div class=\"input-block component-body \">\n" +
-                "<input required name=\"elementType\" style=\"width: 90%\" value=\"1\"\n" +
+                "<input required name=\"elementType\" style=\"width: 85%\" value=\"1\"\n" +
                 "data=\"[{text:'int32',id:'1'},{text:'float',id:'2'},{text:'double',id:'3'},{text:'text',id:'4'},{text:'struct',id:'5'}]\"\n" +
                 "textField=\"text\" valueField=\"id\" class=\"mini-radiobuttonlist\"/></div>");
 
@@ -133,7 +133,7 @@ var dataType = [
             elementValue.append("<div class=\"form-item\">");
             elementValue.append("<label class=\"form-label\">元素个数：</label>");
             elementValue.append("<div class=\"input-block component-body \">\n" +
-                "<input required name='elementNumber' style=\"width: 90%;\" class=\"mini-textbox\" value=\"10\"/></div>");
+                "<input required name='elementNumber' style=\"width: 85%;\" class=\"mini-textbox\" value=\"10\"/></div>");
             html.append(textValue).append(elementValue);
         }
     }];
@@ -544,7 +544,7 @@ importMiniui(function () {
                 func = request.put;
                 api = "device-product/" + dataId;
             } else {
-                dataId = productInfo.id;
+                //dataId = productInfo.id;
                 productInfo.state = 0;
                 productInfo.createTime = new Date().getTime();
             }
@@ -565,7 +565,7 @@ importMiniui(function () {
                 loading.close();
                 if (response.status === 200) {
                     message.showTips("保存成功");
-                    if (!id) id = response.result.id;
+                    if (!dataId) dataId = response.result.id;
                 } else {
                     message.showTips("保存失败:" + response.message, "danger");
                     if (response.result)
@@ -591,8 +591,8 @@ importMiniui(function () {
         function addEnumFrame(place, data) {
             var enumId = "e" + new Date().getTime();
             $(".enum-" + place).append("<div class=\"parameter-input " + place + "\" id=\"" + enumId + "\">\n" +
-                "<input required name=\"value\" emptyText=\"编号如：0\" style=\"width: 43.5%\" class=\"mini-textbox\">~\n" +
-                "<input required name=\"key\" emptyText=\"对该枚举项的描述\" style=\"width: 43.5%\" class=\"mini-textbox\">\n" +
+                "<input required name=\"value\" emptyText=\"编号如：0\" style=\"width: 41%\" class=\"mini-textbox\">~\n" +
+                "<input required name=\"key\" emptyText=\"对该枚举项的描述\" style=\"width: 41%\" class=\"mini-textbox\">\n" +
                 "<a class=\"text-button\" id=\"del" + enumId + "\" href=\"javascript:void(0);\">删除</a>\n" +
                 "</div>\n");
             mini.parse();
@@ -626,7 +626,7 @@ importMiniui(function () {
                         boolValue.append("<div class=\"form-item\">");
                         boolValue.append("<label class=\"form-label\"></label>");
                         boolValue.append("<div class=\"input-block component-body \">\n" +
-                            "<input required borderStyle=\"border:0\" readOnly=\"true\" value='暂不支持此数据类型' style=\"width: 90%\" class=\"mini-textbox\">");
+                            "<input required borderStyle=\"border:0\" readOnly=\"true\" value='暂不支持此数据类型' style=\"width: 85%\" class=\"mini-textbox\">");
                         html.append(boolValue);
                         mini.parse();
                         return false;
@@ -718,7 +718,7 @@ importMiniui(function () {
         function addParameterHtml(position, parameterId, list, parameter) {
             var val = parameter.name + "：" + parameter.id + "(" + parameter.dataType + ")";
             $("." + position).append("<div class=\"parameter-input\" id=\"" + parameterId + "\">\n" +
-                "    <input required id=\"data-" + parameterId + "\" name=\"" + parameterId + "\" readonly=\"true\" style=\"width: 72%\" class=\"mini-textbox\" value=\"" + val + "\">\n" +
+                "    <input required id=\"data-" + parameterId + "\" name=\"" + parameterId + "\" readonly=\"true\" style=\"width: 65%\" class=\"mini-textbox\" value=\"" + val + "\">\n" +
                 "    <a class=\"text-button\" id=\"del" + parameterId + "\" href=\"javascript:void(0);\">删除</a>\n" +
                 "    <a class=\"text-button\" id=\"up" + parameterId + "\" href=\"javascript:void(0);\">编辑</a>\n" +
                 "</div>\n");
