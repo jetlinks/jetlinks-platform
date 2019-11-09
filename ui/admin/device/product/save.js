@@ -26,7 +26,8 @@ function createScopeHtml(html) {
 var dataValueType = {
     "int": "int32 (整数型)", "float": "float (单精度浮点型)", "double": "double (双精度浮点型)",
     "enum": "enum (枚举型)", "boolean": "bool (布尔型)", "string": "text (字符串)",
-    "date": "date (时间型)", "object": "object (结构体)", "array": "array (数组)"
+    "date": "date (时间型)", "object": "object (结构体)", "array": "array (数组)",
+    "file": "file (文件)", "password": "password (密码)"
 };
 var dataType = [
     {
@@ -135,6 +136,26 @@ var dataType = [
             elementValue.append("<div class=\"input-block component-body \">\n" +
                 "<input required name='elementNumber' style=\"width: 85%;\" class=\"mini-textbox\" value=\"10\"/></div>");
             html.append(textValue).append(elementValue);
+        }
+    },
+    {
+        text: "file (文件)", id: "file",
+        createEditor: function (module, html) {
+            var textValue = $("<div class=\"mini-col-11 form-component breadth\">");
+            textValue.append("<div class=\"form-item\">");
+            textValue.append("<label class=\"form-label\">元素类型：</label>");
+            textValue.append("<div class=\"input-block component-body \">\n" +
+                "<input required name=\"bodyType\" style=\"width: 85%\" value=\"url\"\n" +
+                "data=\"[{text:'URL(链接)',id:'url'},{text:'base64(base64编码)',id:'base64'},{text:'binary(二进制)',id:'binary'}]\"\n" +
+                "textField=\"text\" valueField=\"id\" class=\"mini-combobox\"/></div>");
+
+            html.append(textValue);
+        }
+    },
+    {
+        text: "password (密码)", id: "password",
+        createEditor: function (module, html) {
+            //todo 可以添加密码的长度||前台校验密码的正则表达式||是密码加密方式
         }
     }];
 var eventLevel = {"ordinary": "普通", "warn": "警告", "urgent": "紧急"};
