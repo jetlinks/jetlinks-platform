@@ -10,6 +10,7 @@ importMiniui(function () {
         grid.setUrl(request.basePath + "sms-sender/_query/no-paging");
 
         grid.setDataField("result");
+
         function search() {
             tools.searchGrid("#search-box", grid);
         }
@@ -40,7 +41,13 @@ importMiniui(function () {
                     edit(row.id);
                 })
             ];
-
+            if (request.getParameter("selector") === "1") {
+                html.push(
+                    tools.createActionButton("选中", "icon-ok", function () {
+                        tools.closeWindow(row);
+                    })
+                );
+            }
             html.push(
                 tools.createActionButton("删除", "icon-remove", function () {
                     require(["message"], function (message) {

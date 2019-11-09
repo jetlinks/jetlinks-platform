@@ -33,8 +33,7 @@ public class Hy2046SmsSenderProvider implements SmsProvider {
             .baseUrl("http://sms10692.com/v2sms.aspx")
             .build();
 
-//    @Autowired
-// TODO: 2019-11-09  
+    @Autowired
     private SmsTemplateManager templateManager;
 
     @Override

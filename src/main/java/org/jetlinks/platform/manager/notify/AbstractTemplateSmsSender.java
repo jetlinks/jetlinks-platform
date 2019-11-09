@@ -19,7 +19,8 @@ public abstract class AbstractTemplateSmsSender implements SmsSender {
 
     @Override
     public Mono<Boolean> sendTemplate(String templateId, Map<String, Object> context, List<String> sendTo) {
-        return getTemplateManager().getTemplate(templateId)
+        return getTemplateManager()
+                .getTemplate(templateId)
                 .map(template -> render(template, context))
                 .flatMap(text -> this.doSend(text, context, sendTo));
     }

@@ -10,7 +10,16 @@ importMiniui(function () {
 
         var id = request.getParameter("id");
 
-        if (id) loadData(id);
+
+        //加载服务商下拉列表
+        request.get("sms-sender/provider/all", function (res) {
+                if (res.status === 200) {
+                    console.log(res.result.join(","))
+                    mini.getbyName("provider").setData(res.result);
+                    if (id) loadData(id);
+                }
+            }
+        );
 
         $(".save-button").on("click", (function () {
             require(["message"], function (message) {
@@ -54,6 +63,7 @@ importMiniui(function () {
 function loadData(id) {
     require(["request", "message"], function (request, message) {
         var loading = message.loading("加载中...");
+        //加載數據
         request.get("sms-sender/" + id, function (response) {
             loading.hide();
             if (response.status === 200) {
@@ -61,8 +71,8 @@ function loadData(id) {
                 form.setData(response.result);
                 var configuration = response.result.configuration;
                 var configurationList = [];
-                Object.keys(configuration).forEach(function(index) {
-                    configurationList.push({"sortIndex":index,"describe":configuration[index]})
+                Object.keys(configuration).forEach(function (index) {
+                    configurationList.push({"sortIndex": index, "describe": configuration[index]})
                 });
                 mini.get("otherGrid").setData(configurationList)
             } else {

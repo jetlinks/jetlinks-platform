@@ -1,12 +1,14 @@
 package org.jetlinks.platform.manager.notify;
 
 import org.hswebframework.ezorm.rdb.mapping.ReactiveRepository;
+import org.jetlinks.platform.events.SaveSmsSenderSuccessEvent;
 import org.jetlinks.platform.manager.entity.SmsSenderEntity;
 import org.jetlinks.rule.engine.executor.node.notify.SmsSender;
 import org.jetlinks.rule.engine.executor.node.notify.SmsSenderManager;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -25,6 +27,11 @@ public class ManagedSmsSenderManager implements SmsSenderManager, BeanPostProces
 
     public void register(SmsProvider provider) {
         providers.put(provider.getProvider(), provider);
+    }
+
+    @EventListener
+    public void refreshCache(SaveSmsSenderSuccessEvent event) {
+        cache.remove(event.getId());
     }
 
     private Mono<SmsSender> createSender(SmsSenderEntity entity) {
