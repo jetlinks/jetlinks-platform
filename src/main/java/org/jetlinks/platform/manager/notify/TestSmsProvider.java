@@ -19,6 +19,11 @@ public class TestSmsProvider implements SmsProvider, SmsSender {
     }
 
     @Override
+    public String getName() {
+        return "测试";
+    }
+
+    @Override
     public Mono<SmsSender> createSender(Map<String, Object> configuration) {
         return Mono.just(this);
     }

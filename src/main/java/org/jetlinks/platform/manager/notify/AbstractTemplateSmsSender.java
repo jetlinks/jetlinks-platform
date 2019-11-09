@@ -30,7 +30,7 @@ public abstract class AbstractTemplateSmsSender implements SmsSender {
     }
 
 
-    abstract Mono<Boolean> doSend(String text, Map<String, Object> context, List<String> sendTo);
+    protected abstract Mono<Boolean> doSend(String text, Map<String, Object> context, List<String> sendTo);
 
 
 }

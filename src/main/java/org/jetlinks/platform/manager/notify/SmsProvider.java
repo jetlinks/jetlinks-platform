@@ -9,5 +9,7 @@ public interface SmsProvider {
 
     String getProvider();
 
+    String getName();
+
     Mono<SmsSender> createSender(Map<String, Object> configuration);
 }
