@@ -22,6 +22,8 @@ import org.jetlinks.rule.engine.executor.ExecutableRuleNodeFactoryStrategy;
 import org.jetlinks.rule.engine.executor.node.device.DeviceOperationNode;
 import org.jetlinks.rule.engine.executor.node.mqtt.MqttClientManager;
 import org.jetlinks.rule.engine.executor.node.mqtt.MqttClientNode;
+import org.jetlinks.rule.engine.executor.node.notify.EmailSenderManager;
+import org.jetlinks.rule.engine.executor.node.notify.EmailSenderNode;
 import org.jetlinks.rule.engine.executor.node.notify.SmsSenderManager;
 import org.jetlinks.rule.engine.executor.node.notify.SmsSenderNode;
 import org.jetlinks.rule.engine.executor.node.route.RouteEventNode;
@@ -164,6 +166,12 @@ public class RuleEngineConfiguration {
     public SmsSenderNode smsSenderNode(SmsSenderManager smsSenderManager) {
         return new SmsSenderNode(smsSenderManager);
     }
+
+    @Bean
+    public EmailSenderNode emailSenderNode(EmailSenderManager emailSenderManager) {
+        return new EmailSenderNode(emailSenderManager);
+    }
+
 
     @Bean
     public RouteEventNode routeEventNode() {

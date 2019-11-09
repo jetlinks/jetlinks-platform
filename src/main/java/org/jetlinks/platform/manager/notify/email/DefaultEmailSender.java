@@ -1,17 +1,21 @@
 package org.jetlinks.platform.manager.notify.email;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hswebframework.web.exception.BusinessException;
 import org.hswebframework.web.utils.ExpressionUtils;
 import org.jetlinks.platform.manager.entity.SenderTemplateEntity;
 import org.jetlinks.platform.manager.service.SenderTemplateService;
-import org.jetlinks.rule.engine.executor.node.notify.EmailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
+import javax.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.Map;
 
@@ -22,49 +26,70 @@ import java.util.Map;
 @Slf4j
 @AllArgsConstructor
 @NoArgsConstructor
-public class DefaultEmailSender implements EmailSender {
+public class DefaultEmailSender extends AbstractTemplateEmailSender {
 
 
-    private JavaMailSender mailSender;
+    private JavaMailSender javaMailSender;
 
     private String sender;
 
     private SenderTemplateService templateService;
 
     @Override
-    public Mono<Boolean> sendTemplate(String templateId, Map<String, Object> context, List<String> sendTo) {
-        return templateService.findById(Mono.just(templateId))
-                .map(this::convert)
-                .map(o -> {
-                    sendSimpleMail("", "", context, sendTo);
-                    return true;
-                });
+    protected Mono<SenderTemplateEntity> getTemplateEntity(String id) {
+        return templateService.findById(Mono.just(id));
     }
 
     @Override
-    public Mono<Boolean> send(String subject, String text, Map<String, Object> context, List<String> sendTo) {
-        return Mono.fromSupplier(() -> {
-            sendSimpleMail(subject, text, context, sendTo);
-            return true;
-        }).publishOn(Schedulers.elastic());
+    protected Mono<Boolean> doSend(Mono<DefaultEmailTemplate> template, List<String> sendTo) {
+        return template.map(t -> {
+            try {
+//                MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+//                MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);// 第二个参数设置为true，表示允许添加附件
+//                helper.setFrom(sender);
+//                helper.setTo(sendTo.toArray(new String[0]));
+//                helper.setSubject(t.getSubject());
+//                helper.setText(t.getText());
+//                javaMailSender.send(mimeMessage);
+                SimpleMailMessage message = new SimpleMailMessage();
+                message.setTo(sendTo.toArray(new String[0]));
+                message.setFrom(sender);
+                message.setSubject(t.getSubject());
+                message.setText(t.getText());
+                javaMailSender.send(message);
+                return true;
+            } catch (Exception e) {
+                throw new BusinessException("发送邮件失败", e);
+            }
+        });
     }
 
-    private void sendSimpleMail(String subject, String text, Map<String, Object> context, List<String> sendTo) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(sendTo.toArray(new String[0]));
-        message.setFrom(sender);
-        message.setSubject(ExpressionUtils.analytical(subject, context, "spel"));
-        message.setText(ExpressionUtils.analytical(text, context, "spel"));
-        mailSender.send(message);
+    @Override
+    protected Mono<DefaultEmailTemplate> convert(Mono<SenderTemplateEntity> templateEntity, Map<String, Object> context) {
+        return templateEntity.map(entity -> {
+            try {
+                JSONObject template = JSON.parseObject(entity.getTemplate());
+                String subject = template.getString("subject");
+                String text = template.getString("text");
+                if (StringUtils.isEmpty(subject) || StringUtils.isEmpty(text)) {
+                    throw new BusinessException("模板内容错误，text 或者 subject 不能为空。template:" + entity.getTemplate());
+                }
+                return DefaultEmailTemplate.builder()
+                        .text(ExpressionUtils.analytical(text, context, "spel"))
+                        .subject(ExpressionUtils.analytical(subject, context, "spel"))
+                        .build();
+            } catch (Exception e) {
+                throw new BusinessException("解析模板内容失败", e);
+            }
+        });
     }
-    // TODO: 2019/11/8 实现其它类型邮件模板发送，ps:附件、图片、html
 
-    protected Object convert(SenderTemplateEntity templateEntity) {
-        return null;
-    }
-
-    protected Object convert(String subject, String text) {
-        return null;
+    @Override
+    protected Mono<DefaultEmailTemplate> convert(String subject, String text, Map<String, Object> context) {
+        return Mono.fromSupplier(() -> DefaultEmailTemplate.builder()
+                .text(ExpressionUtils.analytical(subject, context, "spel"))
+                .subject(ExpressionUtils.analytical(text, context, "spel"))
+                .build());
     }
 
 }
