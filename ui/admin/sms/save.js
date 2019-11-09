@@ -43,7 +43,7 @@ importMiniui(function () {
                     loading.close();
                     if (response.status === 200) {
                         message.showTips("保存成功");
-                        if (!id) id = response.result;
+                        if (!id) id = response.result.id;
                     } else {
                         message.showTips("保存失败:" + response.message, "danger");
                         if (response.result)
