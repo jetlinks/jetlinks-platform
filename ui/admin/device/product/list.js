@@ -9,6 +9,41 @@ importMiniui(function () {
             initSize: 2
         }).init();
 
+        request.get("protocol/supports", function (response) {
+            if (response.status === 200) {
+                var messageProtocol = mini.getByName("messageProtocol");
+                var data = [];
+                response.result.forEach(function (val) {
+                    data.push({"id": val.id, "name": val.name + "(" + val.id + ")"})
+                });
+                messageProtocol.setData(data);
+            }
+        });
+
+        var deviceType = mini.get("deviceType");
+        deviceType.on("valuechanged", function () {
+            search();
+        });
+        var transportProtocol = mini.get("transportProtocol");
+        transportProtocol.on("valuechanged", function () {
+            search();
+        });
+
+        var messageProtocol = mini.get("messageProtocol");
+        request.get("protocol/supports",function (response) {
+            if (response.status === 200) {
+                var data = [];
+                response.result.forEach(function (val) {
+                    data.push({"id": val.id, "name": val.name + "(" + val.id + ")"})
+                });
+                messageProtocol.setData(data);
+            }
+        });
+        messageProtocol.on("valuechanged", function () {
+            search();
+        });
+
+
         tools.bindOnEnter("#search-box", search);
         var grid = window.grid = mini.get("datagrid");
         tools.initGrid(grid);

@@ -23,7 +23,7 @@
                 <div class="form-item">
                     <label class="form-label">设备类型：</label>
                     <div class="input-block component-body">
-                        <input name="deviceType" showNullItem="true" nullItemText="全部" emptyText="全部" allowInput="true"
+                        <input name="deviceType" id="deviceType" showNullItem="true" nullItemText="全部" emptyText="全部" allowInput="true"
                                data="[{text:'设备',value:'device'},{text:'网关',value:'gateway'}]"
                                textField="text" valueField="value" class="mini-combobox" style="width: 100%"/>
                     </div>
@@ -33,8 +33,9 @@
                 <div class="form-item">
                     <label class="form-label">连接协议：</label>
                     <div class="input-block component-body">
-                        <input name="transportProtocol" showNullItem="true" nullItemText="全部" emptyText="全部" allowInput="true"
-                               dataField="result" class="mini-combobox" style="width: 100%"/>
+                        <input name="transportProtocol" id="transportProtocol" textField="text" showNullItem="true" nullItemText="全部" emptyText="全部" allowInput="true"
+                               dataField="result" data="[{text:'MQTT',value:'MQTT'},{text:'UDP',value:'UDP'},{text:'DCP',value:'DCP'}]"
+                               valueField="value" style="width: 100%" class="mini-combobox">
                     </div>
                 </div>
             </div>
@@ -42,8 +43,8 @@
                 <div class="form-item">
                     <label class="form-label">消息协议：</label>
                     <div class="input-block component-body">
-                        <input name="messageProtocol" showNullItem="true" nullItemText="全部" emptyText="全部" allowInput="true"
-                               dataField="result" class="mini-combobox" style="width: 100%"/>
+                        <input name="messageProtocol" id="messageProtocol" showNullItem="true" nullItemText="全部" emptyText="全部" allowInput="true"
+                               dataField="result" valueField="id" textField="name" class="mini-combobox" style="width: 100%"/>
                     </div>
                 </div>
             </div>
