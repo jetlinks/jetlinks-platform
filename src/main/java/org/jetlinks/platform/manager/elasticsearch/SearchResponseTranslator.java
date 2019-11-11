@@ -18,11 +18,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SearchResponseTranslator {
 
-    public static  <T> Mono<PagerResult<T>> translate(Class<T> clazz, SearchResponse response) {
+    public static <T> PagerResult<T> translate(Class<T> clazz, SearchResponse response) {
+
         long total = response.getHits().getTotalHits();
         List<T> results = Arrays.stream(response.getHits().getHits())
                 .map(hit -> JSON.toJavaObject(new JSONObject(hit.getSourceAsMap()), clazz))
                 .collect(Collectors.toList());
-        return Mono.just(PagerResult.of((int) total, results));
+        return PagerResult.of((int) total, results);
+
     }
 }

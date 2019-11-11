@@ -1,6 +1,7 @@
 package org.jetlinks.platform.manager.elasticsearch;
 
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -47,13 +48,24 @@ public class PagingQueryService {
     }
 
     private <T> Mono<PagerResult<T>> search(SearchRequest request, Class<T> clazz) {
-        try {
-            SearchResponse response = restClient.getClient().search(request, RequestOptions.DEFAULT);
-            return SearchResponseTranslator.translate(clazz, response);
-        } catch (Exception e) {
-            log.error("分页查询失败:{}", e.getMessage());
-            return Mono.just(PagerResult.empty());
-        }
+        return Mono.create(sink -> {
+
+            restClient.getClient().searchAsync(request, RequestOptions.DEFAULT, new ActionListener<SearchResponse>() {
+                @Override
+                public void onResponse(SearchResponse searchResponse) {
+                    sink.success(SearchResponseTranslator.translate(clazz, searchResponse));
+
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    sink.error(e);
+                }
+            });
+
+
+        });
+
     }
 
     private boolean indexIsExists(String index) {
