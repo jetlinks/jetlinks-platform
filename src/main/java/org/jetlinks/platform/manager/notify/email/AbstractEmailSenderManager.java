@@ -42,7 +42,10 @@ public abstract class AbstractEmailSenderManager implements EmailSenderManager {
             synchronized (emailSenderCache) {
                 emailSender = emailSenderCache.get(config.getId());
                 if (emailSender == null) {
-                    emailSender = new DefaultEmailSender(config.getMailSender(), config.getSender(), config.getTemplateService());
+                    emailSender = new DefaultEmailSender();
+                    emailSender.setJavaMailSender(config.getMailSender());
+                    emailSender.setSender(config.getSender());
+                    emailSender.setTemplateService(config.getTemplateService());
                     emailSenderCache.put(config.getId(), emailSender);
                 }
                 sink.success(emailSender);
