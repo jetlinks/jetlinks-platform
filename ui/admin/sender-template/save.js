@@ -15,6 +15,11 @@ importMiniui(function () {
         window.tools = tools;
 
         var id = request.getParameter("id");
+        var typeParam = request.getParameter("type");
+        if (typeParam) {
+            type.setValue(typeParam);
+            type.setReadOnly(true);
+        }
 
         if (id) loadData(id);
 
