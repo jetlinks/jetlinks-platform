@@ -23,14 +23,9 @@ public class MeterRegistryCenter {
     private Map<String, MeterRegistry> meterRegistryMap = new HashMap<>();
 
 
-    @Value("${management.metrics.export.device-info.index:device_info}")
-    private String index;
-
-    @Value("${management.metrics.export.device-info.host:http://localhost:9200}")
+    @Value("${spring.elasticsearch.jest.uris:http://localhost:9200}")
     private String host;
 
-    @Value("${management.metrics.export.device-info.host:yyyy-MM-dd}")
-    private String indexDateFormat;
 
 
     private MeterRegistry createDefaultMeterRegistry() {
@@ -47,12 +42,12 @@ public class MeterRegistryCenter {
 
             @Override
             public String index() {
-                return index;
+                return "device_info";
             }
 
             @Override
             public String indexDateFormat() {
-                return indexDateFormat;
+                return "yyyy-MM-dd";
             }
         };
         return ElasticMeterRegistry.builder(elasticConfig).build();
