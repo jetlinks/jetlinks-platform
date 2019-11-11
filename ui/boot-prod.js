@@ -1,7 +1,7 @@
 window.BASE_PATH = "/";
 
 //api服务地址
-window.API_BASE_PATH = "http://127.0.0.1:8844/";
+window.API_BASE_PATH = "http://2.jetlinks.org:9001/";
 
 window.mini_debugger = false;
 window.profile = 'prod';

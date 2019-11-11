@@ -321,12 +321,20 @@ importMiniui(function () {
     window.UEDITOR_HOME_URL = window.BASE_PATH + "plugins/ueditor/";
 
     initPropertiesGrid();
-    require(["ueditor.config.js", "plugin/ueditor/ueditor.all.min"], function () {
-        require(["plugin/ueditor/lang/zh-cn/zh-cn"], function () {
-            editor = UE.getEditor("container");
-            initEditor();
+    require(["request"],function (request) {
+        require(["ueditor.config.js", "plugin/ueditor/ueditor.all.min"], function () {
+            require(["plugin/ueditor/lang/zh-cn/zh-cn"], function () {
+                editor = UE.getEditor("container");
+                editor.ready(function () {
+                    editor.execCommand('serverparam', ':X_Access_Token', request.getToken());
+                });
+
+                initEditor();
+
+            });
         });
     });
+
     require(["md5"], function (md5) {
         window.md5 = md5;
     });

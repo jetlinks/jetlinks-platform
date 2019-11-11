@@ -9,16 +9,13 @@ spring:
   elasticsearch:
     jest:
       uris: http://elasticsearch:9200
-elasticsearch:
-  client:
-    host: elasticsearch
-    port: 9200
 management:
   metrics:
     export:
       elastic:
         host: http://elasticsearch:9200
         index: jetlinks-metrics
+
 hsweb:
   file:
     upload:

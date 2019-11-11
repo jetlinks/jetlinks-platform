@@ -125,7 +125,7 @@ var menus = [{
     "parentId": "1190181861245626012",
     "path": "aZr2-vs2G",
     "permissionExpression": "resource:rule-model",
-    "sortIndex": 5,
+    "sortIndex": 501,
     "status": 1,
     "url": "admin/rule-engine/model/list.html"
 },{
@@ -135,11 +135,40 @@ var menus = [{
     "parentId": "1190181861245626012",
     "path": "aZr2-QszG",
     "permissionExpression": "resource:rule-instance",
-    "sortIndex": 5,
+    "sortIndex": 502,
     "status": 1,
     "url": "admin/rule-engine/instance/list.html"
+},{
+    "icon": "fa fa-envelope",
+    "id": "11201857568291282374",
+    "name": "邮箱管理",
+    "parentId": "1190181861245626012",
+    "path": "aZr2-Az1s",
+    "permissionExpression": "resource:email-sender",
+    "sortIndex": 503,
+    "status": 1,
+    "url": "admin/rule-engine/manager/email/list.html"
+},{
+    "icon": "fa fa-codepen",
+    "id": "11201898327436112093",
+    "name": "MQTT客户端管理",
+    "parentId": "1190181861245626012",
+    "path": "aZr2-OIz1",
+    "permissionExpression": "resource:mqtt-client",
+    "sortIndex": 504,
+    "status": 1,
+    "url": "admin/rule-engine/manager/mqttclient/list.html"
+},{
+    "icon": "fa fa-commenting",
+    "id": "11201123890436267564",
+    "name": "短信管理",
+    "parentId": "1190181861245626012",
+    "path": "aZr2-09A1",
+    "permissionExpression": "resource:sms-sender",
+    "sortIndex": 505,
+    "status": 1,
+    "url": "admin/sms/list.html"
 }
-
 ];
 var autzSettings = [
     {
