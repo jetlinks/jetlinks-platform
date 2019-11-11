@@ -14,7 +14,7 @@ define(["miniui-tools"], function (tools) {
             })
 
             template.on("buttonclick", function (e) {
-                tools.openWindow("admin/sender-template/list.html?selector=1", "选择模板", "1000", "500", function (data) {
+                tools.openWindow("admin/sender-template/list.html?selector=1&type=email", "选择模板", "1000", "500", function (data) {
                     if (data !== "cancel" || data !== "close") {
                         template.setValue(data.id);
                         template.setText(data.name);

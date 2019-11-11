@@ -5,9 +5,9 @@ importMiniui(function () {
     require(["request", "miniui-tools"], function (request, tools) {
 
         var typeData = [
-            {id:"", text:""},
-            {id:"sms", text:"短信"},
-            {id:"email", text:"邮件"}
+            {id: "", text: ""},
+            {id: "sms", text: "短信"},
+            {id: "email", text: "邮件"}
         ];
 
         var type = mini.getbyName("type");
@@ -19,14 +19,21 @@ importMiniui(function () {
         grid.setUrl(request.basePath + "sender-template/_query/no-paging");
 
         grid.setDataField("result");
+
+        var type = request.getParameter("type");
+
         function search() {
-            tools.searchGrid("#search-box", grid);
+            if (type) {
+                tools.searchGrid("#search-box", grid, request.encodeQueryParam({type: type}));
+            } else {
+                tools.searchGrid("#search-box", grid);
+            }
         }
 
         $(".search-button").click(search);
         tools.bindOnEnter("#search-box", search);
         $(".add-button").click(function () {
-            tools.openWindow("admin/sender-template/save.html", "添加模板", "550", "430", function (e) {
+            tools.openWindow("admin/sender-template/save.html?type=" + type, "添加模板", "550", "430", function (e) {
                 grid.reload();
             })
         });
@@ -36,7 +43,7 @@ importMiniui(function () {
         }
 
         function edit(id) {
-            tools.openWindow("admin/sender-template/save.html?id=" + id, "编辑模板", "550", "430", function (e) {
+            tools.openWindow("admin/sender-template/save.html?id=" + id + "&type=" + type, "编辑模板", "550", "430", function (e) {
                 grid.reload();
             })
         }
