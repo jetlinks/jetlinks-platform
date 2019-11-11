@@ -42,10 +42,10 @@ public class LocalMqttClientManager extends VertxMqttClientManager {
     }
 
     @PostConstruct
-    public void init(){
+    public void init() {
         //每5秒进行连接保活
         Flux.interval(Duration.ofSeconds(5))
-                .subscribe(l-> doClientKeepAlive());
+                .subscribe(l -> doClientKeepAlive());
     }
 
     @Override
@@ -61,7 +61,7 @@ public class LocalMqttClientManager extends VertxMqttClientManager {
 
         MqttClientOptions options = new MqttClientOptions();
         options.setClientId(entity.getClientId());
-
+        options.setConnectTimeout(10000);
         if (secure != null) {
             options.setUsername((String) secure.get("username"));
             options.setPassword((String) secure.get("password"));
