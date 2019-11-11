@@ -4,6 +4,8 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.elastic.ElasticConfig;
 import io.micrometer.elastic.ElasticMeterRegistry;
 import org.hswebframework.web.exception.NotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +23,16 @@ public class MeterRegistryCenter {
     private Map<String, MeterRegistry> meterRegistryMap = new HashMap<>();
 
 
+    @Value("${management.metrics.export.device-info.index:device_info}")
+    private String index;
+
+    @Value("${management.metrics.export.device-info.host:http://localhost:9200}")
+    private String host;
+
+    @Value("${management.metrics.export.device-info.host:yyyy-MM-dd}")
+    private String indexDateFormat;
+
+
     private MeterRegistry createDefaultMeterRegistry() {
         ElasticConfig elasticConfig = new ElasticConfig() {
 
@@ -29,13 +41,18 @@ public class MeterRegistryCenter {
             }
 
             @Override
+            public String host() {
+                return host;
+            }
+
+            @Override
             public String index() {
-                return "device_info";
+                return index;
             }
 
             @Override
             public String indexDateFormat() {
-                return "yyyy-MM-dd";
+                return indexDateFormat;
             }
         };
         return ElasticMeterRegistry.builder(elasticConfig).build();
