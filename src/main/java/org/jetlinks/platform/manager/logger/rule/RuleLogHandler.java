@@ -66,14 +66,14 @@ public class RuleLogHandler {
 
     private void saveLogInfo(Flux<ExecuteLogInfo> logInfoFlux) {
         FluxUtils.bufferRate(logInfoFlux, 800, Duration.ofSeconds(2))
-                .map(data -> saveService.asyncBulkSave(data, EsDataType.EXECUTE_LOG_INDEX))
+                .flatMap(data -> saveService.asyncBulkSave(data, EsDataType.EXECUTE_LOG_INDEX))
                 .doOnError(ex -> log.error("保存规则执行日志失败", ex))
                 .subscribe(s -> log.info("保存规则执行日志成功"));
     }
 
     private void saveEventInfo(Flux<ExecuteEventInfo> eventInfoFlux) {
         FluxUtils.bufferRate(eventInfoFlux, 800, Duration.ofSeconds(2))
-                .map(data -> saveService.asyncBulkSave(data, EsDataType.EXECUTE_EVENT_LOG_INDEX))
+                .flatMap(data -> saveService.asyncBulkSave(data, EsDataType.EXECUTE_EVENT_LOG_INDEX))
                 .doOnError(ex -> log.error("保存规则执行事件日志失败", ex))
                 .subscribe(s -> log.info("保存规则执行事件日志成功"));
     }

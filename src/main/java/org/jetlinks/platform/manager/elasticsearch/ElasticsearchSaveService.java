@@ -61,7 +61,14 @@ public class ElasticsearchSaveService implements SaveService {
         return Mono.create(sink -> {
             BulkRequest bulkRequest = new BulkRequest(entity.getIndex(), entity.getType());
             IndexRequest request = new IndexRequest();
-            data.forEach(d -> request.source(JSON.toJSONString(data), XContentType.JSON));
+            data.forEach(d -> {
+                if (d instanceof String){
+                    request.source(d, XContentType.JSON);
+                }else {
+                    request.source(JSON.toJSONString(d), XContentType.JSON);
+                }
+
+            });
             bulkRequest.add(request);
             restClient.getClient().bulkAsync(bulkRequest, RequestOptions.DEFAULT, new ActionListener<BulkResponse>() {
                 @Override
