@@ -5,9 +5,6 @@ spring:
     active: dev
   application:
     name: jetlinks-platform
-  elasticsearch:
-    jest:
-      uris: http://localhost:9200
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: Asia/Shanghai
