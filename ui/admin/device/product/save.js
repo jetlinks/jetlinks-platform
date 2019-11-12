@@ -155,7 +155,7 @@ var dataType = [
     {
         text: "password (密码)", id: "password",
         createEditor: function (module, html) {
-            //todo 可以添加密码的长度||前台校验密码的正则表达式||是密码加密方式
+            //todo 可以添加密码的长度||前台校验密码的正则表达式||密码加密方式
         }
     }];
 var eventLevel = {"ordinary": "普通", "warn": "警告", "urgent": "紧急"};
@@ -690,7 +690,7 @@ importMiniui(function () {
 
         function gainUnit() {
             var unifyUnit = mini.get("unifyUnit");
-            request.get("../device-product/getUnifyUnit", function (response) {
+            request.get("protocol/units", function (response) {
                 if (response.status === 200) {
                     unifyUnit.setData(response.result);
                 }
