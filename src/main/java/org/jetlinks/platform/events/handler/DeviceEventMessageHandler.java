@@ -215,6 +215,7 @@ public class DeviceEventMessageHandler {
                                         });
                                 return entity;
                             })
+                            .peek(processor::onNext)
                             .collect(Collectors.toList());
                    return syncDeviceProperty(entities);
                 })
