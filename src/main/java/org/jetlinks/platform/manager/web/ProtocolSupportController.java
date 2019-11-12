@@ -10,6 +10,8 @@ import org.hswebframework.web.authorization.annotation.Resource;
 import org.hswebframework.web.crud.web.reactive.ReactiveServiceCrudController;
 import org.jetlinks.core.ProtocolSupport;
 import org.jetlinks.core.ProtocolSupports;
+import org.jetlinks.core.message.codec.DefaultTransport;
+import org.jetlinks.core.metadata.ConfigMetadata;
 import org.jetlinks.core.metadata.unit.ValueUnit;
 import org.jetlinks.core.metadata.unit.ValueUnits;
 import org.jetlinks.platform.manager.entity.DeviceInstanceEntity;
@@ -53,6 +55,12 @@ public class ProtocolSupportController implements
     public Flux<ProtocolInfo> allProtocols() {
         return protocolSupports.getProtocols()
                 .map(ProtocolInfo::of);
+    }
+
+    @GetMapping("/{id}/{transport}/configuration")
+    public Mono<ConfigMetadata> getTransportConfiguration(@PathVariable String id, @PathVariable DefaultTransport transport) {
+        return protocolSupports.getProtocol(id)
+                .flatMap(support -> support.getConfigMetadata(transport));
     }
 
     @GetMapping("/units")
