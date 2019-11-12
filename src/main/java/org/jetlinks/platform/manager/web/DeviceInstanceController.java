@@ -1,5 +1,6 @@
 package org.jetlinks.platform.manager.web;
 
+import com.alibaba.excel.EasyExcel;
 import lombok.Getter;
 import org.hswebframework.ezorm.rdb.exception.DuplicateKeyException;
 import org.hswebframework.web.authorization.annotation.Authorize;
@@ -8,18 +9,23 @@ import org.hswebframework.web.crud.web.reactive.ReactiveServiceCrudController;
 import org.hswebframework.web.exception.BusinessException;
 import org.jetlinks.platform.manager.entity.DeviceInstanceEntity;
 import org.jetlinks.platform.manager.entity.DevicePropertiesEntity;
+import org.jetlinks.platform.manager.entity.excel.DeviceInstanceImportExportEntity;
 import org.jetlinks.platform.manager.service.LocalDeviceInstanceService;
 import org.jetlinks.platform.manager.service.LocalDevicePropertiesService;
 import org.jetlinks.platform.manager.web.response.DeviceInfo;
 import org.jetlinks.platform.manager.web.response.DeviceRunInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ZeroCopyHttpOutputMessage;
 import org.springframework.web.bind.annotation.*;
-import reactor.cache.CacheMono;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Map;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/device-instance")
@@ -85,5 +91,15 @@ public class DeviceInstanceController implements
                 .onErrorMap(DuplicateKeyException.class, err-> new BusinessException("设备id重复",err))
                 .thenReturn(entity));
 
+    }
+
+    @GetMapping("/download")
+    public Mono<Void> download(ZeroCopyHttpOutputMessage zeroCopyResponse) throws IOException {
+        zeroCopyResponse.getHeaders().set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=template.xlsx");
+        zeroCopyResponse.getHeaders().setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        org.springframework.core.io.Resource resource = new ClassPathResource("parallel.png");
+        File file = resource.getFile();
+        EasyExcel.write(file, DeviceInstanceImportExportEntity.class).sheet("模板").doWrite(new ArrayList());
+        return zeroCopyResponse.writeWith(file, 0, file.length());
     }
 }

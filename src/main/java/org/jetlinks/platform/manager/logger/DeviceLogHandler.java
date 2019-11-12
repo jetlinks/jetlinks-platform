@@ -1,10 +1,6 @@
 package org.jetlinks.platform.manager.logger;
 
-import io.searchbox.client.JestClient;
-import io.searchbox.client.JestResult;
-import io.searchbox.client.JestResultHandler;
-import io.searchbox.core.Bulk;
-import io.searchbox.core.Index;
+
 import lombok.extern.slf4j.Slf4j;
 import org.jetlinks.core.utils.FluxUtils;
 import org.jetlinks.platform.events.DeviceConnectedEvent;
@@ -16,6 +12,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import java.time.Duration;
@@ -31,7 +28,7 @@ import java.util.List;
 public class DeviceLogHandler {
 
     @Autowired
-    private JestClient jestClient;
+    private SaveService saveService;
 
     private volatile FluxSink<DeviceOperationLog> deviceIdSink;
 
@@ -81,33 +78,13 @@ public class DeviceLogHandler {
 
     private void collectDeviceLog(Flux<DeviceOperationLog> deviceOperations) {
         FluxUtils.bufferRate(deviceOperations, 800, Duration.ofSeconds(2))
-                .subscribe(this::recordLog);
+                .flatMap(this::recordLog)
+                .doOnError(ex -> log.error("保存设备操作日志失败", ex))
+                .subscribe(s -> log.info("保存设备操作日志成功"));
     }
 
 
-    private void recordLog(List<DeviceOperationLog> datas) {
-        try {
-            Bulk.Builder builder = new Bulk.Builder()
-                    .defaultIndex(EsDataType.DEVICE_OPERATION.getIndex())
-                    .defaultType(EsDataType.DEVICE_OPERATION.getType());
-            datas.forEach(data -> builder.addAction(new Index.Builder(data.toSimpleMap()).build()));
-            jestClient.executeAsync(builder.build(), new JestResultHandler<JestResult>() {
-                @Override
-                public void completed(JestResult result) {
-                    if (!result.isSucceeded()) {
-                        log.error("保存设备操作日志失败:{}", result.getJsonString());
-                    }else{
-                        log.debug("保存设备操作日志成功:{}",datas.size());
-                    }
-                }
-
-                @Override
-                public void failed(Exception ex) {
-                    log.error("保存设备操作日志失败", ex);
-                }
-            });
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
+    private Mono<Boolean> recordLog(List<DeviceOperationLog> datas) {
+        return saveService.asyncBulkSave(datas,EsDataType.DEVICE_OPERATION);
     }
 }

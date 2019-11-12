@@ -1,5 +1,6 @@
 package org.jetlinks.platform.manager.entity;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.hswebframework.ezorm.rdb.mapping.annotation.ColumnType;
@@ -32,6 +33,7 @@ public class DeviceInstanceEntity extends GenericEntity<String> implements Recor
 
     //设备实例名称
     @Column(name = "name")
+    @ExcelProperty("设备名称")
     @NotBlank(message = "设备名称不能为空", groups = CreateGroup.class)
     private String name;
 
@@ -45,6 +47,7 @@ public class DeviceInstanceEntity extends GenericEntity<String> implements Recor
     private String productId;
 
     @Column(name = "product_name")
+    @ExcelProperty("产品名称")
     @NotBlank(message = "产品名称不能为空", groups = CreateGroup.class)
     private String productName;
 
@@ -62,7 +65,7 @@ public class DeviceInstanceEntity extends GenericEntity<String> implements Recor
     @Column(name = "state")
     @EnumCodec
     @ColumnType(javaType = String.class)
-    private DeviceState state=DeviceState.notActive;
+    private DeviceState state;
 
     @Column(name = "creator_id")
     private String creatorId;
