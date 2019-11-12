@@ -19,12 +19,10 @@ import java.util.stream.Collectors;
 public class SearchResponseTranslator {
 
     public static <T> PagerResult<T> translate(Class<T> clazz, SearchResponse response) {
-
         long total = response.getHits().getTotalHits();
         List<T> results = Arrays.stream(response.getHits().getHits())
                 .map(hit -> JSON.toJavaObject(new JSONObject(hit.getSourceAsMap()), clazz))
                 .collect(Collectors.toList());
         return PagerResult.of((int) total, results);
-
     }
 }

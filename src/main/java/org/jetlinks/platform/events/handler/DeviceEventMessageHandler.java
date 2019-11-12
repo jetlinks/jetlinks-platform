@@ -1,10 +1,5 @@
 package org.jetlinks.platform.events.handler;
 
-import io.searchbox.client.JestClient;
-import io.searchbox.client.JestResult;
-import io.searchbox.client.JestResultHandler;
-import io.searchbox.core.Bulk;
-import io.searchbox.core.Index;
 import lombok.extern.slf4j.Slf4j;
 import org.hswebframework.web.event.GenericsPayloadApplicationEvent;
 import org.jetlinks.core.Value;
@@ -18,13 +13,16 @@ import org.jetlinks.core.metadata.DataType;
 import org.jetlinks.core.metadata.DeviceMetadata;
 import org.jetlinks.core.metadata.EventMetadata;
 import org.jetlinks.core.metadata.PropertyMetadata;
-import org.jetlinks.core.metadata.types.*;
+import org.jetlinks.core.metadata.types.DateTimeType;
+import org.jetlinks.core.metadata.types.NumberType;
+import org.jetlinks.core.metadata.types.UnknownType;
 import org.jetlinks.platform.events.DeviceMessageEvent;
 import org.jetlinks.platform.events.GaugePropertyEvent;
-import org.jetlinks.platform.manager.entity.ElasticSearchIndexEntity;
-import org.jetlinks.platform.manager.logger.DeviceOperationLog;
 import org.jetlinks.platform.manager.entity.DevicePropertiesEntity;
+import org.jetlinks.platform.manager.entity.ElasticSearchIndexEntity;
 import org.jetlinks.platform.manager.enums.DeviceLogType;
+import org.jetlinks.platform.manager.logger.DeviceOperationLog;
+import org.jetlinks.platform.manager.logger.SaveService;
 import org.jetlinks.platform.manager.service.LocalDevicePropertiesService;
 import org.jetlinks.platform.manager.utils.GenerateDeviceEventIndex;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +34,10 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -50,7 +51,7 @@ public class DeviceEventMessageHandler {
     private LocalDevicePropertiesService propertiesService;
 
     @Autowired
-    private JestClient jestClient;
+    private SaveService saveService;
 
     @Autowired
     private DeviceRegistry registry;
@@ -145,7 +146,7 @@ public class DeviceEventMessageHandler {
                                         .map(Value::asString)
                                         .switchIfEmpty(Mono.just("")),
                                 deviceOperator.getMetadata()))
-                .subscribe(tuple2 -> {
+                .flatMap(tuple2 -> {
                     DeviceMetadata metadata = tuple2.getT2();
                     Object value = message.getData();
                     DataType dataType = metadata
@@ -165,37 +166,17 @@ public class DeviceEventMessageHandler {
                     }
                     ElasticSearchIndexEntity indexEntity =
                             GenerateDeviceEventIndex.generateIndex(tuple2.getT1(), message.getEvent());
-                    Bulk.Builder builder = new Bulk.Builder()
-                            .defaultIndex(indexEntity.getIndex())
-                            .defaultType(indexEntity.getType());
-
-                    builder.addAction(new Index.Builder(data).build());
-
-                    // TODO: 2019/11/4 修改为批量存储
-                    jestClient.executeAsync(builder.build(), new JestResultHandler<JestResult>() {
-                        @Override
-                        public void completed(JestResult result) {
-                            if (!result.isSucceeded()) {
-                                log.error("保存设备事件失败:{}", result.getJsonString());
-                            } else {
-                                log.info("保存设备事件成功");
-                            }
-                        }
-
-                        @Override
-                        public void failed(Exception ex) {
-                            log.error("保存设备事件失败", ex);
-                        }
-                    });
-                });
-
+                    return saveService.asyncSave(data, indexEntity);
+                })
+                .doOnError(ex -> log.error("保存设备事件失败", ex))
+                .subscribe(s -> log.info("保存设备事件成功"));
 
     }
 
     private void syncDeviceProperty(String device, Map<String, Object> properties, Date time) {
         registry.getDevice(device)
                 .flatMap(DeviceOperator::getMetadata)
-                .subscribe(metadata -> {
+                .flatMap(metadata -> {
 
                     Map<String, PropertyMetadata> propertyMetadata = metadata.getProperties().stream()
                             .collect(Collectors.toMap(PropertyMetadata::getId, Function.identity()));
@@ -234,9 +215,12 @@ public class DeviceEventMessageHandler {
                                         });
                                 return entity;
                             })
+                            .peek(processor::onNext)
                             .collect(Collectors.toList());
-                    syncDeviceProperty(entities);
-                });
+                   return syncDeviceProperty(entities);
+                })
+                .doOnError(ex -> log.error("保存设备属性记录失败", ex))
+                .subscribe(s -> log.info("保存设备属性记录成功"));
 
     }
 
@@ -262,32 +246,12 @@ public class DeviceEventMessageHandler {
         });
     }
 
-    private void syncDeviceProperty(List<DevicePropertiesEntity> list) {
-        Bulk.Builder builder = new Bulk.Builder()
-                .defaultIndex("device_properties")
-                .defaultType("device");
-
-        for (DevicePropertiesEntity entity : list) {
-
-            builder.addAction(new Index
-                    .Builder(entity.toMap())
-                    .build());
-            processor.onNext(entity);
-        }
-
-        jestClient.executeAsync(builder.build(), new JestResultHandler<JestResult>() {
-            @Override
-            public void completed(JestResult result) {
-                if (!result.isSucceeded()) {
-                    log.error("保存设备属性记录失败:{}", result.getJsonString());
-                }
-            }
-
-            @Override
-            public void failed(Exception ex) {
-                log.error("保存设备属性记录失败", ex);
-            }
-        });
-
+    private Mono<Boolean> syncDeviceProperty(List<DevicePropertiesEntity> list) {
+       return saveService.asyncBulkSave(list,
+               ElasticSearchIndexEntity.builder()
+                       .index("device_properties")
+                       .type("doc")
+                       .build()
+       );
     }
 }

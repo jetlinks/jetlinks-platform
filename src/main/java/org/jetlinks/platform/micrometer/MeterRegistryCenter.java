@@ -23,9 +23,11 @@ public class MeterRegistryCenter {
     private Map<String, MeterRegistry> meterRegistryMap = new HashMap<>();
 
 
-    @Value("${spring.elasticsearch.jest.uris:http://localhost:9200}")
+    @Value("${elasticsearch.client.host:localhost}")
     private String host;
 
+    @Value("${elasticsearch.client.port:9200}")
+    private String port;
 
 
     private MeterRegistry createDefaultMeterRegistry() {
@@ -37,8 +39,9 @@ public class MeterRegistryCenter {
 
             @Override
             public String host() {
-                return host;
+                return "http://".concat(host).concat(":").concat(port);
             }
+
 
             @Override
             public String index() {

@@ -1,5 +1,6 @@
 package org.jetlinks.platform.manager.logger.rule;
 
+import lombok.extern.slf4j.Slf4j;
 import org.hswebframework.web.bean.FastBeanCopier;
 import org.jetlinks.core.utils.FluxUtils;
 import org.jetlinks.platform.manager.elasticsearch.ElasticsearchSaveService;
@@ -9,7 +10,6 @@ import org.jetlinks.platform.manager.logger.rule.info.ExecuteLogInfo;
 import org.jetlinks.rule.engine.api.events.NodeExecuteEvent;
 import org.jetlinks.rule.engine.api.events.RuleEvent;
 import org.jetlinks.rule.engine.cluster.logger.LogInfo;
-import org.jetlinks.rule.engine.cluster.worker.NodeExecuteLogEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 import java.time.Duration;
 
 @Component
+@Slf4j
 public class RuleLogHandler {
 
     private final ElasticsearchSaveService saveService;
@@ -39,7 +40,7 @@ public class RuleLogHandler {
         if (logInfoFluxSink != null) {
             logInfoFluxSink.next(logInfo);
         } else {
-            collectLogInfo(Flux.just(logInfo));
+            saveLogInfo(Flux.just(logInfo));
         }
     }
 
@@ -51,7 +52,7 @@ public class RuleLogHandler {
             if (eventInfoFluxSink != null) {
                 eventInfoFluxSink.next(eventInfo);
             } else {
-                collectEventInfo(Flux.just(eventInfo));
+                saveEventInfo(Flux.just(eventInfo));
             }
         }
     }
@@ -59,18 +60,22 @@ public class RuleLogHandler {
 
     @PostConstruct
     public void init() {
-        collectLogInfo(Flux.create(fluxSink -> logInfoFluxSink = fluxSink));
-        collectEventInfo(Flux.create(fluxSink -> eventInfoFluxSink = fluxSink));
+        saveLogInfo(Flux.create(fluxSink -> logInfoFluxSink = fluxSink));
+        saveEventInfo(Flux.create(fluxSink -> eventInfoFluxSink = fluxSink));
     }
 
-    private void collectLogInfo(Flux<ExecuteLogInfo> logInfoFlux) {
+    private void saveLogInfo(Flux<ExecuteLogInfo> logInfoFlux) {
         FluxUtils.bufferRate(logInfoFlux, 800, Duration.ofSeconds(2))
-                .subscribe(data -> saveService.asyncBulkSave(data, EsDataType.EXECUTE_LOG_INDEX));
+                .flatMap(data -> saveService.asyncBulkSave(data, EsDataType.EXECUTE_LOG_INDEX))
+                .doOnError(ex -> log.error("保存规则执行日志失败", ex))
+                .subscribe(s -> log.info("保存规则执行日志成功"));
     }
 
-    private void collectEventInfo(Flux<ExecuteEventInfo> eventInfoFlux) {
+    private void saveEventInfo(Flux<ExecuteEventInfo> eventInfoFlux) {
         FluxUtils.bufferRate(eventInfoFlux, 800, Duration.ofSeconds(2))
-                .subscribe(data -> saveService.asyncBulkSave(data, EsDataType.EXECUTE_EVENT_LOG_INDEX));
+                .flatMap(data -> saveService.asyncBulkSave(data, EsDataType.EXECUTE_EVENT_LOG_INDEX))
+                .doOnError(ex -> log.error("保存规则执行事件日志失败", ex))
+                .subscribe(s -> log.info("保存规则执行事件日志成功"));
     }
 
 

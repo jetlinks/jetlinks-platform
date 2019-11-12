@@ -42,8 +42,7 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
     @Autowired
     private LocalDeviceProductService deviceProductService;
 
-    @Autowired
-    private LocalDevicePropertiesService propertiesService;
+
 
     /**
      * 重置设备安全配置
@@ -93,7 +92,7 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
                 .then(deviceDeployUpdate(id));
     }
 
-    public Mono<Integer> cancelDeploy(String id){
+    public Mono<Integer> cancelDeploy(String id) {
         return findById(Mono.just(id))
                 .flatMap(product -> registry.unRegistry(id)
                         .thenReturn(true)
@@ -142,12 +141,12 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
     }
 
     @EventListener
-    public void handleDeviceOnlineEvent(DeviceOnlineMessage message){
+    public void handleDeviceOnlineEvent(DeviceOnlineMessage message) {
         deviceIdSink.next(message.getDeviceId());
     }
 
     @EventListener
-    public void handleDeviceOnlineEvent(DeviceOfflineMessage message){
+    public void handleDeviceOnlineEvent(DeviceOfflineMessage message) {
         deviceIdSink.next(message.getDeviceId());
     }
 
@@ -219,6 +218,44 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
                         .execute());
 
     }
+
+
+    private final static Map<String, String> columnMapper = new HashMap<>();
+
+    static {
+        columnMapper.put("设备id", "id");
+        columnMapper.put("设备名称", "name");
+        columnMapper.put("型号名称", "productName");
+    }
+
+
+
+    // TODO: 2019/11/11 型号分组 map
+    // TODO: 2019/11/11 不写泛型，直接定死
+    // TODO: 2019/11/11 es 查询 写入都安排成异步的
+//    public Mono<Integer> doBatchImport(String fileUrl) {
+//        Map<String, DeviceProductEntity> productCache = new ConcurrentHashMap<>();
+//        return DeviceInstanceDataListener
+//                .of(fileUrl)
+//                .map(d -> {
+//                    if (productCache.get(d.getProductName()) == null) {
+//                        deviceProductService.createQuery()
+//                                .where(DeviceProductEntity::getName, d.getProductName())
+//                                .fetchOne()
+//                                .switchIfEmpty(Mono.error(new BusinessException("导入的型号不存在")))//报错终止流的导入还是打日志
+//                                .subscribe(productEntity -> {
+//                                    productCache.put(productEntity.getName(), productEntity);
+//                                    d.setProductId(productEntity.getId());
+//                                });
+//                    } else {
+//                        d.setProductId(productCache.get(d.getProductName()).getId());
+//                    }
+//                    return d;
+//                })
+//                //.bufferTimeout(200, Duration.ofSeconds(2))
+//                .as(this::save)
+//                .collect(Collectors.summarizingInt(Integer::intValue));
+//    }
 
 //    public void updateRegistry(DeviceInstanceEntity entity) {
 //        Runnable runnable = () -> {
