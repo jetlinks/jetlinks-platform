@@ -2,8 +2,8 @@ importResource("/admin/css/common.css");
 
 importMiniui(function () {
     mini.parse();
-    require(["request", "miniui-tools", "message", "search-box"], function (request, tools, message, SearchBox) {
-
+    require(["request", "miniui-tools", "message", "search-box"],
+        function (request, tools, message, SearchBox) {
         var typeData = [
             {id:"sms", text:"短信"},
             {id:"email", text:"邮件"}
@@ -48,6 +48,18 @@ importMiniui(function () {
                 })
             });
         }));
+            require(["ueditor.config.js", "plugin/ueditor/ueditor.all.min"], function () {
+                require(["plugin/ueditor/lang/zh-cn/zh-cn"], function () {
+                    editor = UE.getEditor("container");
+                    editor.ready(function () {
+                        editor.execCommand('serverparam', ':X_Access_Token', request.getToken());
+                    });
+
+                    initEditor();
+
+                });
+            });
+
     });
     window.renderAction = function (e) {
         return tools.createActionButton("删除", "icon-remove", function () {
@@ -79,3 +91,41 @@ function getDataAndValidate() {
     }
     return form.getData();
 }
+
+
+var chooseWidgets = {}; //当前已经选择列的组件格式为{id:widget}. id为键，组件对象为值。
+var editor;
+var nowEditId;
+var changedEvents = [];
+
+
+function initEditor() {
+    editor.addListener('selectionchange', function () {
+        var focusNode = editor.selection.getStart();
+        var id = $(focusNode).attr("widget-id");
+        // if(id){
+        nowEditId = id;
+        doConfigChange();
+        //}
+    });
+
+}
+
+var lstChangeConfig = "";
+
+function doConfigChange() {
+    var config = getConfig();
+    var configJSON = JSON.stringify(config);
+
+    if (configJSON != lstChangeConfig) {
+        lstChangeConfig = configJSON;
+        $(changedEvents).each(function () {
+            this(config);
+        });
+    }
+}
+
+window.getConfig = function () {
+    // 返回整个表单的元数据,json格式
+    return JSON.stringify({"html": editor.getContent(), "config": chooseWidgets});
+};

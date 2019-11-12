@@ -33,7 +33,7 @@ importMiniui(function () {
         $(".search-button").click(search);
         tools.bindOnEnter("#search-box", search);
         $(".add-button").click(function () {
-            tools.openWindow("admin/sender-template/save.html?type=" + type, "添加模板", "550", "430", function (e) {
+            tools.openWindow("admin/sender-template/save.html?type=" + type, "添加模板", "80%", "80%", function (e) {
                 grid.reload();
             })
         });
