@@ -26,7 +26,7 @@ public class MeterRegistryCenter {
     @Value("${elasticsearch.client.host:localhost}")
     private String host;
 
-    @Value("${elasticsearch.client.host:9200}")
+    @Value("${elasticsearch.client.port:9200}")
     private String port;
 
 
