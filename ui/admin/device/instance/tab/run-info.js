@@ -2,7 +2,7 @@ importResource("/admin/css/common.css");
 
 importMiniui(function () {
     mini.parse();
-    require(["request", "miniui-tools", "metadata-parser", "message"], function (request, tools, metadataParser, message) {
+    require(["request", "miniui-tools", "metadata-parser", "message", "text!admin/device/instance/panel/property.html", "text!admin/device/instance/panel/event.html"], function (request, tools, metadataParser, message, _propertyPanel, _eventPanel) {
         var id = request.getParameter("id");
         var productId = request.getParameter("productId");
 
@@ -31,10 +31,18 @@ importMiniui(function () {
                 if (isRefresh) {
                     message.showTips("刷新成功");
                 } else {
-                    // TODO: 2019-11-01 增加事件属性板块排序，每次加载按指定顺序。
                     metadata = data.metadata;
-                    initPropertyPlate(data.metadata);
-                    initEventPlate(data.metadata);
+                    var lastPropertyValueMap = {};
+                    request.get("device-instance/" + id + "/properties", function (response) {
+                        if (response.status === 200) {
+                            var d = response.result;
+                            for (let i = 0; i < d.length; i++) {
+                                lastPropertyValueMap[d[i]["property"]] = d[i]["value"];
+                            }
+                        }
+                        initPropertyPanel(metadata, lastPropertyValueMap);
+                        initEventPanel(data.metadata);
+                    });
                 }
             });
         }
@@ -49,27 +57,6 @@ importMiniui(function () {
             initDeviceRunInfo(true);
         });
 
-        function structurePlate(propertyId, name, value, icon, chart) {
-            return "<div class='plate'>\n" +
-                "            <div class=\"row\">\n" +
-                "                <div class=\"mini-col-11\" style=\"margin-bottom: 10%\"><span class=\"info-key\">" + name + "</span></div>\n" +
-                "                <div class=\"mini-col-1\" style=\"margin-bottom: 10%\"><i class=\"fa fa-refresh refresh-effect property-refresh\" title='" + propertyId + "'></i></div>\n" +
-                "                <div class=\"mini-col-12\" style=\"margin-bottom: 20%\"><span class=\"info-value-big property-value\">" + value + "</span><span class=\"info-value-big\" >" + icon + "</span><span class=\"mac\"></span></div>\n" +
-                "                <div class=\"mini-col-12 property-chart\">" + chart + "</div>\n" +
-                "            </div>\n" +
-                "        </div>";
-        }
-
-        function eventStructurePlate(eventName, reportCount, eventId, eventLevel) {
-            return "<div class='plate'>\n" +
-                "            <div class=\"row\">\n" +
-                "                <div class=\"mini-col-11\" style=\"margin-bottom: 10%\"><span class=\"info-key\">" + eventName + "事件</span></div>\n" +
-                "                <div class=\"mini-col-1\" style=\"margin-bottom: 10%\"><i class=\"fa fa-refresh refresh-effect event-refresh\" title='" + eventId + "'></i></div>\n" +
-                "                <div class=\"mini-col-12\" style=\"margin-bottom: 20%\">上报次数:<span class=\"info-value-big event-value\">" + reportCount + "</span><span>次</span><span class=\"mac\"></span></div>\n" +
-                "                <div class=\"mini-col-12 property-chart\">" + eventLevel + "<a href='#' style='width: 80%' class='event-detail' title='" + eventId + "'>查看详情</a></div>\n" +
-                "            </div>\n" +
-                "        </div>";
-        }
 
         var eventLevelMap = {
             "ordinary": "<i class='fa fa-circle-o' style='color: #00CC66;width: 70%'>普通</i>",
@@ -79,32 +66,45 @@ importMiniui(function () {
         }
 
         //加载属性板块
-        function loadPropertyPlate(property) {
+        function loadPropertyPanel(property, lastPropertyValueMap) {
+            var template = $($(_propertyPanel).html());
             var unifyUnit = property.getValueType().unifyUnit;
-            request.get("device-instance/" + id + "/property/" + property.id, function (response) {
-                if (response.status === 200) {
-                    var value = response.result.value;
-                    console.log(response)
-                    if (value === '' || value === undefined) {
-                        value = '--';
-                    }
-                    var plate1 = structurePlate(property.id, property.name, value, unifyUnit.symbol, unifyUnit.getCharts(value));
-                    $(".dataPlate").append(plate1);
-                }
-            });
+            var value = '--';
+            if (lastPropertyValueMap[property.id] !== undefined) {
+                value = lastPropertyValueMap[property.id];
+            }
+            template.find("i").attr("title",property.id)
+            template.find(".property-name").text(property.name);
+            template.find(".property-value").text(value);
+            template.find(".property-icon").text(unifyUnit.symbol);
+            template.find(".property-chart").append(unifyUnit.getCharts(value));
+            $(".dataPanel").append(template);
         }
 
         //加载事件板块
-        function loadEventPlate(event) {
-            request.get("log/device-event/" + event.id + "/productId/" + productId, request.encodeQueryParam({"deviceId.keyword": id}), function (response) {
+        function loadEventPanel(event) {
+            var eventLevel = event.level;
+            if (!eventLevel) {
+                eventLevel = 'default';
+            }
+            var template = $($(_eventPanel).html());
+            template.find("a").attr("title", event.id)
+            template.find("i").attr("title", event.id)
+            template.find(".event-name").text(event.name);
+            template.find(".event-value").text(0);
+            template.find(".event-level").append(eventLevelMap[eventLevel]);
+            $(".dataPanel").append(template);
+            loadEventPanelData(template);
+        }
+        function loadEventPanelData(template) {
+            var loading = message.el_loading("加载中",template[0]);
+            request.get("log/device-event/" + template.find("i").attr("title") + "/productId/" + productId, request.encodeQueryParam({"deviceId.keyword": id}), function (response) {
                 if (response.status === 200) {
-                    var eventLevel = event.level;
-                    if (!eventLevel) {
-                        eventLevel = 'default';
-                    }
-                    var plate = eventStructurePlate(event.name, response.result.total, event.id, eventLevelMap[eventLevel]);
-                    $(".dataPlate").append(plate);
+                    template.find(".event-value").text(response.result.total);
+                }else {
+                    message.showTips(response.message);
                 }
+                loading.hide();
             });
         }
 
@@ -143,8 +143,7 @@ importMiniui(function () {
                 if (response.status === 200) {
                     var result = response.result;
                     var data = result.data;
-                    console.log(response)
-                    if (data.length > 0) {
+                    if (data && data.length > 0) {
                         var columns = [];
                         for (var key in data[0]) {
                             columns.push({
@@ -203,53 +202,46 @@ importMiniui(function () {
         //属性板块刷新
         $(document).on('click', '.property-refresh', function () {
             var propertyId = this.title;
-            var _this = this;
+            var panel = $(this).parents(".panel");
+            var loading = message.el_loading("加载中",panel[0]);
             request.get("device/" + id + "/property/" + propertyId, function (response) {
                 if (!response.status || response.status === 200) {
                     var result = response.result;
                     var unifyUnit = metadataParser.getProperties(metadata).getProperty(propertyId).getValueType().unifyUnit;
-                    $(_this).parents(".row").find(".property-value").html(result[0][propertyId]);
-                    $(_this).parents(".row").find(".property-chart").html(unifyUnit.getCharts(result[0][propertyId]));
-                    message.showTips("刷新成功");
+                    panel.find(".property-value").html(result[0][propertyId]);
+                    panel.find(".property-chart").html(unifyUnit.getCharts(result[0][propertyId]));
                 } else {
                     message.showTips(response.message);
                 }
+                loading.hide();
             });
         });
         //事件板块刷新
         $(document).on('click', '.event-refresh', function () {
-            var eventId = this.title;
-            var _this = this;
-            request.get("log/device-event/" + eventId + "/productId/" + productId, request.encodeQueryParam({"deviceId.keyword": id}), function (response) {
-                if (response.status === 200) {
-                    $(_this).parents(".row").find(".event-value").html(response.result.total);
-                    message.showTips("刷新成功");
-                } else {
-                    message.showTips(response.message);
-                }
-            });
+            loadEventPanelData($(this).parents(".panel"));
         });
 
-        function initPropertyPlate(metadata) {
+
+        function initPropertyPanel(metadata, lastPropertyValueMap) {
             if (metadata === '' || metadata === undefined) {
                 return;
             }
             var properties = metadataParser.getProperties(metadata);
             for (var key in properties) {
                 if (typeof (properties.getProperty(key)) === 'object') {
-                    loadPropertyPlate(properties.getProperty(key));
+                    loadPropertyPanel(properties.getProperty(key), lastPropertyValueMap);
                 }
             }
         }
 
-        function initEventPlate(metadata) {
+        function initEventPanel(metadata) {
             if (metadata === '' || metadata === undefined) {
                 return;
             }
             var event = metadataParser.getEvents(metadata);
             for (var key in event) {
                 if (typeof (event[key]) === 'object') {
-                    loadEventPlate(event[key]);
+                    loadEventPanel(event[key]);
                 }
             }
         }

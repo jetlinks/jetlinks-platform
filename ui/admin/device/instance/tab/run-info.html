@@ -45,28 +45,31 @@
             color: #967189;
             text-decoration: underline;
         }
-        .plate{
+        .panel{
             background: #ffffff;
-            margin-right: 1%;
-            margin-left: 1%;
-            width: 22.92%;
-            height: 30%;
+            border-right: 10px solid #F0F2F5;
             padding: 2%;
-            margin-bottom: 2%;
-            display: inline-block
+            margin-bottom: 1%;
+            position: relative;
+        }
+        .dataPanel{
+            margin-left: 10px;
         }
     </style>
 </head>
-<body>
+<body style="overflow-y: auto">
 <div style="width: 100%; background: #F0F2F5">
-    <div class="dataPlate">
-        <div class="plate">
-            <div class="row">
-                <div class="mini-col-11" style="margin-bottom: 10%"><span class="info-key">设备状态</span></div>
-                <div class="mini-col-1" style="margin-bottom: 10%"><i class="fa fa-refresh device-info-refresh refresh-effect"></i></div>
-                <div class="mini-col-12" style="margin-bottom: 20%"><span class="info-value-big device-state"></span><span class="mac"></span></div>
-                <div class="mini-col-12"><span class="device-online-time info-key" style="margin-left: 5px"></span></div>
+    <div class="container">
+        <div class="row dataPanel">
+            <div class="mini-col-3 panel">
+                <div class="row">
+                    <div class="mini-col-11" style="margin-bottom: 10%"><span class="info-key">设备状态</span></div>
+                    <div class="mini-col-1" style="margin-bottom: 10%"><i class="fa fa-refresh device-info-refresh refresh-effect"></i></div>
+                    <div class="mini-col-12" style="margin-bottom: 20%"><span class="info-value-big device-state"></span><span class="mac"></span></div>
+                    <div class="mini-col-12"><span class="device-online-time info-key" style="margin-left: 5px"></span></div>
+                </div>
             </div>
+
         </div>
     </div>
     <div id="eventDetailWindow" class="mini-window" title="事件详情" style="width:1000px;height:600px;display: none" showModal="true"
