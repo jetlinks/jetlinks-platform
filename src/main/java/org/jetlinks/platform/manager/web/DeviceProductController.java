@@ -50,17 +50,4 @@ public class DeviceProductController implements ReactiveServiceCrudController<De
 //    public Flux<DeviceProductEntity> queryRegisteredDeviceProduct() {
 //        return productService.queryRegisteredDeviceProduct();
 //    }
-
-    @GetMapping("/getUnifyUnit")
-    @Authorize(ignore = true)
-    public ResponseMessage<List<Map<String, String>>> getUnifyUnit() {
-        List<Map<String, String>> list = new ArrayList<>();
-        for (UnifyUnit unifyUnit : UnifyUnit.values()) {
-            Map<String, String> map = new HashMap<>();
-            map.put("id", String.valueOf(unifyUnit));
-            map.put("text", String.valueOf(unifyUnit) + "(" + unifyUnit.getName() + ")");
-            list.add(map);
-        }
-        return ResponseMessage.ok(list);
-    }
 }
