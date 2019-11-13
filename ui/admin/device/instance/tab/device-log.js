@@ -64,6 +64,30 @@ importMiniui(function () {
             var date = new Date(row.createTime);
             return mini.formatDate(date, "yyyy-MM-dd HH:mm:ss")
         };
+
+        window.renderAction = function (e) {
+            var row = e.record;
+            var html = [];
+
+            html.push(tools.createActionLink("详细内容", "详细内容", function () {
+                console.log(row)
+                tools.openWindow("admin/device/instance/tab/device-log-detail.html?content="+1, "详细内容", "40%", "50%", function () {
+                    grid.reload();
+                },function () {
+                    var iframe = this.getIFrameEl();
+                    var win = iframe.contentWindow;
+
+                    function init() {
+                        win.onInit = function (call) {
+                            call(row.content);
+                        }
+                    }
+                    init();
+                    $(iframe).on("load", init);
+                })
+            }));
+            return html.join("");
+        }
     });
 });
 

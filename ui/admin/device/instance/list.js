@@ -41,7 +41,7 @@ importMiniui(function () {
         search();
 
         $(".add-button").click(function () {
-            tools.openWindow("admin/device/instance/save.html", "新建设备实例", "700", "400", function () {
+            tools.openWindow("admin/device/instance/save.html", "新建设备实例", "40%", "50%", function () {
                 grid.reload();
             })
         });
@@ -77,12 +77,12 @@ importMiniui(function () {
             var html = [];
 
             html.push(tools.createActionLink("查看", "查看", function () {
-                tools.openWindow("admin/device/instance/detail.html?id=" + row.id + "&productId=" + row.productId, "查看设备", "1300", "850", function () {
+                tools.openWindow("admin/device/instance/detail.html?id=" + row.id + "&productId=" + row.productId, "查看设备", "70%", "90%", function () {
                     grid.reload();
                 })
             }));
             html.push(tools.createActionLink("编辑", "<sapn>&nbsp;&nbsp;&nbsp;编辑</sapn>", function () {
-                tools.openWindow("admin/device/instance/save.html?id=" + row.id, "编辑设备实例：" + row.name, "700", "400", function () {
+                tools.openWindow("admin/device/instance/save.html?id=" + row.id, "编辑设备实例：" + row.name, "40%", "50%", function () {
                     grid.reload();
                 });
             }));

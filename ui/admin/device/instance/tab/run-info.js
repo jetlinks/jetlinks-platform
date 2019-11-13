@@ -99,6 +99,7 @@ importMiniui(function () {
         function loadEventPanelData(template) {
             var loading = message.el_loading("加载中",template[0]);
             request.get("log/device-event/" + template.find("i").attr("title") + "/productId/" + productId, request.encodeQueryParam({"deviceId.keyword": id}), function (response) {
+                console.log(response)
                 if (response.status === 200) {
                     template.find(".event-value").text(response.result.total);
                 }else {

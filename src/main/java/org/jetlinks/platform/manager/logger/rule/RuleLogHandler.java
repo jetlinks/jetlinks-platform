@@ -3,7 +3,8 @@ package org.jetlinks.platform.manager.logger.rule;
 import lombok.extern.slf4j.Slf4j;
 import org.hswebframework.web.bean.FastBeanCopier;
 import org.jetlinks.core.utils.FluxUtils;
-import org.jetlinks.platform.manager.elasticsearch.ElasticsearchSaveService;
+import org.jetlinks.platform.manager.elasticsearch.index.ElasticIndexProvider;
+import org.jetlinks.platform.manager.elasticsearch.save.ElasticsearchSaveService;
 import org.jetlinks.platform.manager.enums.EsDataType;
 import org.jetlinks.platform.manager.logger.rule.info.ExecuteEventInfo;
 import org.jetlinks.platform.manager.logger.rule.info.ExecuteLogInfo;
@@ -43,11 +44,10 @@ public class RuleLogHandler {
             saveLogInfo(Flux.just(logInfo));
         }
     }
-
     @EventListener
     public void handleRuleExecuteEvent(NodeExecuteEvent event) {
         //不记录BEFORE和RESULT事件
-        if (!RuleEvent.NODE_EXECUTE_BEFORE.equals(event.getEvent())&&!RuleEvent.NODE_EXECUTE_RESULT.equals(event.getEvent())) {
+        if (!RuleEvent.NODE_EXECUTE_BEFORE.equals(event.getEvent()) && !RuleEvent.NODE_EXECUTE_RESULT.equals(event.getEvent())) {
             ExecuteEventInfo eventInfo = FastBeanCopier.copy(event, new ExecuteEventInfo());
             if (eventInfoFluxSink != null) {
                 eventInfoFluxSink.next(eventInfo);
@@ -66,17 +66,23 @@ public class RuleLogHandler {
 
     private void saveLogInfo(Flux<ExecuteLogInfo> logInfoFlux) {
         FluxUtils.bufferRate(logInfoFlux, 800, Duration.ofSeconds(2))
-                .flatMap(data -> saveService.asyncBulkSave(data, EsDataType.EXECUTE_LOG_INDEX))
+                .flatMap(data -> saveService.asyncBulkSave(
+                        data,
+                        ElasticIndexProvider.createIndex(EsDataType.EXECUTE_LOG_INDEX.getIndex(),
+                                EsDataType.EXECUTE_LOG_INDEX.getType()))
+                )
                 .doOnError(ex -> log.error("保存规则执行日志失败", ex))
                 .subscribe(s -> log.info("保存规则执行日志成功"));
     }
 
     private void saveEventInfo(Flux<ExecuteEventInfo> eventInfoFlux) {
         FluxUtils.bufferRate(eventInfoFlux, 800, Duration.ofSeconds(2))
-                .flatMap(data -> saveService.asyncBulkSave(data, EsDataType.EXECUTE_EVENT_LOG_INDEX))
+                .flatMap(data -> saveService.asyncBulkSave(
+                        data,
+                        ElasticIndexProvider.createIndex(EsDataType.EXECUTE_EVENT_LOG_INDEX.getIndex(),
+                                EsDataType.EXECUTE_EVENT_LOG_INDEX.getType()))
+                )
                 .doOnError(ex -> log.error("保存规则执行事件日志失败", ex))
                 .subscribe(s -> log.info("保存规则执行事件日志成功"));
     }
-
-
 }

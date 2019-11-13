@@ -23,6 +23,8 @@ import java.util.Map;
 @Builder
 public class DeviceOperationLog {
 
+    private String id;
+
     private String deviceId;
 
     private DeviceLogType type;
@@ -33,9 +35,14 @@ public class DeviceOperationLog {
     private Object content;
 
     public Map<String, Object> toSimpleMap() {
+
         Map<String, Object> result = (Map) JSON.toJSON(this);
         result.put("type", type.getValue());
-        result.put("content", getContent().toString());
+        if (getContent() instanceof Map){
+            result.put("content", JSON.toJSONString(getContent()));
+        }else {
+            result.put("content", getContent());
+        }
         return result;
     }
 }

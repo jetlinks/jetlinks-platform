@@ -115,15 +115,15 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
     public Mono<DeviceRunInfo> getDeviceRunInfo(String deviceId) {
         return registry.getDevice(deviceId)
                 .flatMap(deviceOperator -> Mono.zip(
-                        deviceOperator.getOnlineTime().switchIfEmpty(Mono.just(0L)),//
-                        deviceOperator.getOfflineTime().switchIfEmpty(Mono.just(0L)),//
-                        deviceOperator.getState().map(DeviceState::of),//
-                        deviceOperator.getConfig(DeviceConfigKey.metadata).switchIfEmpty(Mono.just(""))
+                            deviceOperator.getOnlineTime().switchIfEmpty(Mono.just(0L)),//
+                            deviceOperator.getOfflineTime().switchIfEmpty(Mono.just(0L)),//
+                            deviceOperator.getState().map(DeviceState::of),//
+                            deviceOperator.getConfig(DeviceConfigKey.metadata).switchIfEmpty(Mono.just(""))
                         ).map(tuple4 -> DeviceRunInfo.of(
-                        tuple4.getT1(),
-                        tuple4.getT2(),
-                        tuple4.getT3(),
-                        tuple4.getT4()
+                            tuple4.getT1(),
+                            tuple4.getT2(),
+                            tuple4.getT3(),
+                            tuple4.getT4()
                         ))
                 );
     }
