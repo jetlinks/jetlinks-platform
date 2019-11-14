@@ -114,13 +114,13 @@ function initRequireJs() {
             "module-parser": [BASE_PATH + "admin/data-standards/module-parser"],
             "designer-parser": [BASE_PATH + "admin/data-standards/designer/parser"],
             "designer-default": [BASE_PATH + "admin/data-standards/designer/components-default"],
-            "export": [BASE_PATH + "admin/currency/export"],
             "bootstrap-skin": [BASE_PATH + "plugins/miniui/themes/bootstrap/skin"],
             "bootstrap-large-mode": [BASE_PATH + "plugins/miniui/themes/default/large-mode"],
             "metadata-parser": [BASE_PATH + "plugins/tools/metadata-parser"],
             "metadata-trans-tree": [BASE_PATH + "plugins/tools/metadata-trans-tree"],
             "general-web-uploader": [BASE_PATH + "plugins/tools/general-web-uploader"],
-            "default-method": [BASE_PATH + "admin/currency/default-method"]
+            "default-method": [BASE_PATH + "admin/currency/default-method"],
+            "formParser": [BASE_PATH + "admin/assembly/form-parser"]
         }
     });
     require(['request']);

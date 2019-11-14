@@ -148,7 +148,6 @@ var dataType = [
                 "<input required name=\"bodyType\" style=\"width: 85%\" value=\"url\"\n" +
                 "data=\"[{text:'URL(链接)',id:'url'},{text:'base64(base64编码)',id:'base64'},{text:'binary(二进制)',id:'binary'}]\"\n" +
                 "textField=\"text\" valueField=\"id\" class=\"mini-combobox\"/></div>");
-
             html.append(textValue);
         }
     },
@@ -163,7 +162,7 @@ var eventLevel = {"ordinary": "普通", "warn": "警告", "urgent": "紧急"};
 importMiniui(function () {
 
     mini.parse();
-    require(["request", "miniui-tools", "message", "search-box"], function (request, tools, message, SearchBox) {
+    require(["request", "miniui-tools", "message", "search-box", "formParser"], function (request, tools, message, SearchBox, FormParser) {
         window.tools = tools;
 
         new mini.Form("#product-info").getField("id").setReadOnly(false);
@@ -198,9 +197,9 @@ importMiniui(function () {
             addAttribute("");
         });
 
+        var messageProtocol = mini.getByName("messageProtocol");
         request.get("protocol/supports", function (response) {
             if (response.status === 200) {
-                var messageProtocol = mini.getByName("messageProtocol");
                 var data = [];
                 response.result.forEach(function (val) {
                     data.push({"id": val.id, "name": val.name + "(" + val.id + ")"})
@@ -208,6 +207,41 @@ importMiniui(function () {
                 messageProtocol.setData(data);
             }
         });
+        messageProtocol.on("valuechanged", function (e) {
+            var transportProtocol = mini.getbyName("transportProtocol").getValue();
+            if (transportProtocol === null || transportProtocol === "") {
+                message.showTips("请先选择连接协议", "danger");
+                messageProtocol.setValue("");
+                return false;
+            }
+            setSecurityConfig(e.value, transportProtocol);
+        });
+
+        function gainUnit() {
+            var unifyUnit = mini.get("unifyUnit");
+            request.get("protocol/units", function (response) {
+                if (response.status === 200) {
+                    unifyUnit.setData(response.result);
+                }
+            });
+        }
+
+        function setSecurityConfig(val, transportProtocol, confData) {
+            request.get("protocol/" + val + "/" + transportProtocol + "/configuration", function (response) {
+                if (response.status === 200) {
+                    var data = response.result;
+                    $(".security-config").css("display", "block");
+                    mini.get("securityConfig").setTitle(data.name);
+                    var assembly = new FormParser(data);
+
+                    assembly.render($(".other-config"),4);
+                    mini.parse();
+
+                    if (confData)
+                        new mini.Form("#security-info").setData(confData);
+                }
+            });
+        }
 
         function addAttribute(data) {
             mini.get("attributeEditor").show();
@@ -688,15 +722,6 @@ importMiniui(function () {
             )
         }
 
-        function gainUnit() {
-            var unifyUnit = mini.get("unifyUnit");
-            request.get("protocol/units", function (response) {
-                if (response.status === 200) {
-                    unifyUnit.setData(response.result);
-                }
-            });
-        }
-
         function addParameterInfo(position, list) {
             var parameterInfo = tools.getFormData("#parameter-info", true);
             var valueType = {};
@@ -775,7 +800,8 @@ importMiniui(function () {
                     form.getField("id").setReadOnly(true);
                     form.setData(data);
                     mini.getByName("deviceType").setValue(data.deviceType.value);
-                    new mini.Form("#security-info").setData(data.security);
+                    setSecurityConfig(data.messageProtocol, data.transportProtocol, data.security);
+                    //new mini.Form("#security-info").setData(data.security);
                     var metadata = JSON.parse(data.metadata);
 
                     $(metadata.properties).each(function () {
