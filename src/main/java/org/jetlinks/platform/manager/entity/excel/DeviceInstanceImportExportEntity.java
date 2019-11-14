@@ -6,8 +6,8 @@ import lombok.Data;
 @Data
 public class DeviceInstanceImportExportEntity {
 
-    @ExcelProperty("设备Id")
-    private String Id;
+    @ExcelProperty("设备id")
+    private String id;
 
     @ExcelProperty("设备名称")
     private String name;

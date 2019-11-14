@@ -2,7 +2,7 @@ importResource("/admin/css/common.css");
 
 importMiniui(function () {
     mini.parse();
-    require(["request", "miniui-tools", "search-box", "message"], function (request, tools, SearchBox, message) {
+    require(["request", "miniui-tools", "search-box", "message", "general-web-uploader"], function (request, tools, SearchBox, message, webUploader) {
         var deviceState = [
             {"id": "online", "text": "上线"},
             {"id": "offline", "text": "离线"},
@@ -44,6 +44,24 @@ importMiniui(function () {
             tools.openWindow("admin/device/instance/save.html", "新建设备实例", "40%", "50%", function () {
                 grid.reload();
             })
+        });
+
+
+        webUploader.initWebUploader(function (file, response) {
+            console.log(response);
+            var loading = message.loading("导入中...");
+            if (response.status === 200 && response.result) {
+                var fileUrl = response.result;
+                request.post("device-instance/import", fileUrl, function (rep) {
+                    if (rep.status === 200) {
+                        message.showTips("导入成功，数量：" + rep.result)
+                    } else {
+                        message.showTips("导入失败" + response.message, "danger")
+                    }
+                    loading.hide();
+                    grid.reload();
+                });
+            }
         });
 
         function deploy(id) {

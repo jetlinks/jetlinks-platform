@@ -1,6 +1,10 @@
 package org.jetlinks.platform.manager.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hswebframework.expands.request.RequestBuilder;
+import org.hswebframework.expands.request.SimpleRequestBuilder;
+import org.hswebframework.ezorm.rdb.mapping.defaults.SaveResult;
+import org.hswebframework.web.bean.FastBeanCopier;
 import org.hswebframework.web.crud.service.GenericReactiveCrudService;
 import org.hswebframework.web.exception.BusinessException;
 import org.hswebframework.web.exception.NotFoundException;
@@ -13,12 +17,16 @@ import org.jetlinks.core.utils.FluxUtils;
 import org.jetlinks.platform.events.DeviceConnectedEvent;
 import org.jetlinks.platform.events.DeviceDisconnectedEvent;
 import org.jetlinks.platform.manager.entity.DeviceInstanceEntity;
+import org.jetlinks.platform.manager.entity.DeviceProductEntity;
+import org.jetlinks.platform.manager.entity.excel.DeviceInstanceImportExportEntity;
 import org.jetlinks.platform.manager.enums.DeviceState;
+import org.jetlinks.platform.manager.excel.easyexcel.ExcelReadDataListener;
 import org.jetlinks.platform.manager.web.response.DeviceInfo;
 import org.jetlinks.platform.manager.web.response.DeviceRunInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
@@ -26,10 +34,16 @@ import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuple2;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,7 +56,7 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
     @Autowired
     private LocalDeviceProductService deviceProductService;
 
-
+    private static RequestBuilder requestBuilder = new SimpleRequestBuilder();
 
     /**
      * 重置设备安全配置
@@ -115,15 +129,15 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
     public Mono<DeviceRunInfo> getDeviceRunInfo(String deviceId) {
         return registry.getDevice(deviceId)
                 .flatMap(deviceOperator -> Mono.zip(
-                            deviceOperator.getOnlineTime().switchIfEmpty(Mono.just(0L)),//
-                            deviceOperator.getOfflineTime().switchIfEmpty(Mono.just(0L)),//
-                            deviceOperator.getState().map(DeviceState::of),//
-                            deviceOperator.getConfig(DeviceConfigKey.metadata).switchIfEmpty(Mono.just(""))
+                        deviceOperator.getOnlineTime().switchIfEmpty(Mono.just(0L)),//
+                        deviceOperator.getOfflineTime().switchIfEmpty(Mono.just(0L)),//
+                        deviceOperator.getState().map(DeviceState::of),//
+                        deviceOperator.getConfig(DeviceConfigKey.metadata).switchIfEmpty(Mono.just(""))
                         ).map(tuple4 -> DeviceRunInfo.of(
-                            tuple4.getT1(),
-                            tuple4.getT2(),
-                            tuple4.getT3(),
-                            tuple4.getT4()
+                        tuple4.getT1(),
+                        tuple4.getT2(),
+                        tuple4.getT3(),
+                        tuple4.getT4()
                         ))
                 );
     }
@@ -229,33 +243,45 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
     }
 
 
+    public Mono<Integer> doBatchImport(String fileUrl) {
+        return deviceProductService.createQuery()
+                .fetch()
+                .collectList()
+                .map(productEntities -> {
+                    Map<String, String> productNameMap = productEntities.stream()
+                            .collect(Collectors.toMap(DeviceProductEntity::getName, DeviceProductEntity::getId));
+                    return ExcelReadDataListener.of(getInputStream(fileUrl), DeviceInstanceImportExportEntity.class)
+                            .map(importExportEntity -> {
+                                DeviceInstanceEntity entity = FastBeanCopier.copy(importExportEntity, new DeviceInstanceEntity());
+                                String productId = productNameMap.get(importExportEntity.getProductName());
+                                if (StringUtils.isEmpty(productId)) {
+                                    log.warn("导入设备型号为空，设备名称：{}", entity.getName());
+                                }
+                                entity.setProductId(productId);
+                                entity.setState(DeviceState.notActive);
+                                return entity;
+                            });
+                })
+                .flatMap(this::save)
+                .map(SaveResult::getTotal);
+    }
 
-    // TODO: 2019/11/11 型号分组 map
-    // TODO: 2019/11/11 不写泛型，直接定死
-    // TODO: 2019/11/11 es 查询 写入都安排成异步的
-//    public Mono<Integer> doBatchImport(String fileUrl) {
-//        Map<String, DeviceProductEntity> productCache = new ConcurrentHashMap<>();
-//        return DeviceInstanceDataListener
-//                .of(fileUrl)
-//                .map(d -> {
-//                    if (productCache.get(d.getProductName()) == null) {
-//                        deviceProductService.createQuery()
-//                                .where(DeviceProductEntity::getName, d.getProductName())
-//                                .fetchOne()
-//                                .switchIfEmpty(Mono.error(new BusinessException("导入的型号不存在")))//报错终止流的导入还是打日志
-//                                .subscribe(productEntity -> {
-//                                    productCache.put(productEntity.getName(), productEntity);
-//                                    d.setProductId(productEntity.getId());
-//                                });
-//                    } else {
-//                        d.setProductId(productCache.get(d.getProductName()).getId());
-//                    }
-//                    return d;
-//                })
-//                //.bufferTimeout(200, Duration.ofSeconds(2))
-//                .as(this::save)
-//                .collect(Collectors.summarizingInt(Integer::intValue));
-//    }
+
+    private InputStream getInputStream(String fileUrl) {
+        try {
+            //创建一个临时文件
+            File file = File.createTempFile(IDGenerator.MD5.generate(), ".xlsx");
+            //下载上传的文件
+            requestBuilder
+                    .http(fileUrl)
+                    .download()
+                    .write(file);
+            InputStream in = new FileInputStream(file);
+            return in;
+        } catch (Exception e) {
+            throw new BusinessException("下载文件:" + fileUrl + "失败", e);
+        }
+    }
 
 //    public void updateRegistry(DeviceInstanceEntity entity) {
 //        Runnable runnable = () -> {

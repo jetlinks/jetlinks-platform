@@ -119,6 +119,7 @@ function initRequireJs() {
             "bootstrap-large-mode": [BASE_PATH + "plugins/miniui/themes/default/large-mode"],
             "metadata-parser": [BASE_PATH + "plugins/tools/metadata-parser"],
             "metadata-trans-tree": [BASE_PATH + "plugins/tools/metadata-trans-tree"],
+            "general-web-uploader": [BASE_PATH + "plugins/tools/general-web-uploader"],
             "default-method": [BASE_PATH + "admin/currency/default-method"]
         }
     });
