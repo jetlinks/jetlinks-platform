@@ -16,6 +16,22 @@ define(function () {
                 hide: hide
             };
         },
+        el_loading: function (message,element) {
+            mini.mask({
+                el: element,
+                cls: 'mini-mask-loading',
+                html: message
+            });
+
+            function hide() {
+                mini.unmask(element);
+            }
+
+            return {
+                close: hide,
+                hide: hide
+            };
+        },
         alert: function (msg) {
             mini.alert(msg);
         },

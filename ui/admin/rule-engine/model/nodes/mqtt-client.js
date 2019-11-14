@@ -7,7 +7,7 @@ define(["miniui-tools"], function (tools) {
                 tools.openWindow("admin/rule-engine/manager/mqttclient/list.html?tag=select", "mqtt客户端", "1000", "500", function (data) {
                     if (data !== 'close') {
                         mqttConnect.setText(data.name);
-                        mqttConnect.setValue(data.clientId);
+                        mqttConnect.setValue(data.id);
                     }
                 })
             })

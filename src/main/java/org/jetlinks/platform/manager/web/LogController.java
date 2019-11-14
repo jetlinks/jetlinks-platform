@@ -29,6 +29,7 @@ public class LogController {
     @Autowired
     private LogService logService;
 
+
     @GetMapping("/device-event/{propertyId}/productId/{productId}")
     public Mono<PagerResult<Map>> queryPagerByDeviceEvent(QueryParam queryParam, @PathVariable String productId, @PathVariable String propertyId) {
         return logService.queryPagerByDeviceEvent(queryParam, productId, propertyId);

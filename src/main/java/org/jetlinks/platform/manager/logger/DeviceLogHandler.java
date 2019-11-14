@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetlinks.core.utils.FluxUtils;
 import org.jetlinks.platform.events.DeviceConnectedEvent;
 import org.jetlinks.platform.events.DeviceDisconnectedEvent;
+import org.jetlinks.platform.manager.elasticsearch.index.ElasticIndexProvider;
+import org.jetlinks.platform.manager.elasticsearch.save.SaveService;
 import org.jetlinks.platform.manager.enums.DeviceLogType;
 import org.jetlinks.platform.manager.enums.EsDataType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import javax.annotation.PostConstruct;
 import java.time.Duration;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author bsetfeng
@@ -85,6 +88,10 @@ public class DeviceLogHandler {
 
 
     private Mono<Boolean> recordLog(List<DeviceOperationLog> datas) {
-        return saveService.asyncBulkSave(datas,EsDataType.DEVICE_OPERATION);
+        return saveService.asyncBulkSave(
+                datas.stream().map(DeviceOperationLog::toSimpleMap).collect(Collectors.toList()),
+                ElasticIndexProvider.createIndex(EsDataType.DEVICE_OPERATION.getIndex(),
+                        EsDataType.DEVICE_OPERATION.getType())
+        );
     }
 }

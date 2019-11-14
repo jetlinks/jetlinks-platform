@@ -41,7 +41,7 @@ importMiniui(function () {
         search();
 
         $(".add-button").click(function () {
-            tools.openWindow("admin/device/instance/save.html", "新建设备实例", "700", "400", function () {
+            tools.openWindow("admin/device/instance/save.html", "新建设备实例", "40%", "50%", function () {
                 grid.reload();
             })
         });
@@ -53,11 +53,12 @@ importMiniui(function () {
                 if (response.result === 1) {
                     message.showTips("发布成功");
                 } else {
-                    message.showTips("发布失败："+ response.message, "danger");
+                    message.showTips("发布失败：" + response.message, "danger");
                 }
                 grid.reload();
             });
         }
+
         function cancelDeploy(id) {
             var loding = message.loading("取消布中...");
             request.post("device-instance/cancelDeploy/" + id, {}, function (response) {
@@ -65,7 +66,7 @@ importMiniui(function () {
                 if (response.result === 1) {
                     message.showTips("取消发布成功");
                 } else {
-                    message.showTips("取消发布失败："+ response.message, "danger");
+                    message.showTips("取消发布失败：" + response.message, "danger");
                 }
                 grid.reload();
             });
@@ -76,12 +77,12 @@ importMiniui(function () {
             var html = [];
 
             html.push(tools.createActionLink("查看", "查看", function () {
-                tools.openWindow("admin/device/instance/detail.html?id=" + row.id + "&productId=" + row.productId, "查看设备", "1300", "850", function () {
+                tools.openWindow("admin/device/instance/detail.html?id=" + row.id + "&productId=" + row.productId, "查看设备", "70%", "90%", function () {
                     grid.reload();
                 })
             }));
             html.push(tools.createActionLink("编辑", "<sapn>&nbsp;&nbsp;&nbsp;编辑</sapn>", function () {
-                tools.openWindow("admin/device/instance/save.html?id=" + row.id, "编辑设备实例：" + row.name, "80%", "80%", function () {
+                tools.openWindow("admin/device/instance/save.html?id=" + row.id, "编辑设备实例：" + row.name, "40%", "50%", function () {
                     grid.reload();
                 });
             }));
@@ -89,7 +90,7 @@ importMiniui(function () {
                 html.push(tools.createActionLink("发布", "<sapn>&nbsp;&nbsp;&nbsp;发布</sapn>", function () {
                     deploy(row.id);
                 }));
-            }else {
+            } else {
                 html.push(tools.createActionLink("取消发布", "<sapn>&nbsp;&nbsp;&nbsp;取消发布</sapn>", function () {
                     cancelDeploy(row.id);
                 }));

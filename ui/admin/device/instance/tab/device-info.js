@@ -71,18 +71,18 @@ importMiniui(function () {
         });
 
 
-        propertyLoad();
-
-        function propertyLoad() {
-            request.get("device-instance/" + id + "/properties", function (response) {
-                var html = "";
-                var properties = response.result;
-                for (var i = 0; i < properties.length; i++) {
-                    html += propertyPlate(properties[i].propertyName, properties[i].formatValue, properties[i].property);
-                }
-                $("#property-content").html(html);
-            });
-        }
+        // propertyLoad();
+        //
+        // function propertyLoad() {
+        //     request.get("device-instance/" + id + "/properties", function (response) {
+        //         var html = "";
+        //         var properties = response.result;
+        //         for (var i = 0; i < properties.length; i++) {
+        //             html += propertyPlate(properties[i].propertyName, properties[i].formatValue, properties[i].property);
+        //         }
+        //         $("#property-content").html(html);
+        //     });
+        // }
 
         function propertyPlate(key, value, name) {
             var classes = "_" + name;

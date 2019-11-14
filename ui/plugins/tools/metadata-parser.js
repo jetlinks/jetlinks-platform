@@ -26,7 +26,7 @@ define(["jquery"], function ($) {
                 "getCharts": function (value) {
                     var a = valueTypeCharts["_discount"]();
                     require(['echarts'], function (echarts) {
-                        var body = $("<div>").css("height", "20%");
+                        var body = $("<div>").css("height", "19%");
                         var c = body[0];
                         $("#discount").html("").append(body);
                         var myChart = echarts.init(c);

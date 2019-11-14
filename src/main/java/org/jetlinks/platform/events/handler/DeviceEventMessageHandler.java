@@ -2,6 +2,7 @@ package org.jetlinks.platform.events.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hswebframework.web.event.GenericsPayloadApplicationEvent;
+import org.hswebframework.web.exception.NotFoundException;
 import org.jetlinks.core.Value;
 import org.jetlinks.core.device.DeviceOperator;
 import org.jetlinks.core.device.DeviceRegistry;
@@ -18,13 +19,13 @@ import org.jetlinks.core.metadata.types.NumberType;
 import org.jetlinks.core.metadata.types.UnknownType;
 import org.jetlinks.platform.events.DeviceMessageEvent;
 import org.jetlinks.platform.events.GaugePropertyEvent;
+import org.jetlinks.platform.manager.elasticsearch.index.DeviceEventIndexProvider;
+import org.jetlinks.platform.manager.elasticsearch.index.ElasticIndexProvider;
+import org.jetlinks.platform.manager.elasticsearch.save.SaveService;
 import org.jetlinks.platform.manager.entity.DevicePropertiesEntity;
-import org.jetlinks.platform.manager.entity.ElasticSearchIndexEntity;
 import org.jetlinks.platform.manager.enums.DeviceLogType;
 import org.jetlinks.platform.manager.logger.DeviceOperationLog;
-import org.jetlinks.platform.manager.logger.SaveService;
 import org.jetlinks.platform.manager.service.LocalDevicePropertiesService;
-import org.jetlinks.platform.manager.utils.GenerateDeviceEventIndex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
@@ -139,6 +140,8 @@ public class DeviceEventMessageHandler {
 
 
     private void syncEvent(String device, EventMessage message) {
+
+
         registry.getDevice(device)
                 .flatMap(deviceOperator ->
                         Mono.zip(
@@ -146,6 +149,7 @@ public class DeviceEventMessageHandler {
                                         .map(Value::asString)
                                         .switchIfEmpty(Mono.just("")),
                                 deviceOperator.getMetadata()))
+                .switchIfEmpty(Mono.error(new NotFoundException("保存设备事件失败,注册中心设备：" + device + " 元数据或设备型号为空")))
                 .flatMap(tuple2 -> {
                     DeviceMetadata metadata = tuple2.getT2();
                     Object value = message.getData();
@@ -164,9 +168,7 @@ public class DeviceEventMessageHandler {
                     } else {
                         data.put("value", tempValue);
                     }
-                    ElasticSearchIndexEntity indexEntity =
-                            GenerateDeviceEventIndex.generateIndex(tuple2.getT1(), message.getEvent());
-                    return saveService.asyncSave(data, indexEntity);
+                    return saveService.asyncSave(data, new DeviceEventIndexProvider(tuple2.getT1(), message.getEvent()));
                 })
                 .doOnError(ex -> log.error("保存设备事件失败", ex))
                 .subscribe(s -> log.info("保存设备事件成功"));
@@ -217,7 +219,7 @@ public class DeviceEventMessageHandler {
                             })
                             .peek(processor::onNext)
                             .collect(Collectors.toList());
-                   return syncDeviceProperty(entities);
+                    return syncDeviceProperty(entities);
                 })
                 .doOnError(ex -> log.error("保存设备属性记录失败", ex))
                 .subscribe(s -> log.info("保存设备属性记录成功"));
@@ -247,11 +249,7 @@ public class DeviceEventMessageHandler {
     }
 
     private Mono<Boolean> syncDeviceProperty(List<DevicePropertiesEntity> list) {
-       return saveService.asyncBulkSave(list,
-               ElasticSearchIndexEntity.builder()
-                       .index("device_properties")
-                       .type("doc")
-                       .build()
-       );
+        return saveService.asyncBulkSave(list, ElasticIndexProvider.createIndex("device_properties", "doc"));
     }
+
 }
