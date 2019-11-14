@@ -2,6 +2,7 @@ package org.jetlinks.platform.manager.elasticsearch.query;
 
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.ElasticsearchParseException;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -62,6 +63,8 @@ public class ElasticSearchQueryService {
                     if (((ElasticsearchException) e).status().getStatus() == 404) {
                         sink.success();
                         return;
+                    }else if (((ElasticsearchException) e).status().getStatus() == 400) {
+                        sink.error(new ElasticsearchParseException("查询参数格式异常"));
                     }
                 }
                 sink.error(e);
