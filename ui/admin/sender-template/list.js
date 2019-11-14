@@ -32,9 +32,15 @@ importMiniui(function () {
         $(".search-button").click(search);
         tools.bindOnEnter("#search-box", search);
         $(".add-button").click(function () {
-            tools.openWindow("admin/sender-template/save.html?type=" + type, "添加模板", "70%", "80%", function (e) {
-                grid.reload();
-            })
+            if (type === "sms") {
+                tools.openWindow("admin/sender-template/save.html?type=" + type, "添加模板", "35%", "50%", function (e) {
+                    grid.reload();
+                })
+            } else {
+                tools.openWindow("admin/sender-template/save.html?type=" + type, "添加模板", "70%", "80%", function (e) {
+                    grid.reload();
+                })
+            }
         });
         search();
         window.renderStatus = function (e) {
@@ -42,9 +48,15 @@ importMiniui(function () {
         }
 
         function edit(id) {
-            tools.openWindow("admin/sender-template/save.html?id=" + id + "&type=" + type, "编辑模板", "70%", "80%", function (e) {
-                grid.reload();
-            })
+            if (type === "sms") {
+                tools.openWindow("admin/sender-template/save.html?id=" + id + "&type=" + type, "编辑模板", "35%", "50%", function (e) {
+                    grid.reload();
+                })
+            } else {
+                tools.openWindow("admin/sender-template/save.html?id=" + id + "&type=" + type, "编辑模板", "70%", "80%", function (e) {
+                    grid.reload();
+                })
+            }
         }
 
         window.renderAction = function (e) {

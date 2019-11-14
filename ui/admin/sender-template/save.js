@@ -71,6 +71,11 @@ importMiniui(function () {
 
                     initEditor();
                     if (id) loadData(id);
+                    if (typeParam === "email") {
+                        $("#sms-content").hide();
+                        $("#email-subject").show();
+                        $("#email-content").show();
+                    }
                 });
             });
 
