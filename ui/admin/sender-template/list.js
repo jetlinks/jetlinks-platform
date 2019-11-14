@@ -16,9 +16,8 @@ importMiniui(function () {
         var grid = window.grid = mini.get("data-grid");
         tools.initGrid(grid);
 
-        grid.setUrl(request.basePath + "sender-template/_query/no-paging");
+        grid.setUrl(request.basePath + "sender-template/_query");
 
-        grid.setDataField("result");
 
         var type = request.getParameter("type");
 

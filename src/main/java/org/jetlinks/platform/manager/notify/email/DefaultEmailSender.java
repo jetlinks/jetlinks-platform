@@ -77,12 +77,12 @@ public class DefaultEmailSender extends AbstractTemplateEmailSender {
                 this.helper.setFrom(this.sender);
                 this.helper.setTo(sendTo.toArray(new String[0]));
                 this.helper.setSubject(t.getSubject());
-                this.helper.setText(t.getText());
+                this.helper.setText(t.getText(),true);
                 this.javaMailSender.send(this.mimeMessage);
                 for (Map.Entry<String, String> entry : t.getAttachments().entrySet()) {
                     helper.addAttachment(MimeUtility.encodeText(entry.getKey()), new File(entry.getKey()));
                 }
-                for (Map.Entry<String, String> entry : t.getAttachments().entrySet()) {
+                for (Map.Entry<String, String> entry : t.getImages().entrySet()) {
                     helper.addInline(entry.getKey(), new FileSystemResource(new File(entry.getValue())));
                 }
                 return true;
@@ -102,11 +102,13 @@ public class DefaultEmailSender extends AbstractTemplateEmailSender {
                 if (StringUtils.isEmpty(subject) || StringUtils.isEmpty(text)) {
                     throw new BusinessException("模板内容错误，text 或者 subject 不能为空。template:" + entity.getTemplate());
                 }
-                String sendText = render(subject, context);
+                String sendText = render(text, context);
                 Map<String, Object> tempAttachments = template.getJSONObject("attachments");
                 Map<String, String> attachments = new HashMap<>();
-                tempAttachments.forEach((key, value) ->
-                        attachments.put(key, render(value.toString(), context)));
+                if (tempAttachments != null) {
+                    tempAttachments.forEach((key, value) ->
+                            attachments.put(key, render(value.toString(), context)));
+                }
                 return DefaultEmailTemplate.builder()
                         .attachments(attachments)
                         .images(extractSendTextImage(sendText))
