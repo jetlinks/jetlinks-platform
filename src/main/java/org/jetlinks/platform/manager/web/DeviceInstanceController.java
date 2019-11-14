@@ -1,6 +1,7 @@
 package org.jetlinks.platform.manager.web;
 
 import com.alibaba.excel.EasyExcel;
+import io.swagger.annotations.ApiOperation;
 import lombok.Getter;
 import org.hswebframework.ezorm.rdb.exception.DuplicateKeyException;
 import org.hswebframework.web.authorization.annotation.Authorize;
@@ -88,7 +89,7 @@ public class DeviceInstanceController implements
         return payload.flatMap(entity -> service
                 .insert(Mono.just(entity))
                 // TODO: 2019/11/4 错误类型判断
-                .onErrorMap(DuplicateKeyException.class, err-> new BusinessException("设备id重复",err))
+                .onErrorMap(DuplicateKeyException.class, err -> new BusinessException("设备id重复", err))
                 .thenReturn(entity));
 
     }
@@ -101,5 +102,11 @@ public class DeviceInstanceController implements
         File file = resource.getFile();
         EasyExcel.write(file, DeviceInstanceImportExportEntity.class).sheet("模板").doWrite(new ArrayList());
         return zeroCopyResponse.writeWith(file, 0, file.length());
+    }
+
+    @PostMapping("/import")
+    @ApiOperation("批量导入数据")
+    public Mono<Integer> doBatchImport(@RequestBody Mono<String> fileUrl) {
+        return fileUrl.flatMap(s -> service.doBatchImport(s));
     }
 }
