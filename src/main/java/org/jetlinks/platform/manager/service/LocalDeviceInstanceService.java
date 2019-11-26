@@ -221,15 +221,15 @@ public class LocalDeviceInstanceService extends GenericReactiveCrudService<Devic
                             return operation.getState().zipWith(Mono.just(operation.getDeviceId()));
                         })
                 , 800, Duration.ofSeconds(5))
-                .map(list -> list.stream()
-                        .collect(Collectors.groupingBy(Tuple2::getT1, Collectors.mapping(Tuple2::getT2, Collectors.toSet()))))
+                .map(list -> list.stream().collect(Collectors.groupingBy(Tuple2::getT1, Collectors.mapping(Tuple2::getT2, Collectors.toSet()))))
                 .map(Map::entrySet)
                 .flatMap(Flux::fromIterable)
-                .flatMap(e -> getRepository().createUpdate()
-                        .set(DeviceInstanceEntity::getState, org.jetlinks.platform.manager.enums.DeviceState.of(e.getKey()))
-                        .where()
-                        .in(DeviceInstanceEntity::getId, e.getValue())
-                        .execute());
+                .flatMap(e -> getRepository()
+                                .createUpdate()
+                                .set(DeviceInstanceEntity::getState, org.jetlinks.platform.manager.enums.DeviceState.of(e.getKey()))
+                                .where()
+                                .in(DeviceInstanceEntity::getId, e.getValue())
+                                .execute());
 
     }
 

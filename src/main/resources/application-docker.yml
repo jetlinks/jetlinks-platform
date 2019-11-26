@@ -15,7 +15,10 @@ management:
       elastic:
         host: http://elasticsearch:9200
         index: jetlinks-metrics
-
+elasticsearch:
+  client:
+    host: elasticsearch
+    port: 9200
 hsweb:
   file:
     upload:

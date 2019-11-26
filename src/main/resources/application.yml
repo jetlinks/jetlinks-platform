@@ -25,6 +25,10 @@ spring:
 easyorm:
   default-schema: public # 数据库默认的schema
   dialect: postgres #数据库方言
+elasticsearch:
+  client:
+    host: localhost
+    port: 9200
 hsweb:
   cors:
     enable: true

@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hswebframework.web.bean.FastBeanCopier;
 import org.jetlinks.core.message.codec.MqttMessage;
 import org.jetlinks.core.message.codec.SimpleMqttMessage;
-import org.jetlinks.gateway.vertx.mqtt.VertxMqttMessage;
-import org.jetlinks.rule.engine.executor.node.mqtt.PayloadType;
+import org.jetlinks.rule.engine.executor.PayloadType;
 
 /**
  * @author bsetfeng
